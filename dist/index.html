@@ -83,7 +83,7 @@ if(!telOk(t)){err('tel',true);$('r-tel').classList.add('is-error');bad=bad||'tel
 if(bad)return $(bad).focus();
 data={nombre:n,cedula:document.querySelector('[name=nac]:checked').value+c,telefono:'+'+$('cc').value+t};
 var b=$('b-send');busy(b,true);err('send',false);
-post(C.send,data).then(function(){busy(b,false);launch($('s-datos'),function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
+post(C.send,data).then(function(r){busy(b,false);launch($('s-datos'),r&&r.verificado?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
 function toCode(){$('sent-to').textContent='+'+$('cc').value+' '+fmt(digits($('tel').value));show('s-codigo');paint();timer();$('code').focus()}
 function timer(){var left=WAIT;clearInterval(tick);$('b-resend').disabled=true;
 function step(){rule($('r-time'),Math.round(left/WAIT*RULE));

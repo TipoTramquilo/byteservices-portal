@@ -145,7 +145,8 @@
 
 <script>
 /* Backend hooks. Set before this script, e.g. window.BYTE_PORTAL={send:"/api/otp",verify:"/api/verify"}.
-   send   POST {nombre, cedula:"V18456789", telefono:"+584125551234"}  -> 2xx
+   send   POST {nombre, cedula:"V18456789", telefono:"+584125551234"}  -> 2xx {verificado?, redirect?}
+          verificado:true = number already verified on an earlier day: no code, straight to "conectado"
    verify POST {telefono, codigo}                                     -> 2xx {redirect?}
    Without endpoints the portal runs in demo mode (code 123456). */
 (function(){
@@ -252,7 +253,7 @@ $('s-datos').addEventListener('submit',function(e){e.preventDefault();
   if(bad)return $(bad).focus();
   data={nombre:n,cedula:document.querySelector('[name=nac]:checked').value+c,telefono:'+'+$('cc').value+t};
   var b=$('b-send');busy(b,true);err('send',false);
-  post(C.send,data).then(function(){busy(b,false);launch($('s-datos'),function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
+  post(C.send,data).then(function(r){busy(b,false);launch($('s-datos'),r&&r.verificado?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
 
 function toCode(){$('sent-to').textContent='+'+$('cc').value+' '+fmt(digits($('tel').value));show('s-codigo');paint();timer();$('code').focus()}
 /* the pixel rule drains with the resend countdown */
