@@ -33,6 +33,7 @@
 .foot{margin-top:auto;padding-top:var(--s4)}
 .sent{margin-top:var(--s2);color:var(--g400)}
 .sent b{font:500 15px var(--mono);color:var(--g200);white-space:nowrap}
+.otpwrap{margin-top:var(--s6)}
 .timer{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s4);font:400 var(--t-label)/1.4 var(--mono);color:var(--g400)}
 .done-c{margin:auto 0;display:flex;flex-direction:column;align-items:center;text-align:center}
 .done .h1{margin-top:0}
@@ -59,7 +60,7 @@
 
   <!-- 1 · datos -->
   <form class="step" id="s-datos" novalidate>
-    <h1 class="h1">¿Quién se conecta?</h1>
+    <h1 class="h1">¿Quién se conecta? Te enviamos el código por <em>WhatsApp</em></h1>
 
     <div class="pair">
       <div>
@@ -103,13 +104,35 @@
     <div class="corner"><svg class="px" viewBox="0 0 180 150" aria-hidden="true"></svg></div>
 
     <div class="foot">
-      <p class="err" id="e-send" role="alert">No pudimos conectarte. Revisa tus datos e inténtalo de nuevo.</p>
-      <button class="btn" id="b-send" type="submit">Conectarme</button>
+      <p class="err" id="e-send" role="alert">No pudimos enviar el código. Revisa tu número e inténtalo de nuevo.</p>
+      <button class="btn" id="b-send" type="submit">Enviar código por WhatsApp</button>
       <p class="legal">Al continuar aceptas los <a href="#terminos">términos de uso</a> de la red.</p>
     </div>
   </form>
 
-  <!-- 2 · conectado -->
+  <!-- 2 · código -->
+  <form class="step" id="s-codigo" novalidate hidden>
+    <h1 class="h1">Escribe el código que te llegó por <em>WhatsApp</em></h1>
+    <p class="sent">Enviado a <b id="sent-to">+58 412 555 1234</b> · <button class="link" type="button" id="b-edit">Cambiar</button></p>
+
+    <div class="otpwrap">
+      <label class="lbl" for="code">Código de 6 dígitos</label>
+      <div class="otp" id="otp">
+        <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" enterkeyhint="go" aria-describedby="e-code">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <p class="err" id="e-code" role="alert">Código incorrecto. Revísalo en WhatsApp e inténtalo otra vez.</p>
+      <div class="rule" id="r-time" aria-hidden="true"></div>
+      <div class="timer"><span id="t-left">Reenviar en 1:00</span><button class="link" type="button" id="b-resend" disabled>Reenviar código</button></div>
+    </div>
+
+    <div class="corner"><svg class="px" viewBox="0 0 180 150" aria-hidden="true"></svg></div>
+    <div class="foot">
+      <button class="btn" id="b-verify" type="submit">Conectarme</button>
+    </div>
+  </form>
+
+  <!-- 3 · conectado -->
   <section class="step done" id="s-listo" hidden>
     <div class="done-c">
       <h1 class="h1">Listo, ya estás <em>conectado</em></h1>

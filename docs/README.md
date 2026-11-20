@@ -6,12 +6,12 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 ## Explicación (por qué se decidió)
 
 - **Core**
-  - [core/acceso-wifi.md](/docs/explanation/core/acceso-wifi.md) - hora gratis al enviar, internet hasta el reset (2:00 AM) al verificar, sin código los días siguientes
+  - [core/acceso-wifi.md](/docs/explanation/core/acceso-wifi.md) - registro con OTP por WhatsApp, límites de envío y reset diario (2:00 AM)
 - **Arquitectura**
   - [architecture/puertos-y-adaptadores.md](/docs/explanation/architecture/puertos-y-adaptadores.md) - `core/` con sus puertos y un paquete por adaptador
   - [architecture/api-rest.md](/docs/explanation/architecture/api-rest.md) - Go, REST con JSON y mismo origen que el portal
 - **Base de datos**
-  - [database/sqlite.md](/docs/explanation/database/sqlite.md) - SQLite en proceso, sin ORM, restricciones según estándares y migraciones forward-only
+  - [database/postgres.md](/docs/explanation/database/postgres.md) - Postgres en Supabase, sin ORM, migraciones forward-only
 - **Integraciones**
   - [integrations/twilio.md](/docs/explanation/integrations/twilio.md) - código por WhatsApp con la librería oficial de Twilio
 - **Operación**
@@ -31,7 +31,7 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 ## How-to (pasos para lograr algo)
 
 - [correr-el-proyecto.md](/docs/how-to/correr-el-proyecto.md) - API en el host, en contenedor o solo el portal
-- [agregar-migracion.md](/docs/how-to/agregar-migracion.md) - agregar una migración de SQLite
+- [agregar-migracion.md](/docs/how-to/agregar-migracion.md) - agregar una migración de Postgres
 - [actualizar-openapi.md](/docs/how-to/actualizar-openapi.md) - cambiar el contrato OpenAPI
 - [configurar-twilio.md](/docs/how-to/configurar-twilio.md) - mandar el código por WhatsApp de verdad
 
@@ -41,7 +41,6 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 
 ## Pendiente (sin decisión cerrada)
 
-- [ops/router.md](/docs/pending/ops/router.md) - mini PC con OPNsense o Raspberry: topología y adaptador del router
 - [web/portal.md](/docs/pending/web/portal.md) - términos de uso y textos
 
 ## Estados

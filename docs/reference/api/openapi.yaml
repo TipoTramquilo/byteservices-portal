@@ -7,7 +7,7 @@ info:
     identifier: UNLICENSED
   description: |
     API del portal cautivo del Wi-Fi de invitados de Byte: el visitante deja sus datos, recibe un
-    código de 6 dígitos por WhatsApp y con él obtiene internet
+    código de 6 dígitos por WhatsApp y con él queda registrado
 
     El mismo proceso sirve el portal compilado (`apps/web/dist`) en `/`, desde el mismo origen: no hay CORS
 
@@ -15,18 +15,15 @@ info:
 
     ### Flujo
 
-    1. **Datos** — `POST /api/send`; el dispositivo **no recibe internet**: el walled garden del router deja pasar solo los rangos de Meta (WhatsApp incluido) para que le llegue el código, y el portal cautivo sigue abierto
-    2. **Código** — `POST /api/verify`; si es correcto, el teléfono queda verificado y el dispositivo tiene internet **hasta el reset**
-    3. **Días siguientes** — un teléfono ya verificado que vuelve a `POST /api/send` recibe `verified: true` e internet hasta el reset, sin código
+    1. **Datos** — `POST /api/send`; valida el formulario y manda el código por WhatsApp
+    2. **Código** — `POST /api/verify`; si es correcto, el teléfono queda verificado y el visitante queda guardado
+    3. **Días siguientes** — un teléfono ya verificado que vuelve a `POST /api/send` recibe `verified: true`, sin código
 
     ---
 
     ### Consideraciones generales
 
-    * **Dispositivo:** se identifica por la IP de la conexión, no por un dato del cuerpo; con ella el backend le pide la MAC al router y le abre internet. No se leen `X-Forwarded-For` ni similares: los visitantes llegan directo por la LAN
-
-    * **Sin internet al enviar:** `POST /api/send` no abre internet. Antes de verificar, solo el walled garden de Meta
-      responde; el SO del teléfono sigue mostrando el portal cautivo y no lo cierra
+    * **Dispositivo:** la API no identifica el dispositivo: el registro usa solo los datos del formulario
 
     * **Formatos:** teléfono en E.164, cédula con su letra (`V` o `E`). Fechas en la base en ISO 8601 UTC
 
@@ -52,9 +49,8 @@ paths:
     post:
       summary: Enviar datos y código
       description: |
-        Registra al visitante y manda el código por WhatsApp, sin dar internet: el walled garden deja llegar el
-        mensaje. Si el teléfono ya fue verificado otro día, le da internet hasta el reset y responde `verified: true`
-        sin mandar código
+        Valida el formulario y manda el código por WhatsApp. Si el teléfono ya fue verificado otro día, responde
+        `verified: true` sin mandar código
       operationId: send
       tags: [Acceso]
       requestBody:
@@ -268,7 +264,7 @@ components:
           example:
             error: invalid
     Internal:
-      description: Error interno (base de datos, Twilio o router); el detalle queda en el log
+      description: Error interno (base de datos o Twilio); el detalle queda en el log
       content:
         application/json:
           schema:

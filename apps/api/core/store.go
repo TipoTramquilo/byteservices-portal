@@ -15,23 +15,23 @@ type Visitor struct {
 	Phone    string // E.164: +584125551234
 }
 
-type AccessKind string
-
-const Verified AccessKind = "verified" // sesión de 30 min abierta al enviar el formulario
-
-type Access struct {
-	IP       string
-	MAC      string // vacía si el router no la conoce
-	Phone    string
-	IDNumber string
-	Day      string
-	Kind     AccessKind
-	Start    time.Time
-	End      time.Time
+// Code es el código pendiente de un teléfono. Solo se guarda su hash
+type Code struct {
+	Visitor
+	Hash       string
+	ExpiresAt  time.Time
+	Attempts   int
+	SentAt     time.Time
+	Day        string // YYYY-MM-DD en la zona horaria del portal
+	SendsToday int
 }
 
-// Store guarda visitantes y los accesos a internet
+// Store guarda visitantes, códigos pendientes y accesos a internet
 type Store interface {
+	IsVerified(ctx context.Context, phone string) (bool, error)
 	SaveVerified(ctx context.Context, v Visitor, at time.Time) error
-	SaveAccess(ctx context.Context, a Access) error
+	GetCode(ctx context.Context, phone string) (Code, error) // ErrNotFound si no hay
+	SaveCode(ctx context.Context, c Code) error              // reemplaza el anterior y reinicia los intentos
+	AddAttempt(ctx context.Context, phone string) error
+	DeleteCode(ctx context.Context, phone string) error
 }

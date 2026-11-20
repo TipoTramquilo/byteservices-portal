@@ -101,6 +101,13 @@ h1,h2,p{margin:0}
 .rule.is-error i.on{background:var(--error)}
 
 /* OTP: six monumental cells mirroring one real input */
+.otp{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:var(--s2)}
+.otp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;cursor:text}
+.otp span{display:flex;align-items:center;justify-content:center;height:68px;border-bottom:2px solid var(--g700);font:700 40px/1 var(--display);color:var(--white);transition:border-color var(--t-fast) var(--ease)}
+.otp span.cur{border-color:var(--azul)}
+.otp span.cur:empty::after{content:"";width:2px;height:34px;background:var(--azul);animation:blink 1s steps(1) infinite}
+.otp.is-error span{border-color:var(--error);color:var(--error-text)}
+@keyframes blink{50%{opacity:0}}
 
 /* buttons */
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;border:0;border-radius:var(--r-btn);background:var(--azul);color:var(--negro);font:500 16px/1 var(--mono);cursor:pointer;transition:background var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
@@ -110,6 +117,8 @@ h1,h2,p{margin:0}
 .btn[aria-busy=true]{color:transparent;position:relative}
 .btn[aria-busy=true]::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;border:2px solid var(--negro);border-right-color:transparent;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.link{border:0;background:none;padding:0;font:500 var(--t-label)/1.4 var(--mono);color:var(--azul);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.link:disabled{color:var(--g400);text-decoration:none;cursor:default}
 
 .legal{margin-top:var(--s3);font:400 var(--t-small)/1.5 var(--sans);color:var(--g400);text-align:center}
 .legal a{color:var(--g200);text-underline-offset:3px}

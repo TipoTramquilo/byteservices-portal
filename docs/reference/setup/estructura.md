@@ -17,7 +17,7 @@ cautive-portal/
 │   └── api/                    backend Go
 │       ├── main.go
 │       ├── core/               lógica y puertos
-│       └── adapters/           httpapi, sqlite (+ migrations/), whatsapp, router
+│       └── adapters/           httpapi, postgres (+ migrations/), whatsapp
 ├── docker/                     Dockerfile y docker-compose.yaml (contexto: la raíz)
 ├── docs/                       esta documentación (Diátaxis)
 ├── brand/                      Manual Byte, logos y fuentes de referencia

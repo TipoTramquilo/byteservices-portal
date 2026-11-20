@@ -18,6 +18,8 @@ services:
     image: byte-portal:latest
     container_name: byte-portal
     environment:
+      # Postgres (Supabase u otro). Obligatorio: sin esto la API no arranca
+      - DATABASE_URL=${DATABASE_URL:?define DATABASE_URL en .env}
       # Sin OTP_SECRET los códigos pendientes dejan de servir al reiniciar el contenedor
       - OTP_SECRET=${OTP_SECRET:-}
       - REDIRECT=${REDIRECT:-}
@@ -29,9 +31,6 @@ services:
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
       - TWILIO_WHATSAPP_FROM=${TWILIO_WHATSAPP_FROM:-}
       - TWILIO_CONTENT_SID=${TWILIO_CONTENT_SID:-}
-    volumes:
-      # Base SQLite: verificados, códigos y registro de accesos del torneo
-      - portal_data:/data
     ports:
       - '0.0.0.0:${PORTAL_PORT:-8080}:8080'
     restart: always
@@ -48,6 +47,3 @@ services:
       options:
         max-size: '10m'
         max-file: '3'
-
-volumes:
-  portal_data:

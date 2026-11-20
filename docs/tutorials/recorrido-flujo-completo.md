@@ -1,46 +1,46 @@
 # Recorrido: el flujo completo en local
 
-> **Estado:** Aprobado
+> **Estado:** En revisión
 
-Seguir una visita de punta a punta, del portal a la base, sin Twilio ni router
+Seguir una visita de punta a punta, del portal a la base, sin Twilio. Necesitas una base Postgres (Supabase o una local).
 
 ## 1. Levantar la API
 
 ```bash
+export DATABASE_URL='postgres://usuario:clave@host:5432/base'
 make api
 ```
 
-En la terminal: `listening on :8080` y un aviso de `OTP_SECRET vacío` (esperado en local)
+En la terminal: `listening on :8080`. Las migraciones se aplican al arrancar. Sin `OTP_SECRET` la API usa una clave
+aleatoria, así que los códigos pendientes dejan de valer al reiniciar (esperado en local).
 
 ## 2. Enviar los datos
 
-Abrir `http://localhost:8080` a 390×844 y completar nombre, cédula y un WhatsApp venezolano.
-En la terminal aparecen dos líneas:
+Abrir `http://localhost:8080` a 390×844 y completar nombre, cédula, empresa y un WhatsApp venezolano.
+En la terminal aparece el código, porque sin Twilio el envío es por consola:
 
 ```
 [whatsapp] code for +58…: 123456           ← el código (adaptador de consola)
-(sin línea de router: al enviar no se da internet)
 ```
 
-Qué pasó: [Send](/apps/api/core/service.go) (líneas 58-118) validó los datos, guardó el hash del código en `codes` y lo mandó con el `Sender`. No llamó a `GrantAccess`:
-al enviar no hay internet, solo el walled garden
+Qué pasó: [Send](/apps/api/core/service.go) validó los datos, guardó el hash del código en `codes` y lo mandó con el `Sender`.
 
 ## 3. Equivocarse
 
-Escribir `000000`: el portal muestra "Código incorrecto" y `codes.attempts` sube a 1
+Escribir `000000`: el portal muestra "Código incorrecto" y `codes.attempts` sube a 1.
 
 ## 4. Verificar
 
-Escribir el código de la terminal: "Listo, ya estás conectado". En la terminal, `[router] grant` hasta las 2:00 AM (en el log, `06:00:00Z`: las horas van en UTC).
-[Verify](/apps/api/core/service.go) (líneas 122-161) movió los datos a `verified`, borró el código y registró el
-acceso `verified`
+Escribir el código de la terminal: "Listo, ya estás conectado". En la base, la fila de `codes` desaparece y aparece
+una en `verified` con el nombre, la cédula, la empresa y la hora de verificación (en UTC).
+[Verify](/apps/api/core/service.go) hizo ese movimiento.
 
 ## 5. Volver otro día
 
-Recargar la página y mandar el mismo teléfono (como si fuera otro día u otro dispositivo): el portal salta
-directo a "conectado", sin código. `send` respondió `{"verified": true}`
+Recargar la página y mandar el mismo teléfono: el portal salta directo a "conectado", sin código.
+`send` respondió `{"verified": true}`.
 
 ## 6. Mirar los límites
 
 Pedir el código de nuevo antes de 60 s responde `429 too_soon`; ver la tabla de límites en
-[acceso-wifi.md](/docs/explanation/core/acceso-wifi.md)
+[acceso-wifi.md](/docs/explanation/core/acceso-wifi.md).

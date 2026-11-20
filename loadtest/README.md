@@ -50,8 +50,8 @@ k6 dibuja la barra de progreso; al terminar imprime `rps`, `p50/p95/p99`, `fail`
 - Los VUs son **peticiones en vuelo a la vez**: con 1000 VUs, 1000 peticiones simultáneas sin esperar.
 - k6 y la API viven en la **misma VM** de Podman (8 vCPU, 3.6 GB), así que a altas tasas k6 es parte
   del cuello de botella. Para el techo real haría falta un cliente fuera de la VM.
-- La base SQLite usa **una sola conexión** (`SetMaxOpenConns(1)`), así que todas las consultas se
-  serializan: es el límite del `send`.
+- La base es Postgres con un pool de **10 conexiones** (`SetMaxOpenConns(10)`): el límite pasa a ser la
+  latencia de la base remota y el pool.
 - Con Twilio configurado, cada `send` hace una llamada HTTPS síncrona a Twilio; eso domina el
   tiempo de respuesta mucho antes que la base.
 

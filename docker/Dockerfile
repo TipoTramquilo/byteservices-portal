@@ -20,12 +20,10 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download
 
 COPY apps/api/ ./
-# CGO_ENABLED=0: modernc.org/sqlite es Go puro, así el binario no depende de libc
-# y corre sobre scratch. -s -w quita los símbolos de debug
+# CGO_ENABLED=0: el binario no depende de libc y corre sobre scratch. -s -w quita los símbolos de debug
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/captiveportal . \
-    && mkdir -p /out/data
+    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/captiveportal .
 
 # ---------- Runtime: scratch (solo el binario, el portal y los certificados) ----------
 FROM scratch
@@ -34,14 +32,10 @@ FROM scratch
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /out/captiveportal /app/captiveportal
 COPY --from=web /src/apps/web/dist/ /app/dist/
-# Volumen de la base SQLite: nace con dueño 65532 para que la app escriba sin ser root
-COPY --from=build --chown=65532:65532 /out/data /data
-
+# La base es Postgres (DATABASE_URL se pasa en tiempo de ejecución); el contenedor no guarda datos
 ENV ADDR=:8080 \
-    DB=/data/portal.db \
     PORTAL_DIR=/app/dist
 EXPOSE 8080
-VOLUME /data
 
 # scratch no tiene /etc/passwd: el usuario va por número
 USER 65532:65532

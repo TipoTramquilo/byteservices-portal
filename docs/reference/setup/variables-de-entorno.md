@@ -1,22 +1,19 @@
 # Variables de entorno de la API
 
-> **Estado:** Aprobado
+> **Estado:** En revisión
 
-Las lee [main.go](/apps/api/main.go). Ninguna es obligatoria para correr en local
+| Variable | Valor por defecto | Para qué |
+|---|---|---|
+| `DATABASE_URL` | (obligatoria) | Cadena de conexión a Postgres (Supabase u otro) |
+| `ADDR` | `:8080` | Dirección y puerto donde escucha la API |
+| `PORTAL_DIR` | `../web/dist` | Carpeta con el portal compilado (`index.html` y `fonts/`) |
+| `TIMEZONE` | `America/Caracas` | Zona horaria del día y del reset |
+| `RESET_AT` | `02:00` | Hora local del reset diario (`HH:MM`) |
+| `REDIRECT` | (vacío) | Enlace de "Empezar a navegar" tras conectarse |
+| `OTP_SECRET` | aleatorio al arrancar | Clave HMAC de los hashes de código. Si cambia, los códigos pendientes dejan de valer |
+| `TWILIO_ACCOUNT_SID` | (vacío) | Sin esta variable, el código sale en el log |
+| `TWILIO_AUTH_TOKEN` | (vacío) | Token de Twilio |
+| `TWILIO_WHATSAPP_FROM` | (vacío) | Número de WhatsApp de Twilio en E.164 |
+| `TWILIO_CONTENT_SID` | (vacío) | ID de la plantilla aprobada de WhatsApp (`HX…`) |
 
-| Variable               | Por defecto              | Uso                                                                              |
-| ---------------------- | ------------------------ | -------------------------------------------------------------------------------- |
-| `ADDR`                 | `:8080`                  | Dirección de escucha                                                             |
-| `DB`                   | `portal.db`              | Archivo SQLite. En el contenedor: `/data/portal.db`                              |
-| `PORTAL_DIR`           | `../web/dist`            | Portal compilado que se sirve en `/`. En el contenedor: `/app/dist`              |
-| `TIMEZONE`             | `America/Caracas`        | Zona horaria para ubicar el reset y la columna `day`. Las horas se guardan en UTC |
-| `RESET_AT`             | `02:00`                  | Hora local (`HH:MM`) del reset diario: vencen los accesos y se reinician los límites diarios |
-| `REDIRECT`             | vacío                    | Enlace de "Empezar a navegar"; vacío deja el del portal                          |
-| `OTP_SECRET`           | aleatoria al arrancar    | Clave HMAC de los códigos. **Fijarla en producción**: si no, un reinicio invalida los códigos pendientes |
-| `TWILIO_ACCOUNT_SID`   | vacío                    | Sin ella el código se imprime en el log en vez de mandarse                        |
-| `TWILIO_AUTH_TOKEN`    | vacío                    | Token de la cuenta de Twilio                                                     |
-| `TWILIO_WHATSAPP_FROM` | vacío                    | Número de WhatsApp de Twilio en E.164 (`+14155238886`)                           |
-| `TWILIO_CONTENT_SID`   | vacío                    | ID de la plantilla aprobada (`HX…`) con `{{1}}` para el código                   |
-
-El compose ([docker-compose.yaml](/docker/docker-compose.yaml)) pasa `TIMEZONE`, `OTP_SECRET`, `REDIRECT`, `RESET_AT` y las de Twilio, lee todas desde `.env` (en la raíz; `make` se lo pasa con `--env-file`), y
-publica el puerto en `PORTAL_PORT` (por defecto `8080`)
+`DATABASE_URL` no va en el repositorio ni en la imagen: se pasa al contenedor o al entorno del servicio.

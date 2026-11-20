@@ -12,7 +12,7 @@ Una imagen con la API y el portal compilado, construida con [Dockerfile](/docker
   módulos y de compilación
 - **Runtime:** `scratch` con el binario, `apps/web/dist` y los certificados CA. ~12 MB
 - **Usuario:** `65532:65532`, sin root. `scratch` no tiene `/etc/passwd`: va por número
-- **Datos:** volumen `portal_data` en `/data` con la base SQLite
+- **Datos:** el contenedor no guarda nada. La base es Postgres externo (`DATABASE_URL`)
 
 ## Razones
 
@@ -32,8 +32,6 @@ Una imagen con la API y el portal compilado, construida con [Dockerfile](/docker
 | Destino           | Recomendación                                                              |
 | ----------------- | -------------------------------------------------------------------------- |
 | Equipo en la LAN  | Contenedor                                                                 |
-| Mini PC OPNsense  | Binario solo: OPNsense es FreeBSD y no corre Podman                        |
-| OpenWrt chico     | Binario solo; Podman pesa demasiado para el router                         |
 
 ## En producción
 

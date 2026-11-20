@@ -21,7 +21,7 @@ Compila el portal y levanta la API en `:8080`. Abrir `http://localhost:8080`. Si
 ## Opción B: todo en contenedor
 
 ```bash
-make up     # construye y levanta; la base queda en el volumen portal_data
+make up     # construye y levanta; la base es la de DATABASE_URL (Postgres), no el contenedor
 make logs   # el código aparece aquí sin Twilio
 make down
 ```

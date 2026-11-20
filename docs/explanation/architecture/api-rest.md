@@ -12,11 +12,11 @@
 
 ### Go y no Rust (ni Node)
 
-- **Despliegue:** un binario estático; compilar para el router es una línea (`GOOS=linux GOARCH=arm64 go build`).
+- **Despliegue:** un binario estático; compilar para otro equipo es una línea (`GOOS=linux GOARCH=arm64 go build`).
   En Rust la compilación cruzada a MIPS/ARM de routers es más engorrosa
 - **Velocidad de desarrollo:** HTTP, JSON y SQL son estándar y simples; el rendimiento de Rust no se nota con el
   tráfico de un torneo
-- Node estaba instalado y servía, pero un binario sin runtime encaja mejor en un router
+- Node estaba instalado y servía, pero un binario sin runtime encaja mejor en un servidor pequeño
 
 ### REST y no gRPC
 
@@ -27,7 +27,7 @@
 ### Mismo origen para portal y API
 
 [index](/apps/api/adapters/httpapi/handlers.go) (líneas 76-89) sirve `index.html` inyectando
-`window.BYTE_PORTAL={send:"/api/send",verify:"/api/verify"}`, como lo haría una página alojada en el router. Sin
+`window.BYTE_PORTAL={send:"/api/send",verify:"/api/verify"}`, con las rutas de la misma API. Sin
 otro origen no hay CORS
 
 ## Errores

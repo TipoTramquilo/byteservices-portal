@@ -1,22 +1,23 @@
 // Command captiveportal sirve el portal cautivo de Byte y su API
 //
-// Configuración (variables de entorno): ADDR, DB, PORTAL_DIR, TIMEZONE, RESET_AT, REDIRECT,
-// OPNSENSE_URL, OPNSENSE_KEY, OPNSENSE_SECRET, OPNSENSE_ZONE, OPNSENSE_CA_FILE, OPNSENSE_SERVER_NAME
-// Sin OPNSENSE_URL el acceso no se abre (solo se registra en el log)
+// Configuración (variables de entorno): ADDR, DATABASE_URL, PORTAL_DIR, TIMEZONE, RESET_AT, REDIRECT, OTP_SECRET,
+// TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM, TWILIO_CONTENT_SID
+// Sin TWILIO_ACCOUNT_SID los códigos se imprimen en el log
 package main
 
 import (
+	"context"
+	"crypto/rand"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
-	_ "time/tzdata" // los routers suelen venir sin base de zonas horarias
+	_ "time/tzdata" // las imágenes mínimas (scratch) no traen base de zonas horarias
 
 	"captiveportal/adapters/httpapi"
-	"captiveportal/adapters/router"
-	"captiveportal/adapters/sqlite"
+	"captiveportal/adapters/postgres"
+	"captiveportal/adapters/whatsapp"
 	"captiveportal/core"
 )
 
@@ -34,36 +35,34 @@ func main() {
 	if err != nil {
 		log.Fatal("RESET_AT: ", err)
 	}
-	store, err := sqlite.Open(env("DB", "portal.db"))
+	store, err := postgres.Open(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer store.Close()
 
-	var rtr core.Router = router.Log{}
-	if url := os.Getenv("OPNSENSE_URL"); url != "" {
-		var ca []byte
-		if f := os.Getenv("OPNSENSE_CA_FILE"); f != "" {
-			if ca, err = os.ReadFile(f); err != nil {
-				log.Fatal("OPNSENSE_CA_FILE: ", err)
-			}
-		}
-		zone, err := strconv.Atoi(env("OPNSENSE_ZONE", "0"))
-		if err != nil {
-			log.Fatal("OPNSENSE_ZONE: ", err)
-		}
-		rtr, err = router.NewOPNsense(url, os.Getenv("OPNSENSE_KEY"), os.Getenv("OPNSENSE_SECRET"), zone, ca,
-			os.Getenv("OPNSENSE_SERVER_NAME"))
-		if err != nil {
-			log.Fatal(err)
-		}
+	secret := []byte(os.Getenv("OTP_SECRET"))
+	if len(secret) == 0 {
+		secret = make([]byte, 32)
+		rand.Read(secret)
+		log.Print("OTP_SECRET vacío: se usa una clave aleatoria, los códigos pendientes dejan de servir al reiniciar")
 	}
 
-	svc := core.NewService(store, rtr, core.Config{
-		Location:    loc,
-		ResetHour:   resetAt.Hour(),
-		ResetMinute: resetAt.Minute(),
-		SessionTime: 30 * time.Minute,
+	var sender core.Sender = whatsapp.Console{}
+	if sid := os.Getenv("TWILIO_ACCOUNT_SID"); sid != "" {
+		sender = whatsapp.NewTwilio(sid, os.Getenv("TWILIO_AUTH_TOKEN"),
+			os.Getenv("TWILIO_WHATSAPP_FROM"), os.Getenv("TWILIO_CONTENT_SID"))
+	}
+
+	svc := core.NewService(store, sender, core.Config{
+		Location:       loc,
+		ResetHour:      resetAt.Hour(),
+		ResetMinute:    resetAt.Minute(),
+		CodeTTL:        10 * time.Minute,
+		ResendWait:     60 * time.Second,
+		MaxSendsPerDay: 5,
+		MaxAttempts:    5,
+		Secret:         secret,
 	})
 
 	srv := &http.Server{

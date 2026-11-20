@@ -1,6 +1,6 @@
 .DS_Store
 
-# apps/api: binario compilado y la base SQLite local (con sus archivos WAL)
+# apps/api: binario compilado
 apps/api/captiveportal
 
 # apps/web: el portal compilado; lo arman `make web` y el Dockerfile

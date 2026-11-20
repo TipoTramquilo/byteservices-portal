@@ -7,100 +7,160 @@ import (
 	"time"
 )
 
-// fakeStore guarda visitantes y accesos en memoria
 type fakeStore struct {
-	visitors []Visitor
-	accesses []Access
+	verified map[string]Visitor
+	codes    map[string]Code
+}
+
+func newFakeStore() *fakeStore {
+	return &fakeStore{verified: map[string]Visitor{}, codes: map[string]Code{}}
+}
+
+func (f *fakeStore) IsVerified(_ context.Context, phone string) (bool, error) {
+	_, ok := f.verified[phone]
+	return ok, nil
 }
 
 func (f *fakeStore) SaveVerified(_ context.Context, v Visitor, _ time.Time) error {
-	f.visitors = append(f.visitors, v)
+	f.verified[v.Phone] = v
 	return nil
 }
 
-func (f *fakeStore) SaveAccess(_ context.Context, a Access) error {
-	f.accesses = append(f.accesses, a)
+func (f *fakeStore) GetCode(_ context.Context, phone string) (Code, error) {
+	c, ok := f.codes[phone]
+	if !ok {
+		return Code{}, ErrNotFound
+	}
+	return c, nil
+}
+
+func (f *fakeStore) SaveCode(_ context.Context, c Code) error {
+	f.codes[c.Phone] = c
 	return nil
 }
 
-// fakeRouter registra cada concesión de internet
-type fakeRouter struct {
-	grants []time.Time
-	ips    []string
-}
-
-func (f *fakeRouter) MAC(context.Context, string) (string, error) {
-	return "52:54:00:77:30:65", nil
-}
-
-func (f *fakeRouter) GrantAccess(_ context.Context, ip string, until time.Time) error {
-	f.ips = append(f.ips, ip)
-	f.grants = append(f.grants, until)
+func (f *fakeStore) AddAttempt(_ context.Context, phone string) error {
+	c := f.codes[phone]
+	c.Attempts++
+	f.codes[phone] = c
 	return nil
 }
 
-func newTestService(t *testing.T) (*Service, *fakeStore, *fakeRouter, time.Time) {
+func (f *fakeStore) DeleteCode(_ context.Context, phone string) error {
+	delete(f.codes, phone)
+	return nil
+}
+
+type fakeSender struct {
+	calls int
+	code  string
+}
+
+func (f *fakeSender) SendCode(_ context.Context, _, code string) error {
+	f.calls++
+	f.code = code
+	return nil
+}
+
+func newTestService(t *testing.T) (*Service, *fakeStore, *fakeSender, *time.Time) {
 	t.Helper()
 	loc, err := time.LoadLocation("America/Caracas")
 	if err != nil {
 		t.Fatal(err)
 	}
 	now := time.Date(2026, 11, 20, 10, 0, 0, 0, loc)
-	store, router := &fakeStore{}, &fakeRouter{}
-	svc := NewService(store, router, Config{Location: loc, ResetHour: 2, SessionTime: 30 * time.Minute})
+	store, sender := newFakeStore(), &fakeSender{}
+	svc := NewService(store, sender, Config{
+		Location: loc, ResetHour: 2, CodeTTL: 10 * time.Minute, ResendWait: time.Minute,
+		MaxSendsPerDay: 5, MaxAttempts: 5, Secret: []byte("test-secret"),
+	})
 	svc.now = func() time.Time { return now }
-	return svc, store, router, now
+	return svc, store, sender, &now
 }
 
-var visitor = Visitor{
-	Name:     "Ana Pérez",
-	IDNumber: "V18456789",
-	Company:  "Byte Services",
-	Phone:    "+584125551234",
-}
+var visitor = Visitor{Name: "Ana Pérez", IDNumber: "V18456789", Company: "Byte Services", Phone: "+584125551234"}
 
-const visitorIP = "192.168.10.101"
-
-func TestSendGrantsThirtyMinutes(t *testing.T) {
-	svc, store, router, now := newTestService(t)
-
-	if err := svc.Send(context.Background(), visitor, visitorIP); err != nil {
-		t.Fatalf("Send: %v", err)
+func TestSendManda_UnCodigo(t *testing.T) {
+	svc, _, sender, _ := newTestService(t)
+	verified, err := svc.Send(context.Background(), visitor)
+	if err != nil || verified {
+		t.Fatalf("Send: verified=%v err=%v", verified, err)
 	}
-	if len(router.grants) != 1 {
-		t.Fatalf("se esperaba 1 concesión, hubo %d", len(router.grants))
-	}
-	if want := now.Add(30 * time.Minute); !router.grants[0].Equal(want) {
-		t.Fatalf("la sesión debe vencer a %v, venció %v", want, router.grants[0])
-	}
-	if router.ips[0] != visitorIP {
-		t.Fatalf("concesión para %s, se esperaba %s", router.ips[0], visitorIP)
-	}
-	if len(store.visitors) != 1 || len(store.accesses) != 1 {
-		t.Fatalf("se esperaba 1 visitante y 1 acceso, hubo %d y %d", len(store.visitors), len(store.accesses))
+	if sender.calls != 1 || len(sender.code) != 6 {
+		t.Fatalf("se esperaba 1 código de 6 dígitos, llamadas=%d código=%q", sender.calls, sender.code)
 	}
 }
 
-func TestSendAgainGrantsNewSession(t *testing.T) {
-	svc, _, router, _ := newTestService(t)
-	for i := 0; i < 2; i++ {
-		if err := svc.Send(context.Background(), visitor, visitorIP); err != nil {
-			t.Fatalf("Send %d: %v", i, err)
-		}
+func TestSendMuyPronto_NoManda(t *testing.T) {
+	svc, _, sender, _ := newTestService(t)
+	ctx := context.Background()
+	if _, err := svc.Send(ctx, visitor); err != nil {
+		t.Fatal(err)
 	}
-	if len(router.grants) != 2 {
-		t.Fatalf("cada envío debe dar una sesión nueva, hubo %d", len(router.grants))
+	if _, err := svc.Send(ctx, visitor); !errors.Is(err, ErrTooSoon) {
+		t.Fatalf("se esperaba ErrTooSoon, llegó %v", err)
+	}
+	if sender.calls != 1 {
+		t.Fatalf("no debía mandar otro código, llamadas=%d", sender.calls)
 	}
 }
 
-func TestSendRejectsInvalidData(t *testing.T) {
-	svc, store, router, _ := newTestService(t)
+func TestVerifyCorrecto_VerificaYBorraElCodigo(t *testing.T) {
+	svc, store, sender, _ := newTestService(t)
+	ctx := context.Background()
+	if _, err := svc.Send(ctx, visitor); err != nil {
+		t.Fatal(err)
+	}
+	if err := svc.Verify(ctx, visitor.Phone, sender.code); err != nil {
+		t.Fatalf("Verify con código correcto: %v", err)
+	}
+	if _, ok := store.verified[visitor.Phone]; !ok {
+		t.Fatal("el teléfono debe quedar verificado")
+	}
+	if _, ok := store.codes[visitor.Phone]; ok {
+		t.Fatal("el código usado debe borrarse")
+	}
+}
+
+func TestVerifyIncorrecto_NoVerifica(t *testing.T) {
+	svc, store, sender, _ := newTestService(t)
+	ctx := context.Background()
+	if _, err := svc.Send(ctx, visitor); err != nil {
+		t.Fatal(err)
+	}
+	wrong := "000000"
+	if wrong == sender.code {
+		wrong = "111111"
+	}
+	if err := svc.Verify(ctx, visitor.Phone, wrong); !errors.Is(err, ErrWrongCode) {
+		t.Fatalf("se esperaba ErrWrongCode, llegó %v", err)
+	}
+	if _, ok := store.verified[visitor.Phone]; ok {
+		t.Fatal("un código incorrecto no debe verificar")
+	}
+}
+
+func TestSendYaVerificado_NoMandaCodigo(t *testing.T) {
+	svc, store, sender, now := newTestService(t)
+	store.verified[visitor.Phone] = visitor
+	_ = now
+	verified, err := svc.Send(context.Background(), visitor)
+	if err != nil || !verified {
+		t.Fatalf("un verificado debe responder verified=true: verified=%v err=%v", verified, err)
+	}
+	if sender.calls != 0 {
+		t.Fatal("un verificado no debe recibir código")
+	}
+}
+
+func TestSendDatosInvalidos(t *testing.T) {
+	svc, _, sender, _ := newTestService(t)
 	bad := visitor
 	bad.Name = "Ana"
-	if err := svc.Send(context.Background(), bad, visitorIP); !errors.Is(err, ErrInvalid) {
+	if _, err := svc.Send(context.Background(), bad); !errors.Is(err, ErrInvalid) {
 		t.Fatalf("se esperaba ErrInvalid, llegó %v", err)
 	}
-	if len(router.grants) != 0 || len(store.visitors) != 0 {
-		t.Fatal("datos inválidos no deben dar internet ni guardar visitante")
+	if sender.calls != 0 {
+		t.Fatal("datos inválidos no deben mandar código")
 	}
 }
