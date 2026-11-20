@@ -1,0 +1,225 @@
+openapi: 3.2.0
+info:
+  title: Portal cautivo Byte API
+  version: 1.0.0
+  license:
+    name: Propietario
+    identifier: UNLICENSED
+  description: |
+    API del portal cautivo del Wi-Fi de invitados de Byte: el visitante deja sus datos, recibe un
+    código de 6 dígitos por WhatsApp y con él obtiene internet
+
+    El mismo proceso sirve el portal compilado (`apps/web/dist`) en `/`, desde el mismo origen: no hay CORS
+
+    ---
+
+    ### Flujo
+
+    1. **Datos** — `POST /api/send`; el dispositivo recibe **1 h de internet gratis** (una vez al día por IP, MAC, teléfono y cédula) para que le llegue el código por WhatsApp
+    2. **Código** — `POST /api/verify`; si es correcto, el teléfono queda verificado y el dispositivo tiene internet **hasta el reset**
+    3. **Días siguientes** — un teléfono ya verificado que vuelve a `POST /api/send` recibe `verified: true` e internet hasta el reset, sin código
+
+    ---
+
+    ### Consideraciones generales
+
+    * **Dispositivo:** se identifica por la IP de la conexión, no por un dato del cuerpo; con ella el backend le pide la MAC al router y le abre internet. No se leen `X-Forwarded-For` ni similares: los visitantes llegan directo por la LAN
+
+    * **Hora gratis:** una vez al día por IP, MAC, teléfono y cédula; si cualquiera de ellos ya la usó hoy, el código se manda igual pero sin otra hora
+
+    * **Formatos:** teléfono en E.164, cédula con su letra (`V` o `E`). Fechas en la base en ISO 8601 UTC
+
+    * **Reenvío:** el mismo `POST /api/send` reenvía el código; exige 60 s entre envíos y un máximo de 5 envíos por teléfono al día. Cada envío reemplaza el código anterior
+
+    * **Código:** vence a los 10 min y admite 5 intentos; se guarda solo su HMAC-SHA256, nunca el código
+
+    * **Reset diario:** a las 02:00 hora local (`RESET_AT` en `TIMEZONE`); el día va de reset a reset. Todas las horas se guardan en UTC
+
+    * **Errores:** cuerpo `{"error": "<código>"}`; lo que importa es el código HTTP. El portal solo distingue éxito (2xx) de error
+servers:
+  - url: http://localhost:8080
+    description: Desarrollo (`make api`)
+tags:
+  - name: Acceso
+    description: Datos del visitante, código por WhatsApp y acceso a internet
+  - name: Sistema
+    description: Salud del servicio
+paths:
+  /api/send:
+    post:
+      summary: Enviar datos y código
+      description: |
+        Registra al visitante y le da su hora gratis. Si el teléfono ya fue verificado otro día, le da
+        internet hasta el reset y responde `verified: true` sin mandar código
+      operationId: send
+      tags: [Acceso]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendRequest'
+      responses:
+        '200':
+          description: Código enviado, o teléfono ya verificado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendResponse'
+              examples:
+                codigoEnviado:
+                  summary: Código enviado por WhatsApp
+                  value: {}
+                yaVerificado:
+                  summary: Teléfono verificado otro día
+                  value:
+                    verified: true
+        '400':
+          $ref: '#/components/responses/Invalid'
+        '429':
+          description: Envío muy seguido (`too_soon`) o límite diario de envíos alcanzado (`too_many`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                tooSoon:
+                  value:
+                    error: too_soon
+                tooMany:
+                  value:
+                    error: too_many
+        '500':
+          $ref: '#/components/responses/Internal'
+
+  /api/verify:
+    post:
+      summary: Verificar el código
+      description: Si el código es correcto, el teléfono queda verificado y el dispositivo tiene internet hasta el reset
+      operationId: verify
+      tags: [Acceso]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        '200':
+          description: Código correcto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '400':
+          description: Datos con formato inválido (`invalid`), o código incorrecto, vencido o inexistente (`wrong_code`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalid:
+                  value:
+                    error: invalid
+                wrongCode:
+                  value:
+                    error: wrong_code
+        '429':
+          description: Se agotaron los intentos de ese código; hay que pedir otro con `POST /api/send`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: too_many
+        '500':
+          $ref: '#/components/responses/Internal'
+
+  /api/health:
+    get:
+      summary: Liveness del proceso
+      description: Responde mientras el proceso HTTP esté escuchando. Lo usa el healthcheck del contenedor (`captiveportal health`)
+      operationId: getHealth
+      tags: [Sistema]
+      responses:
+        '204':
+          description: Proceso activo
+
+components:
+  schemas:
+    Phone:
+      type: string
+      description: Teléfono de WhatsApp en E.164
+      pattern: '^\+[1-9]\d{7,14}$'
+      examples: ['+584125551234']
+
+    SendRequest:
+      type: object
+      required: [name, id_number, phone]
+      properties:
+        name:
+          type: string
+          description: Nombre y apellido; al menos dos palabras. Los espacios repetidos se normalizan
+          maxLength: 100
+          examples: ['María González']
+        id_number:
+          type: string
+          description: Cédula con su letra, sin puntos
+          pattern: '^[VE]\d{6,8}$'
+          examples: ['V18456789']
+        phone:
+          $ref: '#/components/schemas/Phone'
+    SendResponse:
+      type: object
+      properties:
+        verified:
+          type: boolean
+          description: Solo presente si el teléfono ya fue verificado otro día; el portal salta directo a "conectado"
+        redirect:
+          type: string
+          format: uri
+          description: Enlace de "Empezar a navegar" (`REDIRECT`); solo con `verified`
+
+    VerifyRequest:
+      type: object
+      required: [phone, code]
+      properties:
+        phone:
+          $ref: '#/components/schemas/Phone'
+        code:
+          type: string
+          pattern: '^\d{6}$'
+          examples: ['123456']
+    VerifyResponse:
+      type: object
+      properties:
+        redirect:
+          type: string
+          format: uri
+          description: Enlace de "Empezar a navegar" (`REDIRECT`); ausente si no está configurado
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          enum: [invalid, wrong_code, too_soon, too_many, internal]
+
+  responses:
+    Invalid:
+      description: JSON mal formado o datos con formato inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: invalid
+    Internal:
+      description: Error interno (base de datos, Twilio o router); el detalle queda en el log
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: internal
