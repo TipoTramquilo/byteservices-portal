@@ -10,7 +10,7 @@ cautive-portal/
 │   ├── web/                    portal (HTML/CSS/JS, sin dependencias)
 │   │   ├── src/                index.html, byte.css, app.js, fonts/ (recortadas)
 │   │   ├── fonts-src/          fuentes originales completas
-│   │   ├── dist/               compilado por build.mjs (en git)
+│   │   ├── dist/               compilado por build.mjs (no va en git)
 │   │   ├── build.mjs           minificador propio: mete byte.css y app.js en un index.html autocontenido
 │   │   ├── subset-fonts.mjs    recorta fonts-src/ a src/fonts/ (make fonts)
 │   │   └── design-system.html  muestrario de tokens y del portal en cada estado
@@ -40,4 +40,4 @@ cautive-portal/
 | `make down`    | Para el contenedor                                          |
 | `make logs`    | Sigue los logs                                              |
 
-Un solo `.gitignore` en la raíz. El `.dockerignore` solo deja pasar `apps/api/` y `apps/web/dist/`
+Un solo `.gitignore` en la raíz. El `.dockerignore` solo deja pasar `apps/api/`, `apps/web/build.mjs` y `apps/web/src/`

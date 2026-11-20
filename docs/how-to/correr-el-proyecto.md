@@ -39,6 +39,6 @@ Sirve `apps/web/src` en `:8000` en modo demo (código `123456`), sin API. Para v
 
 ## Antes de un commit
 
-- `make web` si se tocó `apps/web/src`: `dist/` va en git
+- `make web` para correr la API local con el portal nuevo: `dist/` no va en git, la imagen lo compila sola
 - `cd apps/api && go vet ./...`
 - Probar el flujo en el navegador a 390×844

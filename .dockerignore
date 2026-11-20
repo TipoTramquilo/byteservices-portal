@@ -1,5 +1,6 @@
 *
 !apps/api/
-!apps/web/dist/
+!apps/web/build.mjs
+!apps/web/src/
 apps/api/captiveportal
 apps/api/*.db*

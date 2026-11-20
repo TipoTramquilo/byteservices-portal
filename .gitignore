@@ -2,9 +2,12 @@
 
 # apps/api: binario compilado y la base SQLite local (con sus archivos WAL)
 apps/api/captiveportal
+
+# apps/web: el portal compilado; lo arman `make web` y el Dockerfile
+apps/web/dist/
 *.db
 *.db-shm
 *.db-wal
 
 # loadtest: resultados y muestras de las corridas
-loadtest/out/
+loadtest/results/

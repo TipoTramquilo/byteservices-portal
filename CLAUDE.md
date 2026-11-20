@@ -32,14 +32,14 @@ Web (`apps/web/`):
 - `src/byte.css` — all styles/tokens. Also linked by `design-system.html`.
 - `src/fonts/` — self-hosted woff2 (Satoshi 700, Plex Sans 400, Plex Mono 400/500), subsetted from `fonts-src/` by `subset-fonts.mjs` (`make fonts`, which fetches `subset-font` with npx; nothing is added to the repo). Plex Sans keeps full Latin-1 because it renders the name field; Satoshi and Plex Mono keep only the characters the portal shows. Rerun `make fonts` after changing portal copy, or new characters fall back to system fonts.
 - `design-system.html` — living specimen of tokens and components; embeds the portal in each state via `?step=`.
-- `build.mjs` — hand-rolled minifier: inlines `byte.css` and `app.js` into the HTML (it replaces the exact strings `<link rel="stylesheet" href="byte.css">` and `<script src="app.js"></script>` — keep both tags verbatim), minifies inline `<style>`/`<script>` separately, writes `dist/`, prints raw and gzip size. `dist/` is committed; rebuild after editing `src/`.
+- `build.mjs` — hand-rolled minifier: inlines `byte.css` and `app.js` into the HTML (it replaces the exact strings `<link rel="stylesheet" href="byte.css">` and `<script src="app.js"></script>` — keep both tags verbatim), minifies inline `<style>`/`<script>` separately, writes `dist/`, prints raw and gzip size. `dist/` is not committed (gitignored): the Dockerfile builds it, and `make web` rebuilds it for local runs (`make api` serves it).
 
 API (`apps/api/`):
 - Go API (`/api/send`, `/api/verify`, `/api/health`) that also serves `apps/web/dist/`. Ports and adapters: `core/` holds the logic and its ports (`Store`, `Sender`, `Router`); `adapters/` has `httpapi`, `sqlite` (plain SQL; numbered migrations in `migrations/`, embedded and applied on startup via `PRAGMA user_version`; never edit a published one, add the next), `whatsapp` (Twilio or console) and `router` (log only until the router is chosen). Dependencies: `modernc.org/sqlite`, `twilio-go`. Identifiers in English, comments in Spanish.
 
 Root:
 - `docs/` — documentation (Diátaxis); `docs/reference/api/openapi.yaml` is the API contract.
-- `docker/` — `Dockerfile` (build context is the repo root: API binary + `apps/web/dist` on `scratch`) and `docker-compose.yaml`.
+- `docker/` — `Dockerfile` (build context is the repo root: stage `node` compiles the portal with `build.mjs`, stage `golang` builds the API, runtime `scratch`) and `docker-compose.yaml`.
 - `brand/` — brand reference material (Manual Byte PDF, fonts, logos). `Manual Byte.pdf` (Rev. 2) is the binding brand authority; byteservices.net is not.
 - `.claude/skills/impeccable`, `.impeccable/` — the Impeccable design workflow used to build the UI; `.impeccable/surfaces/portal-index-html.md` holds the direction contract and the list of open decisions.
 

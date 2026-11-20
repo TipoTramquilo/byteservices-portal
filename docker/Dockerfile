@@ -1,8 +1,15 @@
 # ============================================================
-#  Portal cautivo Byte - apps/api (Go) + apps/web/dist (portal compilado)
-#  Contexto de build: la raíz del repo (necesita apps/api/ y apps/web/dist/)
+#  Portal cautivo Byte - apps/api (Go) + apps/web (portal, compilado en la imagen)
+#  Contexto de build: la raíz del repo (necesita apps/api/ y apps/web/)
 #  podman build -f docker/Dockerfile -t byte-portal .
 # ============================================================
+
+# ---------- Portal: build.mjs no tiene dependencias, solo necesita Node ----------
+FROM docker.io/library/node:alpine AS web
+WORKDIR /src
+COPY apps/web/build.mjs apps/web/build.mjs
+COPY apps/web/src apps/web/src
+RUN node apps/web/build.mjs
 
 # ---------- Build: binario estático ----------
 FROM docker.io/library/golang:alpine AS build
@@ -26,7 +33,7 @@ FROM scratch
 # Certificados CA para la API de Twilio por HTTPS: es lo único del sistema que usa el binario
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /out/captiveportal /app/captiveportal
-COPY apps/web/dist/ /app/dist/
+COPY --from=web /src/apps/web/dist/ /app/dist/
 # Volumen de la base SQLite: nace con dueño 65532 para que la app escriba sin ser root
 COPY --from=build --chown=65532:65532 /out/data /data
 

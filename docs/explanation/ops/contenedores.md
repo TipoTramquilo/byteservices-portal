@@ -7,6 +7,7 @@
 Una imagen con la API y el portal compilado, construida con [Dockerfile](/docker/Dockerfile) y levantada con
 [docker-compose.yaml](/docker/docker-compose.yaml). El `Makefile` detecta Podman o Docker
 
+- **Portal:** etapa `node:alpine` que corre `apps/web/build.mjs` (sin dependencias); el resultado va a `/app/dist`
 - **Build:** `golang:alpine`, binario estático (`CGO_ENABLED=0`, `-trimpath -ldflags="-s -w"`) con caché de
   módulos y de compilación
 - **Runtime:** `scratch` con el binario, `apps/web/dist` y los certificados CA. ~12 MB
