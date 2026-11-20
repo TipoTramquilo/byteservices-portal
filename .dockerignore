@@ -1,0 +1,5 @@
+*
+!apps/api/
+!apps/web/dist/
+apps/api/captiveportal
+apps/api/*.db*

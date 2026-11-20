@@ -1,0 +1,52 @@
+# ============================================================
+#  Portal cautivo Byte
+#  podman compose -f docker/docker-compose.yaml up -d --build
+# ============================================================
+
+name: byte-portal
+
+# Sin pod: cada servicio publica su puerto con rootlessport; en un pod, si el contenedor
+# infra cae, los puertos quedan sin publicar
+x-podman:
+  in_pod: false
+
+services:
+  portal:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: byte-portal:latest
+    container_name: byte-portal
+    environment:
+      # Sin OTP_SECRET los códigos pendientes dejan de servir al reiniciar el contenedor
+      - OTP_SECRET=${OTP_SECRET:-}
+      - REDIRECT=${REDIRECT:-}
+      # Hora local del reset diario (por defecto 02:00)
+      - RESET_AT=${RESET_AT:-}
+      # Twilio (código por WhatsApp). Sin TWILIO_ACCOUNT_SID el código sale en el log
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_WHATSAPP_FROM=${TWILIO_WHATSAPP_FROM:-}
+      - TWILIO_CONTENT_SID=${TWILIO_CONTENT_SID:-}
+    volumes:
+      # Base SQLite: verificados, códigos y registro de accesos del torneo
+      - portal_data:/data
+    ports:
+      - '0.0.0.0:${PORTAL_PORT:-8080}:8080'
+    restart: always
+    stop_grace_period: 10s
+    # Se repite aquí porque podman construye en formato OCI, que descarta el HEALTHCHECK del Dockerfile
+    healthcheck:
+      test: ['CMD', '/app/captiveportal', 'health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+volumes:
+  portal_data:
