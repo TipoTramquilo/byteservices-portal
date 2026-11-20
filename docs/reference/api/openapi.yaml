@@ -36,6 +36,8 @@ info:
     * **Reset diario:** a las 02:00 hora local (`RESET_AT` en `TIMEZONE`); el día va de reset a reset. Todas las horas se guardan en UTC
 
     * **Errores:** cuerpo `{"error": "<código>"}`; lo que importa es el código HTTP. El portal solo distingue éxito (2xx) de error
+
+    * **Métodos:** una ruta que existe con otro método responde 405 y la cabecera `Allow` dice cuáles admite; el portal no los usa
 servers:
   - url: http://localhost:8080
     description: Desarrollo (`make api`)
@@ -76,6 +78,20 @@ paths:
                     verified: true
         '400':
           $ref: '#/components/responses/Invalid'
+        '405':
+          description: La ruta solo admite `POST`
+          headers:
+            Allow:
+              description: Métodos que admite la ruta
+              schema:
+                type: string
+              example: POST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: method_not_allowed
         '429':
           description: Envío muy seguido (`too_soon`) o límite diario de envíos alcanzado (`too_many`)
           content:
@@ -124,6 +140,20 @@ paths:
                 wrongCode:
                   value:
                     error: wrong_code
+        '405':
+          description: La ruta solo admite `POST`
+          headers:
+            Allow:
+              description: Métodos que admite la ruta
+              schema:
+                type: string
+              example: POST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: method_not_allowed
         '429':
           description: Se agotaron los intentos de ese código; hay que pedir otro con `POST /api/send`
           content:
@@ -144,6 +174,20 @@ paths:
       responses:
         '204':
           description: Proceso activo
+        '405':
+          description: La ruta solo admite `GET` y `HEAD`
+          headers:
+            Allow:
+              description: Métodos que admite la ruta
+              schema:
+                type: string
+              example: GET, HEAD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: method_not_allowed
 
 components:
   schemas:
@@ -204,7 +248,7 @@ components:
       properties:
         error:
           type: string
-          enum: [invalid, wrong_code, too_soon, too_many, internal]
+          enum: [invalid, wrong_code, too_soon, too_many, method_not_allowed, internal]
 
   responses:
     Invalid:

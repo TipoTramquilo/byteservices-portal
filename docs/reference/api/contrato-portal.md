@@ -20,7 +20,7 @@ portal corre en **modo demo**: latencia falsa de 700 ms, código `123456` y una 
 ## Dispositivo
 
 La página no manda ningún identificador del dispositivo: el navegador no puede leer la MAC. La API usa la IP de la
-conexión ([clientIP](/apps/api/adapters/httpapi/handlers.go) (líneas 91-99)); con ella le pide la MAC al router
+conexión ([clientIP](/apps/api/adapters/httpapi/handlers.go) (líneas 93-101)); con ella le pide la MAC al router
 y le abre el acceso. No lee
 `X-Forwarded-For`: los visitantes llegan directo por la LAN y esa cabecera la puede escribir cualquiera
 

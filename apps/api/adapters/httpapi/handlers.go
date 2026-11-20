@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 
 	"captiveportal/core"
 )
@@ -70,7 +72,7 @@ func New(svc *core.Service, portalDir, redirect string) http.Handler {
 	files := http.FileServer(http.Dir(portalDir))
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) { index(w, portalDir) })
 	mux.Handle("GET /", files)
-	return mux
+	return methods(mux)
 }
 
 // index sirve el portal con los endpoints de la API puestos, como lo haría la página alojada en el router
@@ -127,4 +129,25 @@ func reply(w http.ResponseWriter, status int, v response) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(v)
+}
+
+// Métodos que admite cada ruta de la API; HEAD va con GET, como en el mux
+var apiMethods = map[string][]string{
+	"/api/send":   {http.MethodPost},
+	"/api/verify": {http.MethodPost},
+	"/api/health": {http.MethodGet, http.MethodHead},
+}
+
+// methods contesta 405 con Allow cuando la ruta de la API existe pero no admite ese método.
+// Sin esto, el FileServer de GET / se traga los GET y HEAD a /api/* y responde 404
+func methods(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		allowed, ok := apiMethods[r.URL.Path]
+		if !ok || slices.Contains(allowed, r.Method) {
+			next.ServeHTTP(w, r)
+			return
+		}
+		w.Header().Set("Allow", strings.Join(allowed, ", "))
+		reply(w, http.StatusMethodNotAllowed, response{Error: "method_not_allowed"})
+	})
 }
