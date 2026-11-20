@@ -1,9 +1,10 @@
 # Equipo y adaptador del router
 
-> **Estado:** Pendiente
+> **Estado:** En progreso. El adaptador de OPNsense está escrito y probado contra una VM; falta el equipo real y cerrar
+> la duración de las sesiones
 
-Hoy el puerto `Router` solo tiene el adaptador de [log](/apps/api/adapters/router/log.go): registra el acceso sin abrir
-nada. Falta confirmar el equipo y escribir el adaptador
+El puerto `Router` tiene dos adaptadores: el de [log](/apps/api/adapters/router/log.go), que solo registra el acceso,
+y el de [OPNsense](/apps/api/adapters/router/opnsense.go), que se activa si `OPNSENSE_URL` está definida
 
 ## Topología propuesta
 
@@ -33,19 +34,36 @@ banda del Starlink antes que el equipo: conviene limitar la velocidad por visita
 En los dos casos la API debe recibir a los visitantes directo (sin proxy delante), porque los identifica por la IP de
 la conexión
 
-## Adaptador de OPNsense (por confirmar)
+## Adaptador de OPNsense
 
-El portal cautivo de OPNsense trabaja por IP, igual que la API. Falta revisar en su documentación:
+El adaptador usa la API de OPNsense con una API key (Basic auth) y verifica el certificado de la GUI con su CA.
 
-- Cómo abrir una sesión para una IP desde la API de OPNsense
-- Cómo leer la MAC de una IP (sesiones del portal cautivo o tabla ARP)
-- Cómo darle a cada sesión un tiempo distinto (1 h gratis, después hasta el reset). Puede requerir RADIUS con
-  el atributo `Session-Timeout`
-- Cómo servir el portal propio como página del portal cautivo y dejar la API accesible antes de autenticar
+| Método del puerto      | Llamada a OPNsense                                                    |
+| ---------------------- | --------------------------------------------------------------------- |
+| `MAC(ctx, ip)`         | `GET /api/diagnostics/interface/getArp`, busca la IP en la tabla ARP   |
+| `GrantAccess(ctx, ip, until)` | `POST /api/captiveportal/session/connect` con `zoneid`, `ip` y `sessionTimeout` |
 
-## Al decidir
+Variables de entorno de la API:
 
-1. Escribir `apps/api/adapters/router/opnsense.go` con `MAC(ctx, ip)` (de la sesión del portal cautivo o la tabla
-   ARP de OPNsense) y `GrantAccess(ctx, ip, until)`
-2. Elegirlo en [main.go](/apps/api/main.go) según variables de entorno, como el `Sender`
-3. Mover este documento a `explanation/ops/` con la decisión
+| Variable               | Uso                                                                     |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `OPNSENSE_URL`         | Dirección de la GUI, por ejemplo `https://192.168.122.10`               |
+| `OPNSENSE_KEY`, `OPNSENSE_SECRET` | Key y secret de la API de un usuario de OPNsense              |
+| `OPNSENSE_ZONE`        | ID de la zona del portal (por defecto `0`)                              |
+| `OPNSENSE_CA_FILE`     | PEM de la CA o del certificado de la GUI, si no es público              |
+| `OPNSENSE_SERVER_NAME` | Nombre que trae el certificado en su SAN, por ejemplo `OPNsense.internal`. Hace falta si la URL usa una IP |
+
+### Limitaciones conocidas
+
+- **Duración de la sesión:** `sessionTimeout` no quedó registrado en la VM (`acc_session_timeout` vacío). Por ahora la
+  sesión no vence sola en OPNsense, aunque la API guarde `until`. Falta confirmar si la zona necesita `hardtimeout` o
+  RADIUS con `Session-Timeout` para vencer a las 02:00.
+- **MAC:** sale de la tabla ARP. Si el visitante no tiene entrada ARP reciente, `MAC` devuelve vacío y el servicio lo
+  trata como desconocido. Al pedir el código el visitante acaba de hacer una petición, así que normalmente hay entrada.
+- **Portal propio:** pendiente decidir cómo servir la página del portal y dejar la API accesible antes de autenticar.
+
+## Pendiente
+
+1. Confirmar la duración de las sesiones (`hardtimeout` o RADIUS) y que vencen al reset de las 02:00
+2. Probar con el equipo real (Starlink, router en modo AP) y un visitante real
+3. Mover este documento a `explanation/ops/` cuando se cierren los puntos anteriores

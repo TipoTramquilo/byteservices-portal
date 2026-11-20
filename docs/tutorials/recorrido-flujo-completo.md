@@ -18,12 +18,12 @@ Abrir `http://localhost:8080` a 390×844 y completar nombre, cédula y un WhatsA
 En la terminal aparecen dos líneas:
 
 ```
-[router] grant 127.0.0.1 until …     ← la hora gratis (adaptador de log)
 [whatsapp] code for +58…: 123456           ← el código (adaptador de consola)
+(sin línea de router: al enviar no se da internet)
 ```
 
-Qué pasó: [Send](/apps/api/core/service.go) (líneas 58-118) validó los datos, vio que ni la IP, ni el teléfono, ni la cédula habían usado su hora,
-la dio con `GrantAccess`, guardó el hash del código en `codes` y lo mandó con el `Sender`
+Qué pasó: [Send](/apps/api/core/service.go) (líneas 58-118) validó los datos, guardó el hash del código en `codes` y lo mandó con el `Sender`. No llamó a `GrantAccess`:
+al enviar no hay internet, solo el walled garden
 
 ## 3. Equivocarse
 
@@ -31,7 +31,7 @@ Escribir `000000`: el portal muestra "Código incorrecto" y `codes.attempts` sub
 
 ## 4. Verificar
 
-Escribir el código de la terminal: "Listo, ya estás conectado". En la terminal, otro `grant` hasta las 2:00 AM (en el log, `06:00:00Z`: las horas van en UTC).
+Escribir el código de la terminal: "Listo, ya estás conectado". En la terminal, `[router] grant` hasta las 2:00 AM (en el log, `06:00:00Z`: las horas van en UTC).
 [Verify](/apps/api/core/service.go) (líneas 122-161) movió los datos a `verified`, borró el código y registró el
 acceso `verified`
 

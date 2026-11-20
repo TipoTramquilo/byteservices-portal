@@ -24,7 +24,7 @@ el código en el log, para desarrollar sin cuenta
 ## Limitaciones
 
 - `twilio-go` no acepta `context`: un timeout de 10 s en el cliente lo reemplaza
-- Si Twilio falla, `POST /api/send` responde `500`; el código ya quedó guardado y la hora gratis ya se dio
+- Si Twilio falla, `POST /api/send` responde `500`; el código ya quedó guardado y el mensaje no salió
 
 ## Pendiente de validar
 

@@ -41,8 +41,8 @@ erDiagram
     }
 ```
 
-Las relaciones son lógicas (por `phone`); no hay claves foráneas: `access` registra también la hora gratis de
-teléfonos que nunca verificaron
+Las relaciones son lógicas (por `phone`); no hay claves foráneas: `access` registra también accesos de
+teléfonos que nunca verificaron (la hora gratis de antes; desde el walled garden ya no se crean)
 
 ## `verified`
 
@@ -75,7 +75,7 @@ Un código pendiente por teléfono; cada envío reemplaza al anterior y reinicia
 
 ## `access`
 
-Cada vez que se da internet: controla la hora gratis (una por IP, MAC, teléfono y cédula al día) y queda como registro del torneo
+Cada vez que se da internet (al verificar o al entrar sin código): queda como registro del torneo. Ya no hay hora gratis al enviar
 
 | Columna     | Tipo    | Regla                                   |
 | ----------- | ------- | --------------------------------------- |
@@ -89,5 +89,5 @@ Cada vez que se da internet: controla la hora gratis (una por IP, MAC, teléfono
 | `start_at`  | TEXT    | ISO 8601 UTC                            |
 | `end_at`    | TEXT    | ISO 8601 UTC, mayor que `start_at`      |
 
-Índices `access_ip_day`, `access_mac_day`, `access_phone_day` y `access_id_number_day` (cada uno con `day, kind`): uno por cada término
-del `OR` de la consulta de la hora gratis, que SQLite recorre por separado
+Índices `access_ip_day`, `access_mac_day`, `access_phone_day` y `access_id_number_day` (cada uno con `day, kind`): quedan de la consulta de la hora gratis que se quitó; se conservan
+hasta decidir si se borran con una migración nueva

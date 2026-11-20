@@ -15,7 +15,7 @@ info:
 
     ### Flujo
 
-    1. **Datos** — `POST /api/send`; el dispositivo recibe **1 h de internet gratis** (una vez al día por IP, MAC, teléfono y cédula) para que le llegue el código por WhatsApp
+    1. **Datos** — `POST /api/send`; el dispositivo **no recibe internet**: el walled garden del router deja pasar solo los rangos de Meta (WhatsApp incluido) para que le llegue el código, y el portal cautivo sigue abierto
     2. **Código** — `POST /api/verify`; si es correcto, el teléfono queda verificado y el dispositivo tiene internet **hasta el reset**
     3. **Días siguientes** — un teléfono ya verificado que vuelve a `POST /api/send` recibe `verified: true` e internet hasta el reset, sin código
 
@@ -25,7 +25,8 @@ info:
 
     * **Dispositivo:** se identifica por la IP de la conexión, no por un dato del cuerpo; con ella el backend le pide la MAC al router y le abre internet. No se leen `X-Forwarded-For` ni similares: los visitantes llegan directo por la LAN
 
-    * **Hora gratis:** una vez al día por IP, MAC, teléfono y cédula; si cualquiera de ellos ya la usó hoy, el código se manda igual pero sin otra hora
+    * **Sin internet al enviar:** `POST /api/send` no abre internet. Antes de verificar, solo el walled garden de Meta
+      responde; el SO del teléfono sigue mostrando el portal cautivo y no lo cierra
 
     * **Formatos:** teléfono en E.164, cédula con su letra (`V` o `E`). Fechas en la base en ISO 8601 UTC
 
@@ -51,8 +52,9 @@ paths:
     post:
       summary: Enviar datos y código
       description: |
-        Registra al visitante y le da su hora gratis. Si el teléfono ya fue verificado otro día, le da
-        internet hasta el reset y responde `verified: true` sin mandar código
+        Registra al visitante y manda el código por WhatsApp, sin dar internet: el walled garden deja llegar el
+        mensaje. Si el teléfono ya fue verificado otro día, le da internet hasta el reset y responde `verified: true`
+        sin mandar código
       operationId: send
       tags: [Acceso]
       requestBody:
