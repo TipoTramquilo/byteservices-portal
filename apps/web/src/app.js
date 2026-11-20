@@ -96,7 +96,12 @@ $('tel').addEventListener('paste',function(){setTimeout(onTel)});
 $('cedula').addEventListener('input',function(){var d=this.value.replace(/\D/g,'').slice(0,8);  /* max 12.345.678 */
   this.value=d.replace(/\B(?=(\d{3})+(?!\d))/g,'.');err('cedula',false)});
 $('nombre').addEventListener('input',function(){err('nombre',false)});
-['nombre','cedula'].forEach(function(id){$(id).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();(id==='nombre'?$('cedula'):$('tel')).focus()}})});
+/* GO / NEXT: va al siguiente campo sin llenar; si no queda ninguno, oculta el teclado sin enviar.
+   El paso siguiente lo da solo el botón */
+['nombre','cedula','tel'].forEach(function(id,i,all){$(id).addEventListener('keydown',function(e){if(e.key!=='Enter')return;e.preventDefault();
+  var nxt=all.slice(i+1).filter(function(f){return !$(f).value.trim()})[0];
+  if(nxt)$(nxt).focus();else this.blur()})});
+$('code').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();this.blur()}});
 
 function post(url,body){return DEMO?new Promise(function(ok){setTimeout(ok,700)}):fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw j;return j})})}
 function busy(b,on){b.setAttribute('aria-busy',on);b.disabled=on}
@@ -107,6 +112,7 @@ $('s-datos').addEventListener('submit',function(e){e.preventDefault();
   if(c.length<6){err('cedula',true);bad=bad||'cedula'}
   if(!telOk(t)){err('tel',true);$('r-tel').classList.add('is-error');bad=bad||'tel'}
   if(bad)return $(bad).focus();
+  document.activeElement.blur();  /* GO on the phone keyboard: hide it while the rocket flies */
   data={name:n,id_number:document.querySelector('[name=nac]:checked').value+c,phone:'+'+$('cc').value+t};
   var b=$('b-send');busy(b,true);err('send',false);
   function next(r){busy(b,false);launch($('s-datos'),r&&r.verified?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})}
@@ -125,7 +131,7 @@ $('b-edit').addEventListener('click',function(){clearInterval(tick);show('s-dato
 
 function paint(){var v=$('code').value,cells=$('otp').querySelectorAll('span'),f=document.activeElement===$('code');
   cells.forEach(function(s,i){s.textContent=v[i]||'';s.classList.toggle('cur',f&&i===Math.min(v.length,5))})}
-$('code').addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);blink();spark(6);$('otp').classList.remove('is-error');$('e-code').classList.remove('show');paint();if(this.value.length===6)$('s-codigo').requestSubmit()});
+$('code').addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);blink();spark(6);$('otp').classList.remove('is-error');$('e-code').classList.remove('show');paint()});
 $('code').addEventListener('focus',paint);$('code').addEventListener('blur',paint);
 
 $('s-codigo').addEventListener('submit',function(e){e.preventDefault();var v=$('code').value,b=$('b-verify');
