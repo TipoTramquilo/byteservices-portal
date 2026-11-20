@@ -29,7 +29,9 @@ la conoce por ARP. Si el router no la sabe, se sigue sin MAC
 le da internet **hasta el reset**, se registra el acceso y el portal salta directo a "Conectado"
 
 **4. Límites de envío.** Si el teléfono es nuevo, la API revisa que no se haya pedido un código hace menos de 60 s
-(`429 too_soon`) ni se hayan hecho ya 5 envíos hoy a ese número (`429 too_many`)
+(`429 too_soon`) ni se hayan hecho ya 5 envíos hoy a ese número (`429 too_many`). Las peticiones del **mismo teléfono**
+se atienden de una en una (un lock en memoria por número, el despliegue es una sola instancia), así que dos pestañas o
+dos móviles a la vez no generan dos códigos: la segunda recibe `too_soon` y el portal lo interpreta como enviado
 
 **5. Hora gratis.** La API revisa en `access` si **la IP, la MAC, el teléfono o la cédula** ya recibieron su hora gratis
 hoy. Si ninguno la usó, el router abre **1 h de internet**; si alguno ya la usó, no hay otra hora, pero el código se

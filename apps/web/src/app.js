@@ -2,6 +2,7 @@
    The API identifies the device by the request's IP, so the page sends no device id.
    send   POST {name, id_number:"V18456789", phone:"+584125551234"}  -> 2xx {verified?, redirect?}
           verified:true = number already verified on an earlier day: no code, straight to "conectado"
+          429 {error:"too_soon"} = a code went out less than 60 s ago and still works: treat as sent
    verify POST {phone, code}                                        -> 2xx {redirect?}
    Without endpoints the portal runs in demo mode (code 123456). */
 (function(){
@@ -97,7 +98,7 @@ $('cedula').addEventListener('input',function(){var d=this.value.replace(/\D/g,'
 $('nombre').addEventListener('input',function(){err('nombre',false)});
 ['nombre','cedula'].forEach(function(id){$(id).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();(id==='nombre'?$('cedula'):$('tel')).focus()}})});
 
-function post(url,body){return DEMO?new Promise(function(ok){setTimeout(ok,700)}):fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){if(!r.ok)throw r;return r.json().catch(function(){return{}})})}
+function post(url,body){return DEMO?new Promise(function(ok){setTimeout(ok,700)}):fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw j;return j})})}
 function busy(b,on){b.setAttribute('aria-busy',on);b.disabled=on}
 
 $('s-datos').addEventListener('submit',function(e){e.preventDefault();
@@ -108,7 +109,9 @@ $('s-datos').addEventListener('submit',function(e){e.preventDefault();
   if(bad)return $(bad).focus();
   data={name:n,id_number:document.querySelector('[name=nac]:checked').value+c,phone:'+'+$('cc').value+t};
   var b=$('b-send');busy(b,true);err('send',false);
-  post(C.send,data).then(function(r){busy(b,false);launch($('s-datos'),r&&r.verified?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
+  function next(r){busy(b,false);launch($('s-datos'),r&&r.verified?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})}
+  /* too_soon: el código salió hace menos de 60 s y sigue valiendo, así que pasa al paso del código */
+  post(C.send,data).then(next,function(e){if(e&&e.error==='too_soon')return next({});busy(b,false);err('send',true)})});
 
 function toCode(){$('sent-to').textContent='+'+$('cc').value+' '+fmt(digits($('tel').value));show('s-codigo');paint();timer();$('code').focus()}
 /* the pixel rule drains with the resend countdown */
@@ -117,7 +120,7 @@ function timer(){var left=WAIT;clearInterval(tick);$('b-resend').disabled=true;
     $('t-left').textContent=left>0?'Reenviar en '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'¿No te llegó?';
     $('b-resend').hidden=left>0;if(left<=0){clearInterval(tick);$('b-resend').disabled=false}left--}
   step();tick=setInterval(step,1000)}
-$('b-resend').addEventListener('click',function(){var b=this;b.disabled=true;post(C.send,data).then(timer,function(){b.disabled=false})});
+$('b-resend').addEventListener('click',function(){var b=this;b.disabled=true;post(C.send,data).then(timer,function(e){if(e&&e.error==='too_soon')return timer();b.disabled=false})});
 $('b-edit').addEventListener('click',function(){clearInterval(tick);show('s-datos');$('tel').focus()});
 
 function paint(){var v=$('code').value,cells=$('otp').querySelectorAll('span'),f=document.activeElement===$('code');

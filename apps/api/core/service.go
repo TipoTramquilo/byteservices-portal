@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"net"
 	"net/netip"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 )
@@ -38,6 +40,20 @@ type Service struct {
 	router Router
 	cfg    Config
 	now    func() time.Time
+	locks  [phoneLocks]sync.Mutex
+}
+
+// phoneLocks son las franjas del lock por teléfono: dos números pueden compartir franja, lo que
+// solo cuesta algo de espera entre ellos. Con 256 basta para que el choque sea raro
+const phoneLocks = 256
+
+// lockPhone bloquea ese teléfono y devuelve la función que lo suelta
+func (s *Service) lockPhone(phone string) func() {
+	h := fnv.New32a()
+	h.Write([]byte(phone))
+	m := &s.locks[h.Sum32()%phoneLocks]
+	m.Lock()
+	return m.Unlock
 }
 
 func NewService(store Store, sender Sender, router Router, cfg Config) *Service {
@@ -63,33 +79,49 @@ func (s *Service) Send(ctx context.Context, v Visitor, ip string) (verified bool
 		return false, ErrInvalid
 	}
 	now := s.now().In(s.cfg.Location)
-	day, end := s.window(now)
 
+	// el chequeo y el guardado del código van juntos: si dos peticiones del mismo teléfono se
+	// cruzan, ambas ven el código anterior y cada una manda el suyo. El lock se suelta antes de
+	// llamar a Twilio, que es lo lento y no toca el estado
+	unlock := s.lockPhone(v.Phone)
+	verified, code, err := s.prepare(ctx, v, ip, now)
+	unlock()
+	if err != nil || verified {
+		return verified, err
+	}
+	return false, s.sender.SendCode(ctx, v.Phone, code)
+}
+
+// prepare decide si toca enviar y guarda el código; devuelve el código a mandar (vacío si no hay
+// que mandar nada). Se llama con el lock del teléfono tomado
+func (s *Service) prepare(ctx context.Context, v Visitor, ip string, now time.Time) (verified bool, code string, err error) {
 	mac, err := s.mac(ctx, ip)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	verified, err = s.store.IsVerified(ctx, v.Phone)
 	if err != nil || verified {
 		if verified {
+			_, end := s.window(now)
 			err = s.grant(ctx, ip, mac, v, Verified, now, end)
 		}
-		return verified, err
+		return verified, "", err
 	}
 
+	day, end := s.window(now)
 	sends := 1
 	prev, err := s.store.GetCode(ctx, v.Phone)
 	switch {
 	case errors.Is(err, ErrNotFound):
 	case err != nil:
-		return false, err
+		return false, "", err
 	default:
 		if now.Sub(prev.SentAt) < s.cfg.ResendWait {
-			return false, ErrTooSoon
+			return false, "", ErrTooSoon
 		}
 		if prev.Day == day {
 			if prev.SendsToday >= s.cfg.MaxSendsPerDay {
-				return false, ErrTooMany
+				return false, "", ErrTooMany
 			}
 			sends = prev.SendsToday + 1
 		}
@@ -97,24 +129,24 @@ func (s *Service) Send(ctx context.Context, v Visitor, ip string) (verified bool
 
 	used, err := s.store.HadFreeAccess(ctx, ip, mac, v.Phone, v.IDNumber, day)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	if !used {
 		if err := s.grant(ctx, ip, mac, v, Free, now, minTime(now.Add(s.cfg.FreeTime), end)); err != nil {
-			return false, err
+			return false, "", err
 		}
 	}
 
-	code, err := newCode()
+	code, err = newCode()
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	err = s.store.SaveCode(ctx, Code{Visitor: v, Hash: s.hash(v.Phone, code), ExpiresAt: now.Add(s.cfg.CodeTTL),
 		SentAt: now, Day: day, SendsToday: sends})
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
-	return false, s.sender.SendCode(ctx, v.Phone, code)
+	return false, code, nil
 }
 
 // Verify revisa el código; si es correcto, el teléfono queda verificado y el dispositivo
