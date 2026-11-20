@@ -14,7 +14,8 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 
 	"captiveportal/core"
 )
@@ -28,10 +29,15 @@ type Store struct {
 
 // Open conecta con la URL de Postgres (DATABASE_URL) y aplica las migraciones pendientes
 func Open(ctx context.Context, url string) (*Store, error) {
-	db, err := sql.Open("pgx", url)
+	// Modo de consulta simple: el pooler de transacciones de Supabase reutiliza conexiones, y las
+	// sentencias preparadas de pgx se chocan entre ellas (SQLSTATE 42P05). Se fuerza aquí, para que
+	// no dependa de la URL
+	cfg, err := pgx.ParseConfig(url)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("DATABASE_URL: %w", err)
 	}
+	cfg.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+	db := stdlib.OpenDB(*cfg)
 	db.SetMaxOpenConns(10)
 	if err := db.PingContext(ctx); err != nil {
 		db.Close()
