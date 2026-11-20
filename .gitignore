@@ -5,3 +5,6 @@ apps/api/captiveportal
 *.db
 *.db-shm
 *.db-wal
+
+# loadtest: resultados y muestras de las corridas
+loadtest/out/
