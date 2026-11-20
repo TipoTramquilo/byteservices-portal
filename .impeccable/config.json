@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "sans\",system-ui,-apple-system,segoe ui,roboto,sans-serif",
+        "createdAt": "2026-11-20T06:30:13.321Z",
+        "reason": "Falso positivo: pila tomada de DESIGN.md (tipografía, Plex Sans); el hook compara la cadena sin las comillas de cada nombre. Reporte interno generado en loadtest/results/report.html"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "mono\",ui-monospace,sf mono,menlo,consolas,monospace",
+        "createdAt": "2026-11-20T06:30:13.339Z",
+        "reason": "Falso positivo: pila tomada de DESIGN.md (tipografía, Plex Mono); mismo motivo que la de sans. Reporte interno generado en loadtest/results/report.html"
+      }
+    ]
+  }
+}
