@@ -21,7 +21,9 @@ No hay red entre la app y la base ni otro contenedor que mantener; el respaldo e
 
 Límites asumidos, irrelevantes para un torneo:
 
-- **Un solo escritor a la vez.** Se abre con una conexión (`SetMaxOpenConns(1)`) y `busy_timeout`, en modo WAL
+- **Un solo escritor, lectores en paralelo.** En WAL: escrituras con una conexión (`SetMaxOpenConns(1)`),
+  `synchronous=NORMAL`, `busy_timeout` y checkpoint cada ~16 MB; lecturas en un pool aparte (`query_only`,
+  una conexión por núcleo hasta 8) que no espera al escritor
 - **Una sola instancia.** Dos procesos de la API no pueden compartir el archivo; escalar horizontalmente exigiría Postgres
 
 ### `modernc.org/sqlite` y no `mattn/go-sqlite3`
