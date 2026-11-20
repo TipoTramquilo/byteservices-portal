@@ -1,0 +1,2 @@
+Carpeta de recursos Byte: Otros
+Suelta aqui los archivos (SVG, PNG, PDF, AI, etc.).

@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-19T22:30:00Z",
+  "title": "Design System: Portal cautivo Byte",
+  "extensions": {
+    "colorMeta": {
+      "azul-byte": {
+        "role": "primary",
+        "displayName": "Azul Byte",
+        "canonical": "oklch(66.3% 0.148 245)",
+        "tonalRamp": [
+          "#000C21",
+          "#00274A",
+          "#004577",
+          "#0066A8",
+          "#2A88CD",
+          "#68ACE5",
+          "#9CCFFC",
+          "#D0F3FF"
+        ]
+      },
+      "violeta": {
+        "role": "secondary",
+        "displayName": "Violeta",
+        "canonical": "oklch(49.5% 0.251 279)",
+        "tonalRamp": [
+          "#080031",
+          "#1D0F66",
+          "#35269F",
+          "#4F3FDD",
+          "#6B66FF",
+          "#8E94FF",
+          "#B5BFFF",
+          "#E0E9FF"
+        ]
+      },
+      "azul-profundo": {
+        "role": "secondary",
+        "displayName": "Azul Profundo",
+        "canonical": "oklch(53.2% 0.138 250)",
+        "tonalRamp": [
+          "#000B20",
+          "#002648",
+          "#084475",
+          "#1964A5",
+          "#4086CA",
+          "#73AAE2",
+          "#A4CEFA",
+          "#D5F2FF"
+        ]
+      },
+      "celeste": {
+        "role": "tertiary",
+        "displayName": "Celeste",
+        "canonical": "oklch(82.4% 0.120 224)",
+        "tonalRamp": [
+          "#000E19",
+          "#002B3D",
+          "#004B64",
+          "#006D8F",
+          "#1590B3",
+          "#62B1CE",
+          "#99D3EA",
+          "#CFF6FF"
+        ]
+      },
+      "negro-byte": {
+        "role": "neutral",
+        "displayName": "Negro Byte",
+        "canonical": "oklch(17.1% 0.028 267)",
+        "tonalRamp": [
+          "#090B10",
+          "#22252D",
+          "#3D424D",
+          "#5B6170",
+          "#7B8292",
+          "#9FA5B3",
+          "#C4C9D4",
+          "#EBEEF6"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "oklch(19.4% 0.034 268)",
+        "tonalRamp": [
+          "#090B11",
+          "#21252E",
+          "#3C4250",
+          "#596173",
+          "#7A8295",
+          "#9EA5B5",
+          "#C4C9D6",
+          "#EBEEF7"
+        ]
+      },
+      "gris-900": {
+        "role": "neutral",
+        "displayName": "Gris 900",
+        "canonical": "oklch(23.3% 0.035 267)",
+        "tonalRamp": [
+          "#090B11",
+          "#21252F",
+          "#3C4250",
+          "#596174",
+          "#7A8296",
+          "#9EA5B6",
+          "#C3C9D6",
+          "#EAEEF8"
+        ]
+      },
+      "linea-panel": {
+        "role": "neutral",
+        "displayName": "Línea de panel",
+        "canonical": "oklch(29.2% 0.040 268)",
+        "tonalRamp": [
+          "#080B12",
+          "#202530",
+          "#3B4252",
+          "#586177",
+          "#798299",
+          "#9DA5B8",
+          "#C3C9D8",
+          "#EAEEF9"
+        ]
+      },
+      "gris-700": {
+        "role": "neutral",
+        "displayName": "Gris 700",
+        "canonical": "oklch(38.4% 0.038 267)",
+        "tonalRamp": [
+          "#080B11",
+          "#202530",
+          "#3B4251",
+          "#586175",
+          "#798298",
+          "#9DA5B7",
+          "#C3C9D7",
+          "#EAEEF8"
+        ]
+      },
+      "gris-400": {
+        "role": "neutral",
+        "displayName": "Gris 400",
+        "canonical": "oklch(66.3% 0.033 267)",
+        "tonalRamp": [
+          "#090B11",
+          "#21252E",
+          "#3C424F",
+          "#596173",
+          "#7A8295",
+          "#9EA5B5",
+          "#C4C9D5",
+          "#EBEEF7"
+        ]
+      },
+      "gris-200": {
+        "role": "neutral",
+        "displayName": "Gris 200",
+        "canonical": "oklch(88.2% 0.016 266)",
+        "tonalRamp": [
+          "#0A0B0E",
+          "#23252A",
+          "#3F4248",
+          "#5D616A",
+          "#7E828B",
+          "#A1A5AD",
+          "#C6C9CF",
+          "#ECEEF3"
+        ]
+      },
+      "blanco-lila": {
+        "role": "neutral",
+        "displayName": "Blanco lila",
+        "canonical": "oklch(94.3% 0.015 299)",
+        "tonalRamp": [
+          "#0B0B0D",
+          "#252429",
+          "#434147",
+          "#626068",
+          "#83818A",
+          "#A6A4AB",
+          "#CAC8CE",
+          "#EFEEF2"
+        ]
+      },
+      "blanco": {
+        "role": "neutral",
+        "displayName": "Blanco",
+        "canonical": "oklch(100.0% 0.000 90)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "exito": {
+        "role": "state",
+        "displayName": "Éxito",
+        "canonical": "oklch(72.3% 0.192 150)",
+        "tonalRamp": [
+          "#001200",
+          "#003201",
+          "#00540D",
+          "#007A1E",
+          "#009D42",
+          "#5CBD74",
+          "#96DDA4",
+          "#CDFDD5"
+        ]
+      },
+      "aviso": {
+        "role": "state",
+        "displayName": "Aviso",
+        "canonical": "oklch(78.2% 0.159 72)",
+        "tonalRamp": [
+          "#190500",
+          "#3E1B00",
+          "#663400",
+          "#914F00",
+          "#B67100",
+          "#D2994B",
+          "#EDC089",
+          "#FFE9C3"
+        ]
+      },
+      "error": {
+        "role": "state",
+        "displayName": "Error",
+        "canonical": "oklch(63.7% 0.208 25)",
+        "tonalRamp": [
+          "#230000",
+          "#4F0003",
+          "#800210",
+          "#B41521",
+          "#DD4543",
+          "#F67B73",
+          "#FFABA3",
+          "#FFDBD4"
+        ]
+      },
+      "error-texto": {
+        "role": "state",
+        "displayName": "Error texto",
+        "canonical": "oklch(71.1% 0.166 22)",
+        "tonalRamp": [
+          "#1F0002",
+          "#48090F",
+          "#751D22",
+          "#A63237",
+          "#CD5657",
+          "#E78582",
+          "#FFB2AE",
+          "#FFDFDB"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Número de WhatsApp a escala de cartel; baja en pasos de 2px hasta 22px si no cabe."
+      },
+      "display-otp": {
+        "displayName": "Display OTP",
+        "purpose": "Los seis dígitos del código."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "La pregunta de cada paso; una palabra puede ir en Azul Byte."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Títulos de hojas secundarias (términos)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto de apoyo, unos 34ch bajo el titular."
+      },
+      "field": {
+        "displayName": "Field",
+        "purpose": "Nombre y cédula escritos sobre la línea."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etiquetas, temporizador, filas de confirmación; 500 en pill y enlaces."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Botón primario, caja de oración."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Texto legal (Plex Sans) y mensajes de error (Plex Mono)."
+      }
+    },
+    "shadows": [],
+    "focus": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid #5FD6FF; outline-offset: 3px; border-radius: 4px",
+        "purpose": "Foco por teclado en todo control (1px de desplazamiento dentro del control V/E)."
+      },
+      {
+        "name": "selection",
+        "value": "background: rgba(48,154,231,.35); color: #FFFFFF",
+        "purpose": "Selección de texto."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Curva de salida para toda transición de estado y entrada de paso."
+      },
+      {
+        "name": "t-fast",
+        "value": "140ms",
+        "purpose": "Cambios de estado: líneas, botón, píxeles de la regla, control V/E."
+      },
+      {
+        "name": "t-step",
+        "value": "320ms",
+        "purpose": "Entrada de cada paso: opacidad 0 y +10px en Y hasta reposo."
+      },
+      {
+        "name": "blink",
+        "value": "1s steps(1) infinite",
+        "purpose": "Cursor de la celda OTP actual."
+      },
+      {
+        "name": "spin",
+        "value": ".7s linear infinite",
+        "purpose": "Indicador de botón ocupado."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce → transition:none; animation:none",
+        "purpose": "Desactiva todo movimiento."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tablet",
+        "value": "700px",
+        "purpose": "Centrado vertical; cada paso con altura mínima de 720px."
+      },
+      {
+        "name": "desktop",
+        "value": "1000px",
+        "purpose": "El patrón byte sale de la columna y se fija en la esquina inferior derecha de la ventana (240px, a 40px)."
+      }
+    ],
+    "layout": {
+      "maxWidth": "440px",
+      "gutter": "24px",
+      "pairColumns": "minmax(0,1fr) minmax(0,1.08fr)"
+    },
+    "openItems": [
+      "Texto de términos de uso: decisión abierta; la hoja :target (#terminos) es un marcador provisional."
+    ],
+    "fonts": [
+      {
+        "family": "Satoshi",
+        "weight": 700,
+        "file": "portal/fonts/satoshi-700.woff2",
+        "size": "17.1 KB",
+        "preload": true
+      },
+      {
+        "family": "Plex Mono",
+        "weight": 400,
+        "file": "portal/fonts/plex-mono-400.woff2",
+        "size": "13.6 KB"
+      },
+      {
+        "family": "Plex Mono",
+        "weight": 500,
+        "file": "portal/fonts/plex-mono-500.woff2",
+        "size": "14.0 KB"
+      },
+      {
+        "family": "Plex Sans",
+        "weight": 400,
+        "file": "portal/fonts/plex-sans-400.woff2",
+        "size": "21.0 KB"
+      }
+    ],
+    "fontSubset": "Latín básico + Latin-1 + guiones, comillas, puntos suspensivos y flechas; WOFF2, font-display swap; 66 KB en total. Originales completos en Recursos."
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La única acción de cada paso: ancho completo, 56px, anclado al pie.",
+      "html": "<button class=\"ds-btn\">Enviar código por WhatsApp</button>",
+      "css": ".ds-btn{display:flex;align-items:center;justify-content:center;width:100%;height:56px;border:0;border-radius:10px;background:var(--azul,#309AE7);color:var(--negro,#0A0F1C);font:500 16px/1 var(--mono,'Plex Mono',ui-monospace,Menlo,monospace);cursor:pointer;transition:background 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1)} .ds-btn:hover{background:#4AA8EC} .ds-btn:active{transform:scale(.985)} .ds-btn:focus-visible{outline:2px solid var(--celeste,#5FD6FF);outline-offset:3px}"
+    },
+    {
+      "name": "Botón deshabilitado",
+      "kind": "button",
+      "refersTo": "button-primary-disabled",
+      "description": "Estado inactivo del botón primario.",
+      "html": "<button class=\"ds-btn-off\" disabled>Conectarme</button>",
+      "css": ".ds-btn-off{display:flex;align-items:center;justify-content:center;width:100%;height:56px;border:0;border-radius:10px;background:var(--g900,#161D2E);color:var(--g400,#8A93A8);font:500 16px/1 var(--mono,'Plex Mono',ui-monospace,Menlo,monospace);cursor:default}"
+    },
+    {
+      "name": "Enlace",
+      "kind": "button",
+      "refersTo": "link",
+      "description": "Acción secundaria en línea (Cambiar, Reenviar código).",
+      "html": "<button class=\"ds-link\" type=\"button\">Reenviar código</button>",
+      "css": ".ds-link{border:0;background:none;padding:0;font:500 12.5px/1.4 var(--mono,'Plex Mono',ui-monospace,monospace);color:var(--azul,#309AE7);cursor:pointer;text-decoration:underline;text-underline-offset:3px} .ds-link:hover{color:#4AA8EC} .ds-link:focus-visible{outline:2px solid var(--celeste,#5FD6FF);outline-offset:3px;border-radius:4px} .ds-link:disabled{color:var(--g400,#8A93A8);text-decoration:none;cursor:default}"
+    },
+    {
+      "name": "Campo de línea",
+      "kind": "input",
+      "refersTo": "field-line",
+      "description": "El dato se escribe sobre una línea de 1px, nunca en una caja.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-lbl\" for=\"ds-n\">Nombre y apellido</label><div class=\"ds-line\"><input id=\"ds-n\" placeholder=\"Tu nombre\"></div></div>",
+      "css": ".ds-field{background:var(--negro,#0A0F1C);padding:16px} .ds-lbl{display:block;font:400 12.5px/1 var(--mono,'Plex Mono',ui-monospace,monospace);color:var(--g400,#8A93A8);margin-bottom:8px} .ds-line{border-bottom:1px solid var(--g700,#3A4358);transition:border-color 140ms cubic-bezier(.16,1,.3,1)} .ds-line:hover{border-color:var(--g400,#8A93A8)} .ds-line:focus-within{border-color:var(--azul,#309AE7)} .ds-line input{width:100%;border:0;background:none;padding:6px 0 10px;font:400 18px/1.3 var(--sans,'Plex Sans',system-ui,sans-serif);color:#fff;outline:none} .ds-line input::placeholder{color:var(--g400,#8A93A8)}"
+    },
+    {
+      "name": "Pill de red",
+      "kind": "chip",
+      "refersTo": "network-pill",
+      "description": "Nombre de la red en la barra superior; punto Celeste, Éxito al conectar.",
+      "html": "<span class=\"ds-pill\"><i></i>Byte Invitados</span>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line,#232B40);border-radius:999px;font:500 12.5px/1 var(--mono,'Plex Mono',ui-monospace,monospace);color:var(--g200,#D3D8E3);background:var(--negro,#0A0F1C)} .ds-pill i{width:7px;height:7px;border-radius:1.5px;background:var(--celeste,#5FD6FF)}"
+    },
+    {
+      "name": "Control V/E",
+      "kind": "input",
+      "refersTo": "segmented-option-checked",
+      "description": "Nacionalidad de la cédula, dentro de la misma línea que el número.",
+      "html": "<div class=\"ds-seg\" role=\"radiogroup\" aria-label=\"Nacionalidad\"><button class=\"on\" role=\"radio\" aria-checked=\"true\">V</button><button role=\"radio\" aria-checked=\"false\">E</button></div>",
+      "css": ".ds-seg{display:inline-flex;padding:2px;border-radius:7px;background:var(--panel,#0E1424);border:1px solid var(--line,#232B40)} .ds-seg button{min-width:24px;padding:3px 5px;border:0;border-radius:5px;background:none;font:500 13px/1.2 var(--mono,'Plex Mono',ui-monospace,monospace);color:var(--g400,#8A93A8);cursor:pointer;transition:background 140ms,color 140ms} .ds-seg button:hover{color:#fff} .ds-seg button:focus-visible{outline:2px solid var(--celeste,#5FD6FF);outline-offset:1px} .ds-seg .on{background:var(--g700,#3A4358);color:#fff}"
+    },
+    {
+      "name": "Número monumental con regla de píxeles",
+      "kind": "custom",
+      "refersTo": "display",
+      "description": "Firma: el teléfono a escala display y la regla que se llena de azul a violeta por dígito.",
+      "html": "<div class=\"ds-big\"><div class=\"ds-num\"><span class=\"ds-cc\">+58</span><span class=\"ds-n\">412 555 12</span></div><div class=\"ds-rule\"><i style=\"background:rgb(48,154,231)\"></i><i style=\"background:rgb(50,149,231)\"></i><i style=\"background:rgb(51,143,231)\"></i><i style=\"background:rgb(53,138,231)\"></i><i style=\"background:rgb(55,133,232)\"></i><i style=\"background:rgb(56,128,232)\"></i><i style=\"background:rgb(58,122,232)\"></i><i style=\"background:rgb(60,117,232)\"></i><i style=\"background:rgb(61,112,232)\"></i><i style=\"background:rgb(63,107,232)\"></i><i style=\"background:rgb(65,101,233)\"></i><i style=\"background:rgb(67,96,233)\"></i><i style=\"background:rgb(68,91,233)\"></i><i style=\"background:rgb(70,86,233)\"></i><i style=\"background:rgb(72,80,233)\"></i><i style=\"background:rgb(73,75,233)\"></i><i></i><i></i><i></i><i></i></div></div>",
+      "css": ".ds-big{background:var(--negro,#0A0F1C);padding:20px} .ds-num{display:flex;align-items:baseline;gap:8px} .ds-cc{font:500 17px/1 var(--mono,'Plex Mono',ui-monospace,monospace);color:var(--g400,#8A93A8)} .ds-n{font:700 44px/1.1 var(--display,Satoshi,'Avenir Next',system-ui,sans-serif);letter-spacing:-.02em;color:#fff;font-variant-numeric:tabular-nums} .ds-rule{display:flex;gap:3px;margin-top:12px} .ds-rule i{flex:1;max-width:6px;height:6px;border-radius:1px;background:var(--line,#232B40);transition:background 140ms cubic-bezier(.16,1,.3,1)}"
+    },
+    {
+      "name": "Celdas OTP",
+      "kind": "custom",
+      "refersTo": "otp-cell",
+      "description": "Seis celdas monumentales sobre línea; la actual subraya en Azul Byte con cursor.",
+      "html": "<div class=\"ds-otp\"><span>4</span><span>8</span><span class=\"cur\"></span><span></span><span></span><span></span></div>",
+      "css": ".ds-otp{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;background:var(--negro,#0A0F1C);padding:16px} .ds-otp span{display:flex;align-items:center;justify-content:center;height:68px;border-bottom:2px solid var(--g700,#3A4358);font:700 40px/1 var(--display,Satoshi,'Avenir Next',system-ui,sans-serif);color:#fff} .ds-otp span.cur{border-color:var(--azul,#309AE7)} .ds-otp span.cur:empty::after{content:\"\";width:2px;height:34px;background:var(--azul,#309AE7);animation:ds-blink 1s steps(1) infinite} @keyframes ds-blink{50%{opacity:0}} @media (prefers-reduced-motion:reduce){.ds-otp span.cur:empty::after{animation:none}}"
+    },
+    {
+      "name": "Lockup Byte",
+      "kind": "nav",
+      "refersTo": "lockup",
+      "description": "Isotipo | separador | wordmark, en blanco, arriba a la izquierda. Vectores reales del manual.",
+      "html": "<div class=\"ds-lockup\"><svg class=\"ds-iso\" viewBox=\"0 0 859 913\" aria-hidden=\"true\"><path d=\"M379.33 675.058L732.539 471.338C810.553 426.352 859 342.472 859 252.429C859 208.286 847.275 164.669 825.091 126.32C780.037 48.4103 696.063 0 605.937 0H405.769C294.267 0 203.895 90.2887 203.895 201.648V559.379C203.895 564.858 207.305 569.809 212.474 571.671C215.321 572.689 218.222 573.62 221.175 574.41C231.634 577.219 242.357 578.571 253.045 578.624C265.35 578.712 281.101 576.183 293.089 571.934C298.293 570.09 301.721 565.156 301.721 559.66V201.648C301.721 144.265 348.304 97.7338 405.769 97.7338H605.937C661.222 97.7338 712.745 127.409 740.379 175.204C753.985 198.734 761.175 225.423 761.175 252.429C761.175 307.67 731.449 359.118 683.635 386.703L330.409 590.424C294.548 611.091 252.764 616.604 212.737 605.893C172.746 595.182 139.346 569.563 118.674 533.76C105.05 510.161 97.843 483.454 97.843 456.501C97.843 429.284 105.033 402.419 118.586 378.907C130.399 358.468 146.378 341.366 165.345 328.442C168.984 325.967 171.269 321.928 171.269 317.538V236.257C171.269 227.004 161.829 220.542 153.304 224.177C103.222 245.458 61.543 282.139 33.8214 330.093C11.6898 368.477 0 412.182 0 456.501C0 500.574 11.725 544.173 33.9093 582.592C67.6604 641.029 122.172 682.819 187.406 700.273C209.204 706.12 231.318 709 253.291 709C297.097 709 340.358 697.534 379.33 675.058Z\"/><path d=\"M378.973 237.576C370.193 232.507 361.185 228 352 224.04C343.484 220.378 334 226.856 334 236.151V317.196C334 321.861 336.499 326.174 340.528 328.515L523.588 434.257C527.635 436.581 532.615 436.581 536.662 434.257L608.468 392.766C617.177 387.75 617.177 375.181 608.468 370.146L378.973 237.576Z\"/><path d=\"M850.29 594.856C839.206 553.428 818.266 516.34 789.492 486.138C784.995 481.43 777.722 480.586 772.435 484.399C764.898 489.845 757.064 494.958 748.93 499.666L709.757 522.278C702.027 526.741 700.956 537.511 707.719 543.344C730.977 563.39 747.736 589.849 755.852 620.156C766.55 660.109 761.051 701.871 740.358 737.694C712.761 785.518 661.308 815.21 606.096 815.21H406.064C361.392 815.21 323.325 786.871 308.657 747.234C306.531 741.507 300.787 737.87 294.744 738.766C281.2 740.804 267.498 741.858 253.761 741.858C243.73 741.858 233.682 741.243 223.669 740.136C214.833 739.152 207.35 746.971 209.317 755.65C229.589 845.604 310.079 913 406.064 913H606.096C696.125 913 780.006 864.562 825.012 786.607C858.775 728.154 867.752 660.056 850.29 594.856Z\"/></svg><i class=\"ds-sep\"></i><svg class=\"ds-word\" viewBox=\"0 0 646 322\" aria-label=\"Byte\"><path d=\"M0.000453949 241.961V-6.10352e-05H96.3215C143.985 -6.10352e-05 173.113 24.8249 173.113 65.2069C173.113 92.0179 161.197 111.216 138.358 120.815C163.845 129.09 176.754 148.288 176.754 176.423C176.754 217.798 147.957 241.961 97.9765 241.961H0.000453949ZM92.6805 37.4029H42.3685V103.272H93.6735C116.843 103.272 129.752 91.0249 129.752 69.5099C129.752 48.6569 116.512 37.4029 92.6805 37.4029ZM96.3215 139.02H42.3685V204.558H96.3215C120.153 204.558 133.393 192.973 133.393 171.127C133.393 150.605 119.822 139.02 96.3215 139.02ZM192.18 317.76V283.998H216.343C232.231 283.998 242.161 280.357 249.112 261.159L253.746 248.912L187.877 78.4469H230.576L272.613 197.607L316.967 78.4469H358.673L278.571 278.371C266.324 308.823 249.112 321.401 222.301 321.401C211.047 321.401 201.117 320.077 192.18 317.76ZM437.218 241.961H396.836V112.209H365.391V78.4469H396.836V27.4729H437.218V78.4469H468.994V112.209H437.218V241.961ZM565.633 246.264C516.976 246.264 482.883 210.847 482.883 160.204C482.883 108.899 516.314 73.4819 564.309 73.4819C613.297 73.4819 644.411 106.251 644.411 157.225V169.472L521.279 169.803C524.258 198.6 539.484 213.164 566.295 213.164C588.472 213.164 603.036 204.558 607.67 189.001H645.073C638.122 224.749 608.332 246.264 565.633 246.264ZM564.64 106.582C540.808 106.582 526.244 119.491 522.272 143.985H604.36C604.36 121.477 588.803 106.582 564.64 106.582Z\"/></svg></div>",
+      "css": ".ds-lockup{display:inline-flex;align-items:center;gap:12px;color:#fff;background:var(--negro,#0A0F1C);padding:12px 16px} .ds-lockup svg{display:block;fill:currentColor;width:auto} .ds-iso{height:26px} .ds-word{height:19px} .ds-sep{width:1px;height:22px;background:var(--g700,#3A4358)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El número es la interfaz",
+    "overview": "**Creative North Star: \"El número es la interfaz\"**\n\nEl portal es la puerta de entrada de una empresa de seguridad, y se comporta como tal: un fondo Negro Byte casi absoluto, una sola acción en Azul Byte y los datos del visitante escritos sobre líneas, no encerrados en cajas. Lo que el visitante teclea es lo más grande de la pantalla. El número de WhatsApp se compone a escala de cartel en Satoshi Bold y, debajo, una regla de píxeles se llena de azul a violeta con cada dígito; en el paso del código, la misma regla se vacía como temporizador de reenvío.\n\nLa densidad es baja y vertical: una columna de 440px como máximo, una pregunta por paso, el botón anclado al pie bajo el pulgar. El mundo sale del Manual de Identidad Byte Rev. 2 y de su aplicación en pantalla en el deck PAYMUL (de ahí el panel #0E1424 y la línea #232B40). El patrón de cuadrados \"byte\" aparece agrupado en una sola esquina, nunca repartido como textura.\n\nLa superficie es plana: profundidad por escalón tonal y filetes de 1px, sin sombras ni brillos, con contraste alto en todo el texto. El manual prohíbe distorsionar el logo, los brillos y el bajo contraste; el portal lo respeta.",
+    "keyCharacteristics": [
+      "Fondo Negro Byte (#0A0F1C), nunca negro puro.",
+      "Campos como líneas de 1px; el dato escrito en blanco sobre la regla.",
+      "Número de teléfono y código OTP en Satoshi Bold a tamaño monumental, cifras tabulares.",
+      "Regla de píxeles azul→violeta como firma: progreso al escribir, cuenta atrás al esperar.",
+      "Tres voces tipográficas con funciones fijas: Satoshi (títulos y números), Plex Mono (etiquetas, botones, datos), Plex Sans (texto).",
+      "Azul Byte como única acción; plano, sin sombras."
+    ],
+    "rules": [
+      {
+        "name": "La regla de la única acción",
+        "body": "Azul Byte es lo único que se pulsa o que indica foco activo. Ningún otro color de la marca se usa como botón o enlace.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla del negro que no es negro",
+        "body": "El fondo es Negro Byte (#0A0F1C). Nunca #000.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla del blanco escrito",
+        "body": "El blanco puro es para titulares, el logo y los datos que teclea el visitante; el texto corrido va en Blanco lila.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de las tres voces",
+        "body": "Satoshi solo en titulares y números; Plex Mono en todo lo que es interfaz o dato (etiquetas, botones, pill, valores); Plex Sans en el texto que se lee. No se intercambian.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del número monumental",
+        "body": "El dato principal de cada paso (teléfono, código) se compone en Satoshi Bold a escala display, en blanco. Es el elemento más grande de la pantalla.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla plana",
+        "body": "Nada proyecta sombra ni resplandor. Si algo necesita separarse, sube un escalón tonal y gana un filete de 1px.",
+        "section": "elevation"
+      },
+      {
+        "name": "La regla de la línea, no la caja",
+        "body": "Un campo de texto es una línea de 1px bajo el dato (2px en las celdas OTP). No se dibujan cajas alrededor de campos.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** usar Negro Byte (#0A0F1C) como fondo de toda pantalla.",
+      "**Do** reservar Azul Byte (#309AE7) para la acción, el foco activo y la única palabra destacada del titular.",
+      "**Do** escribir los campos sobre una línea de 1px (Gris 700 en reposo, Azul Byte con foco, Error en error).",
+      "**Do** componer el dato principal del paso en Satoshi Bold a escala display, con cifras tabulares.",
+      "**Do** expresar el paso de azul a violeta en píxeles discretos, como en la regla y el patrón.",
+      "**Do** agrupar el patrón byte en una sola esquina.",
+      "**Do** mantener el botón primario a ancho completo, 56px de alto y anclado al pie del paso.",
+      "**Do** usar Error texto (#F87171) para mensajes de error en texto pequeño, para que cumplan AA."
+    ],
+    "donts": [
+      "**Don't** usar negro puro (#000) como fondo.",
+      "**Don't** añadir sombras, brillos o resplandores; el manual los prohíbe y el sistema es plano.",
+      "**Don't** dibujar cajas alrededor de los campos de texto.",
+      "**Don't** distorsionar el logo ni alterar las proporciones del lockup (isotipo | separador | wordmark).",
+      "**Don't** usar Violeta, Celeste o Azul Profundo como color de acción.",
+      "**Don't** usar texto de bajo contraste; el texto secundario no baja de Gris 400 sobre Negro Byte.",
+      "**Don't** usar Satoshi para etiquetas o botones ni Plex Mono para texto corrido."
+    ]
+  }
+}

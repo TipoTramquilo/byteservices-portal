@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal Byte · Design system</title>
+<link rel="stylesheet" href="portal/byte.css">
+<style>
+body{font-size:15px}
+.page{max-width:1180px;margin:0 auto;padding:56px 40px 96px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+.top .meta{font:400 var(--t-label)/1.5 var(--mono);color:var(--g400);text-align:right}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:end;padding:72px 0 56px}
+.hero h1{font:700 clamp(40px,6vw,72px)/1.02 var(--display);letter-spacing:-.03em;color:var(--white)}
+.hero h1 em{font-style:normal;color:var(--azul)}
+.hero p{color:var(--g400);max-width:46ch}
+.hero .rule{margin-top:20px}
+section{padding:64px 0 0}
+h2{font:700 28px/1.15 var(--display);letter-spacing:-.02em;color:var(--white);margin-bottom:8px}
+.sub{color:var(--g400);max-width:62ch;margin-bottom:28px}
+
+.sw{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.sw div{border-radius:10px;padding:14px;min-height:108px;display:flex;flex-direction:column;justify-content:flex-end;font:400 12px/1.45 var(--mono);border:1px solid var(--line)}
+.sw b{font:500 13px var(--mono);display:block}
+.sw .grey div{min-height:84px}
+.row{margin-top:12px}
+
+.type{border-top:1px solid var(--line)}
+.type>div{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line)}
+.type small{font:400 12px/1.5 var(--mono);color:var(--g400)}
+.type .s1{font:700 46px/1.05 var(--display);letter-spacing:-.02em;color:var(--white)}
+.type .s2{font:700 30px/1.12 var(--display);letter-spacing:-.02em;color:var(--white)}
+.type .s3{font:500 16px var(--mono);color:var(--lila)}
+.type .s4{font:400 15px/1.55 var(--sans);color:var(--lila);max-width:60ch}
+.type .s5{font:400 12.5px var(--mono);color:var(--g400)}
+
+.comp{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:24px}
+.card h3{font:500 13px/1 var(--mono);color:var(--g200);margin:0 0 4px}
+.card .note{font:400 12.5px/1.5 var(--sans);color:var(--g400);margin:0 0 20px}
+.card .stack>*+*{margin-top:18px}
+.states{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.states>div>small{display:block;font:400 11px var(--mono);color:var(--g400);margin-top:8px}
+.btn.demo-hover{background:var(--azul-hover)}
+.fake-focus{outline:2px solid var(--celeste);outline-offset:3px}
+
+.screens{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.screens figure{margin:0}
+.frame{position:relative;width:100%;aspect-ratio:390/844;border:1px solid var(--line);border-radius:var(--r-panel);overflow:hidden;background:var(--negro)}
+.frame iframe{position:absolute;left:0;top:0;width:390px;height:844px;border:0;transform-origin:0 0}
+figcaption{font:400 12.5px/1.5 var(--mono);color:var(--g400);margin-top:12px}
+figcaption b{color:var(--g200);font-weight:500}
+
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rules ul{margin:0;padding:0;list-style:none}
+.rules li{padding:12px 0;border-bottom:1px solid var(--line);color:var(--lila)}
+.rules li:last-child{border:0}
+.rules .card h3{display:flex;gap:8px;align-items:center}
+.rules .card h3 i{width:8px;height:8px;border-radius:2px}
+
+.weight{width:100%;border-collapse:collapse;font:400 13px/1.4 var(--mono)}
+.weight th,.weight td{text-align:left;padding:12px 0;border-bottom:1px solid var(--line)}
+.weight th{font-weight:400;color:var(--g400)}
+.weight td:last-child,.weight th:last-child{text-align:right}
+.weight .tot td{color:var(--white);font-weight:500;border:0}
+
+@media (max-width:900px){.page{padding:32px 20px 64px}.hero{grid-template-columns:1fr;gap:24px;padding:48px 0 32px}.sw{grid-template-columns:repeat(2,1fr)}.comp,.rules{grid-template-columns:1fr}.screens{grid-template-columns:repeat(2,1fr)}.type>div{grid-template-columns:1fr;gap:6px}.top .meta{display:none}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <div class="lockup"><svg class="iso" viewBox="0 0 859 913" aria-hidden="true"><path d="M379.33 675.058L732.539 471.338C810.553 426.352 859 342.472 859 252.429C859 208.286 847.275 164.669 825.091 126.32C780.037 48.4103 696.063 0 605.937 0H405.769C294.267 0 203.895 90.2887 203.895 201.648V559.379C203.895 564.858 207.305 569.809 212.474 571.671C215.321 572.689 218.222 573.62 221.175 574.41C231.634 577.219 242.357 578.571 253.045 578.624C265.35 578.712 281.101 576.183 293.089 571.934C298.293 570.09 301.721 565.156 301.721 559.66V201.648C301.721 144.265 348.304 97.7338 405.769 97.7338H605.937C661.222 97.7338 712.745 127.409 740.379 175.204C753.985 198.734 761.175 225.423 761.175 252.429C761.175 307.67 731.449 359.118 683.635 386.703L330.409 590.424C294.548 611.091 252.764 616.604 212.737 605.893C172.746 595.182 139.346 569.563 118.674 533.76C105.05 510.161 97.843 483.454 97.843 456.501C97.843 429.284 105.033 402.419 118.586 378.907C130.399 358.468 146.378 341.366 165.345 328.442C168.984 325.967 171.269 321.928 171.269 317.538V236.257C171.269 227.004 161.829 220.542 153.304 224.177C103.222 245.458 61.543 282.139 33.8214 330.093C11.6898 368.477 0 412.182 0 456.501C0 500.574 11.725 544.173 33.9093 582.592C67.6604 641.029 122.172 682.819 187.406 700.273C209.204 706.12 231.318 709 253.291 709C297.097 709 340.358 697.534 379.33 675.058Z"/><path d="M378.973 237.576C370.193 232.507 361.185 228 352 224.04C343.484 220.378 334 226.856 334 236.151V317.196C334 321.861 336.499 326.174 340.528 328.515L523.588 434.257C527.635 436.581 532.615 436.581 536.662 434.257L608.468 392.766C617.177 387.75 617.177 375.181 608.468 370.146L378.973 237.576Z"/><path d="M850.29 594.856C839.206 553.428 818.266 516.34 789.492 486.138C784.995 481.43 777.722 480.586 772.435 484.399C764.898 489.845 757.064 494.958 748.93 499.666L709.757 522.278C702.027 526.741 700.956 537.511 707.719 543.344C730.977 563.39 747.736 589.849 755.852 620.156C766.55 660.109 761.051 701.871 740.358 737.694C712.761 785.518 661.308 815.21 606.096 815.21H406.064C361.392 815.21 323.325 786.871 308.657 747.234C306.531 741.507 300.787 737.87 294.744 738.766C281.2 740.804 267.498 741.858 253.761 741.858C243.73 741.858 233.682 741.243 223.669 740.136C214.833 739.152 207.35 746.971 209.317 755.65C229.589 845.604 310.079 913 406.064 913H606.096C696.125 913 780.006 864.562 825.012 786.607C858.775 728.154 867.752 660.056 850.29 594.856Z"/></svg><i class="sep"></i><svg class="word" viewBox="0 0 646 322" aria-label="Byte"><path d="M0.000453949 241.961V-6.10352e-05H96.3215C143.985 -6.10352e-05 173.113 24.8249 173.113 65.2069C173.113 92.0179 161.197 111.216 138.358 120.815C163.845 129.09 176.754 148.288 176.754 176.423C176.754 217.798 147.957 241.961 97.9765 241.961H0.000453949ZM92.6805 37.4029H42.3685V103.272H93.6735C116.843 103.272 129.752 91.0249 129.752 69.5099C129.752 48.6569 116.512 37.4029 92.6805 37.4029ZM96.3215 139.02H42.3685V204.558H96.3215C120.153 204.558 133.393 192.973 133.393 171.127C133.393 150.605 119.822 139.02 96.3215 139.02ZM192.18 317.76V283.998H216.343C232.231 283.998 242.161 280.357 249.112 261.159L253.746 248.912L187.877 78.4469H230.576L272.613 197.607L316.967 78.4469H358.673L278.571 278.371C266.324 308.823 249.112 321.401 222.301 321.401C211.047 321.401 201.117 320.077 192.18 317.76ZM437.218 241.961H396.836V112.209H365.391V78.4469H396.836V27.4729H437.218V78.4469H468.994V112.209H437.218V241.961ZM565.633 246.264C516.976 246.264 482.883 210.847 482.883 160.204C482.883 108.899 516.314 73.4819 564.309 73.4819C613.297 73.4819 644.411 106.251 644.411 157.225V169.472L521.279 169.803C524.258 198.6 539.484 213.164 566.295 213.164C588.472 213.164 603.036 204.558 607.67 189.001H645.073C638.122 224.749 608.332 246.264 565.633 246.264ZM564.64 106.582C540.808 106.582 526.244 119.491 522.272 143.985H604.36C604.36 121.477 588.803 106.582 564.64 106.582Z"/></svg></div>
+    <p class="meta">Portal cautivo · Byte Invitados<br>Manual de Identidad Rev. 2 · Nov 2026</p>
+  </header>
+
+  <div class="hero">
+    <h1>El número que escribes <em>es la interfaz</em>.</h1>
+    <div>
+      <p>Sistema del portal Wi-Fi de Byte: nombre, cédula y WhatsApp, código de 6 dígitos y listo. Fondo Negro Byte, acción en Azul Byte, títulos en Satoshi y todo lo operativo en IBM Plex Mono. La regla de píxeles se llena con cada dígito y se vacía con el tiempo de reenvío.</p>
+      <div class="rule" id="hero-rule"></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Paleta</h2>
+    <p class="sub">Tonos del manual. Panel #0E1424 y línea #232B40 vienen de las tarjetas del deck PAYMUL, la aplicación en pantalla del manual. El azul es la única acción; el violeta cierra la regla de píxeles y el patrón byte. Nunca negro puro.</p>
+    <div class="sw">
+      <div style="background:var(--negro)"><b>Negro Byte</b>#0A0F1C · fondo</div>
+      <div style="background:var(--azul);color:var(--negro)"><b>Azul Byte</b>#309AE7 · acción, foco</div>
+      <div style="background:var(--violeta);color:var(--white)"><b>Violeta</b>#5036EA · fin de regla</div>
+      <div style="background:var(--profundo);color:var(--white)"><b>Azul Profundo</b>#1A6FB8 · patrón</div>
+      <div style="background:var(--celeste);color:var(--negro)"><b>Celeste</b>#5FD6FF · anillo de foco</div>
+    </div>
+    <div class="sw grey row" style="grid-template-columns:repeat(6,1fr)">
+      <div style="background:var(--panel)"><b>Panel</b>#0E1424 · deck PAYMUL</div>
+      <div style="background:var(--g900)"><b>Gris 900</b>#161D2E · deshabilitado</div>
+      <div style="background:var(--g700)"><b>Gris 700</b>#3A4358 · reglas</div>
+      <div style="background:var(--g400);color:var(--negro)"><b>Gris 400</b>#8A93A8 · secundario</div>
+      <div style="background:var(--g200);color:var(--negro)"><b>Gris 200</b>#D3D8E3 · datos, enlaces</div>
+      <div style="background:var(--lila);color:var(--negro)"><b>Blanco lila</b>#EDEAF5 · texto</div>
+    </div>
+    <div class="sw row" style="grid-template-columns:repeat(3,1fr)">
+      <div style="background:var(--ok);color:var(--negro);min-height:72px"><b>Éxito</b>#22C55E · conectado</div>
+      <div style="background:var(--warn);color:var(--negro);min-height:72px"><b>Aviso</b>#F5A523</div>
+      <div style="background:var(--error);color:var(--negro);min-height:72px"><b>Error</b>#EF4444 · texto #F87171</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Tipografía</h2>
+    <p class="sub">Satoshi para lo que se lee de lejos; Plex Mono para todo lo que se opera; Plex Sans para frases. Cada fuente tiene un respaldo del sistema y el portal funciona aunque no carguen.</p>
+    <div class="type">
+      <div><small>Número · Satoshi 700<br>clamp(30, 10.4vw, 44)</small><span class="s1">412 555 1234</span></div>
+      <div><small>Título · Satoshi 700 · 30</small><span class="s2">¿Quién se conecta?</span></div>
+      <div><small>Botón · Plex Mono 500 · 16</small><span class="s3">Enviar código por WhatsApp</span></div>
+      <div><small>Texto · Plex Sans 400 · 15</small><span class="s4">Puedes cerrar esta ventana y navegar con normalidad.</span></div>
+      <div><small>Etiqueta · Plex Mono 400 · 12.5</small><span class="s5">Nombre y apellido</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Componentes</h2>
+    <p class="sub">Los datos se escriben sobre una línea, no dentro de cajas. Cada componente con sus estados.</p>
+    <div class="comp">
+      <div class="card">
+        <h3>Campo de línea</h3><p class="note">Línea Gris 700, Azul Byte al enfocar, roja con mensaje en error.</p>
+        <div class="states">
+          <div><div class="line"><input value="María González" aria-label="ejemplo" readonly></div><small>reposo</small></div>
+          <div><div class="line" style="border-color:var(--azul)"><input value="María" aria-label="ejemplo" readonly></div><small>foco</small></div>
+          <div><div class="line is-error"><input value="María" aria-label="ejemplo" readonly></div><p class="err">Escribe tu nombre y apellido.</p><small>error</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Cédula V / E</h3><p class="note">Control segmentado de radio nativos; los puntos de miles se ponen solos.</p>
+        <div class="line ced" style="max-width:240px">
+          <div class="seg"><input type="radio" name="x" id="x1" checked><label for="x1">V</label><input type="radio" name="x" id="x2"><label for="x2">E</label></div>
+          <input value="18.456.789" aria-label="ejemplo" readonly>
+        </div>
+      </div>
+      <div class="card" style="grid-column:1/-1">
+        <h3>Número monumental + regla de píxeles</h3><p class="note">Acepta 0412…, 412…, +58 412… o 58412… (10 dígitos, sin filtrar operadora) y muestra siempre 412 555 1234; el tamaño baja solo si no cabe. La regla se llena azul→violeta con cada dígito.</p>
+        <div class="states" style="grid-template-columns:repeat(3,1fr);gap:28px">
+          <div><div class="big"><span class="cc" style="background:none;padding:0">+58</span><input value="412" aria-label="ejemplo" readonly style="font-size:34px"></div><div class="rule" data-fill="12"></div><small>escribiendo</small></div>
+          <div><div class="big"><span class="cc" style="background:none;padding:0">+58</span><input value="412 555 1234" aria-label="ejemplo" readonly style="font-size:34px"></div><div class="rule" data-fill="40"></div><small>completo</small></div>
+          <div><div class="big"><span class="cc" style="background:none;padding:0">+58</span><input value="212 555 1" aria-label="ejemplo" readonly style="font-size:34px"></div><div class="rule is-error" data-fill="28"></div><p class="err show">El número está incompleto. Revísalo.</p><small>error</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Código de 6 dígitos</h3><p class="note">Un solo input real con autocompletado one-time-code; seis celdas lo reflejan. Se envía solo al sexto dígito.</p>
+        <div class="stack">
+          <div class="otp"><span>4</span><span>8</span><span class="cur"></span><span></span><span></span><span></span></div>
+          <div class="otp is-error"><span>4</span><span>8</span><span>3</span><span>9</span><span>2</span><span>0</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Reenvío</h3><p class="note">La misma regla se vacía en 60 s; luego se activa el enlace.</p>
+        <div class="stack">
+          <div><div class="rule" data-fill="22"></div><div class="timer" style="display:flex;justify-content:space-between;margin-top:14px;font:400 12.5px var(--mono);color:var(--g400)"><span>Reenviar en 0:33</span></div></div>
+          <div><div class="rule" data-fill="0"></div><div class="timer" style="display:flex;justify-content:space-between;margin-top:14px;font:400 12.5px var(--mono);color:var(--g400)"><span>¿No te llegó?</span><button class="link">Reenviar código</button></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Botón</h3><p class="note">Texto Negro Byte sobre Azul Byte (contraste 6.4:1). Radio 10 px.</p>
+        <div class="stack">
+          <button class="btn">Enviar código por WhatsApp</button>
+          <div class="states">
+            <div><button class="btn demo-hover">Hover</button></div>
+            <div><button class="btn" aria-busy="true">Cargando</button><small>cargando</small></div>
+            <div><button class="btn" disabled>Inactivo</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Red, enlace, aviso legal</h3><p class="note">La píldora cambia a verde al conectar.</p>
+        <div class="stack">
+          <div style="display:flex;gap:10px;flex-wrap:wrap"><span class="pill"><i></i>Byte Invitados</span><span class="pill ok"><i></i>Conectado</span></div>
+          <p class="sent" style="color:var(--g400)">Enviado a <b style="font:500 15px var(--mono);color:var(--g200)">+58 412 555 1234</b> · <button class="link">Cambiar</button></p>
+          <p class="legal" style="text-align:left">Al continuar aceptas los <a href="#">términos de uso</a> de la red.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pantallas">
+    <h2>Pantallas</h2>
+    <p class="sub">El portal real (<code style="font-family:var(--mono)">portal/index.html</code>) en cada estado, a 390 × 844.</p>
+    <div class="screens">
+      <figure><div class="frame"><iframe src="portal/" title="Datos" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>01 Datos</b> · vacío</figcaption></figure>
+      <figure><div class="frame"><iframe src="portal/?step=datos-error" title="Datos con error" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>01 Datos</b> · número inválido</figcaption></figure>
+      <figure><div class="frame"><iframe src="portal/?step=error" title="Código incorrecto" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>02 Código</b> · incorrecto</figcaption></figure>
+      <figure><div class="frame"><iframe src="portal/?step=listo" title="Conectado" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>03 Listo</b> · conectado</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reglas</h2>
+    <p class="sub">Del manual, traducidas al portal.</p>
+    <div class="rules">
+      <div class="card"><h3><i style="background:var(--ok)"></i>Sí</h3><ul>
+        <li>Patrón byte agrupado en una sola esquina, nunca de fondo completo.</li>
+        <li>Elementos ligeramente suavizados: radio 10 px en botones, 14 px en paneles.</li>
+        <li>Logo: isotipo, separador y "Byte" en blanco sobre Negro Byte.</li>
+        <li>Una acción azul por pantalla.</li>
+      </ul></div>
+      <div class="card"><h3><i style="background:var(--error)"></i>No</h3><ul>
+        <li>Negro puro, brillos o sombras de color en el logo.</li>
+        <li>Deformar o rotar el isotipo; cambiar la fuente del logotipo.</li>
+        <li>Texto pequeño en gris sobre gris (bajo contraste).</li>
+        <li>Pedir al visitante que quite el 0: el portal lo corrige solo.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Peso</h2>
+    <p class="sub">Nada se carga de internet: antes de autenticarse no hay conexión. Todo se sirve desde el router o el servidor del portal.</p>
+    <table class="weight">
+      <tr><th>Archivo</th><th>Ahora</th></tr>
+      <tr><td>index.html (con logo y JS)</td><td id="w-html">28 KB</td></tr>
+      <tr><td>byte.css</td><td>8 KB</td></tr>
+      <tr><td>Fuentes woff2 recortadas a español (Satoshi 700, Plex Mono 400/500, Plex Sans 400)</td><td>66 KB</td></tr>
+      <tr><td>Antes del recorte (OTF/TTF completas)</td><td>532 KB</td></tr>
+      <tr class="tot"><td>Total del portal</td><td id="w-tot">≈ 102 KB</td></tr>
+    </table>
+  </section>
+</div>
+<script>
+(function(){var N=40;function fill(el,n){for(var i=0;i<N;i++){var c=document.createElement('i'),t=i/(N-1);if(i<n){c.className='on';c.style.setProperty('--c','rgb('+Math.round(48+32*t)+','+Math.round(154-100*t)+','+Math.round(231+3*t)+')')}el.appendChild(c)}}
+document.querySelectorAll('.rule[data-fill]').forEach(function(r){fill(r,+r.dataset.fill)});fill(document.getElementById('hero-rule'),40);
+function scale(){document.querySelectorAll('.frame').forEach(function(f){f.firstElementChild.style.transform='scale('+f.clientWidth/390+')'})}
+addEventListener('resize',scale);scale()})();
+</script>
+</body>
+</html>
