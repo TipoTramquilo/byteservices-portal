@@ -84,7 +84,7 @@ export function handleSummary(data) {
     `r500=${m.resp_500?.values.count ?? 0}`,
   ].join(' ');
   return {
-    '/scripts/out/last.json': JSON.stringify({ mode: MODE, vus: VUS, rate: RATE, duration: DUR, pause: PAUSE, metrics: m }),
+    '/scripts/results/last.json': JSON.stringify({ mode: MODE, vus: VUS, rate: RATE, duration: DUR, pause: PAUSE, metrics: m }),
     stdout: line + '\n',
   };
 }

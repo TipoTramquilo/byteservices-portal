@@ -16,8 +16,9 @@ reenvío de puertos del Mac.
 ## Comandos
 
 ```sh
-./loadtest/vus-1000.sh          # 1000 VUs en bucle, sin pausa (30 s) + CPU/RAM
-./loadtest/escalera.sh          # 50 → 1000 VUs, nivel por nivel, con tabla resumen
+./loadtest/ramp.sh              # rampa: 50 → 1000 VUs, nivel por nivel, a results/ramp.csv
+./loadtest/constant.sh          # 1000 VUs en bucle, sin pausa (30 s por defecto) + CPU/RAM
+node loadtest/report.mjs        # gráficos y tabla en results/report.html
 ```
 
 Para verlo en vivo, en dos terminales:
@@ -26,7 +27,7 @@ Para verlo en vivo, en dos terminales:
 podman stats byte-portal        # consumo del portal
 podman run --rm --name k6run --network byte-portal_default \
   -v "$PWD/loadtest:/scripts" docker.io/grafana/k6 run \
-  -e MODE=send -e VUS=1000 -e DUR=30s /scripts/k6.js
+  -e MODE=send -e VUS=1000 -e DUR=30s /scripts/scripts/portal.js
 ```
 
 k6 dibuja la barra de progreso; al terminar imprime `rps`, `p50/p95/p99`, `fail`, `r429` y `r500`.
@@ -54,4 +55,4 @@ k6 dibuja la barra de progreso; al terminar imprime `rps`, `p50/p95/p99`, `fail`
 - Con Twilio configurado, cada `send` hace una llamada HTTPS síncrona a Twilio; eso domina el
   tiempo de respuesta mucho antes que la base.
 
-Los resultados quedan en `loadtest/out/` (ignorado por git).
+Los resultados quedan en `loadtest/results/` (ignorado por git): `ramp.csv`, las muestras de CPU/RAM y `report.html`.
