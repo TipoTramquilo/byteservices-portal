@@ -1,8 +1,8 @@
 ---
 version: 1
 slug: "portal-index-html"
-primary_target: "portal/index.html"
-related_targets: ["design-system.html"]
+primary_target: "apps/web/src/index.html"
+related_targets: ["apps/web/design-system.html"]
 ---
 
 # Portal cautivo Byte

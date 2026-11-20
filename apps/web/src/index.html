@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A0F1C">
+<title>Byte Invitados · Wi-Fi</title>
+<link rel="preload" href="fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="byte.css">
+<style>
+.app{position:relative;max-width:440px;min-height:100dvh;margin:0 auto;padding:max(24px,env(safe-area-inset-top)) var(--gutter) max(22px,env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:hidden}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:var(--s3)}
+/* the bar masks the launch: content flies up behind it */
+.bar{position:relative;z-index:2}.bar::before{content:"";position:absolute;inset:-80px calc(var(--gutter) * -1) -14px;background:var(--negro);z-index:-1}
+.step{display:flex;flex-direction:column;flex:1;animation:in var(--t-step) var(--ease) both}
+.step[hidden]{display:none}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.rocket{position:fixed;left:0;top:0;z-index:1;width:48px;height:92px;pointer-events:none;will-change:transform,clip-path}
+.rocket svg{display:block;width:100%;height:100%}
+.rocket .fl rect{animation:r-flame .14s steps(2) infinite alternate}
+.rocket .fl rect:nth-child(2n){animation-delay:.07s}
+.puff{position:fixed;z-index:-1;border-radius:1.5px;pointer-events:none}
+@keyframes r-flame{to{opacity:.3}}
+.step.launch .corner rect{animation:px-exhaust .8s ease-in calc(var(--in) * .25 + 220ms) both}
+.step.land{animation:land .6s var(--ease) both}
+@keyframes px-exhaust{0%{opacity:var(--o)}25%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:translateY(90px) scale(.35)}}
+@keyframes land{from{opacity:0;transform:translateY(70px)}}
+.step .h1{margin-top:clamp(16px,4vh,36px)}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:var(--s4);margin-top:var(--s5)}
+.phone{margin-top:var(--s5)}
+.corner{flex:1 1 0;min-height:0;display:flex;justify-content:flex-end;align-items:flex-end;margin-top:var(--s4);pointer-events:none}
+.corner .px{width:auto;height:100%;max-width:180px;max-height:150px}
+.foot{margin-top:auto;padding-top:var(--s4)}
+.sent{margin-top:var(--s2);color:var(--g400)}
+.sent b{font:500 15px var(--mono);color:var(--g200);white-space:nowrap}
+.otpwrap{margin-top:var(--s6)}
+.timer{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s4);font:400 var(--t-label)/1.4 var(--mono);color:var(--g400)}
+.done-c{margin:auto 0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.done .h1{margin-top:0}
+.done .lead{margin:var(--s2) auto 0}
+.done .rule{width:100%;justify-content:center;margin-top:var(--s5)}
+.done .btn{margin-top:var(--s6)}
+.corner-d{display:none;position:fixed;right:40px;bottom:40px;width:240px;pointer-events:none}
+.demo{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);font:400 11px var(--mono);color:var(--g400)}
+.terms{display:none;position:fixed;inset:auto 0 0 0;z-index:5;max-width:440px;margin:0 auto;padding:24px var(--gutter) 28px;background:var(--panel);border-top:1px solid var(--line);border-radius:var(--r-panel) var(--r-panel) 0 0}
+.terms:target{display:block}
+.terms h2{font:700 var(--t-h2)/1.2 var(--display);color:var(--white)}
+.terms p{color:var(--g400);margin:8px 0 18px}
+@media (min-width:700px){.app{justify-content:center}.step{flex:0 0 auto;min-height:720px}}
+@media (min-width:1000px){.step .corner{display:none}.corner-d{display:block}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="iso" viewBox="0 0 859 913"><path d="M379.33 675.058L732.539 471.338C810.553 426.352 859 342.472 859 252.429C859 208.286 847.275 164.669 825.091 126.32C780.037 48.4103 696.063 0 605.937 0H405.769C294.267 0 203.895 90.2887 203.895 201.648V559.379C203.895 564.858 207.305 569.809 212.474 571.671C215.321 572.689 218.222 573.62 221.175 574.41C231.634 577.219 242.357 578.571 253.045 578.624C265.35 578.712 281.101 576.183 293.089 571.934C298.293 570.09 301.721 565.156 301.721 559.66V201.648C301.721 144.265 348.304 97.7338 405.769 97.7338H605.937C661.222 97.7338 712.745 127.409 740.379 175.204C753.985 198.734 761.175 225.423 761.175 252.429C761.175 307.67 731.449 359.118 683.635 386.703L330.409 590.424C294.548 611.091 252.764 616.604 212.737 605.893C172.746 595.182 139.346 569.563 118.674 533.76C105.05 510.161 97.843 483.454 97.843 456.501C97.843 429.284 105.033 402.419 118.586 378.907C130.399 358.468 146.378 341.366 165.345 328.442C168.984 325.967 171.269 321.928 171.269 317.538V236.257C171.269 227.004 161.829 220.542 153.304 224.177C103.222 245.458 61.543 282.139 33.8214 330.093C11.6898 368.477 0 412.182 0 456.501C0 500.574 11.725 544.173 33.9093 582.592C67.6604 641.029 122.172 682.819 187.406 700.273C209.204 706.12 231.318 709 253.291 709C297.097 709 340.358 697.534 379.33 675.058Z"/><path d="M378.973 237.576C370.193 232.507 361.185 228 352 224.04C343.484 220.378 334 226.856 334 236.151V317.196C334 321.861 336.499 326.174 340.528 328.515L523.588 434.257C527.635 436.581 532.615 436.581 536.662 434.257L608.468 392.766C617.177 387.75 617.177 375.181 608.468 370.146L378.973 237.576Z"/><path d="M850.29 594.856C839.206 553.428 818.266 516.34 789.492 486.138C784.995 481.43 777.722 480.586 772.435 484.399C764.898 489.845 757.064 494.958 748.93 499.666L709.757 522.278C702.027 526.741 700.956 537.511 707.719 543.344C730.977 563.39 747.736 589.849 755.852 620.156C766.55 660.109 761.051 701.871 740.358 737.694C712.761 785.518 661.308 815.21 606.096 815.21H406.064C361.392 815.21 323.325 786.871 308.657 747.234C306.531 741.507 300.787 737.87 294.744 738.766C281.2 740.804 267.498 741.858 253.761 741.858C243.73 741.858 233.682 741.243 223.669 740.136C214.833 739.152 207.35 746.971 209.317 755.65C229.589 845.604 310.079 913 406.064 913H606.096C696.125 913 780.006 864.562 825.012 786.607C858.775 728.154 867.752 660.056 850.29 594.856Z"/></symbol></svg>
+<main class="app">
+  <div class="bar">
+    <div class="lockup"><svg class="iso" viewBox="0 0 859 913" aria-hidden="true"><use href="#iso"/></svg><i class="sep"></i><svg class="word" viewBox="0 0 646 322" aria-label="Byte"><path d="M0.000453949 241.961V-6.10352e-05H96.3215C143.985 -6.10352e-05 173.113 24.8249 173.113 65.2069C173.113 92.0179 161.197 111.216 138.358 120.815C163.845 129.09 176.754 148.288 176.754 176.423C176.754 217.798 147.957 241.961 97.9765 241.961H0.000453949ZM92.6805 37.4029H42.3685V103.272H93.6735C116.843 103.272 129.752 91.0249 129.752 69.5099C129.752 48.6569 116.512 37.4029 92.6805 37.4029ZM96.3215 139.02H42.3685V204.558H96.3215C120.153 204.558 133.393 192.973 133.393 171.127C133.393 150.605 119.822 139.02 96.3215 139.02ZM192.18 317.76V283.998H216.343C232.231 283.998 242.161 280.357 249.112 261.159L253.746 248.912L187.877 78.4469H230.576L272.613 197.607L316.967 78.4469H358.673L278.571 278.371C266.324 308.823 249.112 321.401 222.301 321.401C211.047 321.401 201.117 320.077 192.18 317.76ZM437.218 241.961H396.836V112.209H365.391V78.4469H396.836V27.4729H437.218V78.4469H468.994V112.209H437.218V241.961ZM565.633 246.264C516.976 246.264 482.883 210.847 482.883 160.204C482.883 108.899 516.314 73.4819 564.309 73.4819C613.297 73.4819 644.411 106.251 644.411 157.225V169.472L521.279 169.803C524.258 198.6 539.484 213.164 566.295 213.164C588.472 213.164 603.036 204.558 607.67 189.001H645.073C638.122 224.749 608.332 246.264 565.633 246.264ZM564.64 106.582C540.808 106.582 526.244 119.491 522.272 143.985H604.36C604.36 121.477 588.803 106.582 564.64 106.582Z"/></svg></div>
+    <span class="pill" id="net"><i></i>Byte Invitados</span>
+  </div>
+
+  <!-- 1 · datos -->
+  <form class="step" id="s-datos" novalidate>
+    <h1 class="h1">¿Quién se conecta? Te enviamos el código por <em>WhatsApp</em></h1>
+
+    <div class="pair">
+      <div>
+        <label class="lbl" for="nombre">Nombre y apellido</label>
+        <div class="line"><input id="nombre" name="nombre" autocomplete="name" autocapitalize="words" enterkeyhint="next" required></div>
+        <p class="err" id="e-nombre">Escribe tu nombre y apellido.</p>
+      </div>
+      <div>
+        <label class="lbl" for="cedula">Cédula</label>
+        <div class="line ced">
+          <div class="seg" role="radiogroup" aria-label="Nacionalidad">
+            <input type="radio" name="nac" id="nac-v" value="V" checked><label for="nac-v">V</label>
+            <input type="radio" name="nac" id="nac-e" value="E"><label for="nac-e">E</label>
+          </div>
+          <input id="cedula" name="cedula" inputmode="numeric" maxlength="10" autocomplete="off" enterkeyhint="next" required>
+        </div>
+        <p class="err" id="e-cedula">Entre 6 y 8 dígitos.</p>
+      </div>
+    </div>
+
+    <div class="phone">
+      <label class="lbl" for="tel">WhatsApp</label>
+      <div class="big">
+        <select class="cc" id="cc" aria-label="Código de país">
+          <option value="58" selected>+58</option><option value="57">+57</option><option value="1">+1</option>
+          <option value="34">+34</option><option value="51">+51</option><option value="56">+56</option>
+          <option value="593">+593</option><option value="507">+507</option><option value="55">+55</option>
+        </select>
+        <input id="tel" type="tel" inputmode="numeric" autocomplete="tel-national" enterkeyhint="send" placeholder="412 555 1234" required>
+      </div>
+      <div class="rule" id="r-tel" aria-hidden="true"></div>
+      <p class="err" id="e-tel">El número está incompleto. Revísalo.</p>
+    </div>
+
+    <div class="corner"><svg class="px" viewBox="0 0 180 150" aria-hidden="true"></svg></div>
+
+    <div class="foot">
+      <p class="err" id="e-send" role="alert">No pudimos enviar el código. Revisa tu número e inténtalo de nuevo.</p>
+      <button class="btn" id="b-send" type="submit">Enviar código por WhatsApp</button>
+      <p class="legal">Al continuar aceptas los <a href="#terminos">términos de uso</a> de la red.</p>
+    </div>
+  </form>
+
+  <!-- 2 · código -->
+  <form class="step" id="s-codigo" novalidate hidden>
+    <h1 class="h1">Escribe el código que te llegó por <em>WhatsApp</em></h1>
+    <p class="sent">Enviado a <b id="sent-to">+58 412 555 1234</b> · <button class="link" type="button" id="b-edit">Cambiar</button></p>
+
+    <div class="otpwrap">
+      <label class="lbl" for="code">Código de 6 dígitos</label>
+      <div class="otp" id="otp">
+        <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-describedby="e-code">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <p class="err" id="e-code" role="alert">Código incorrecto. Revísalo en WhatsApp e inténtalo otra vez.</p>
+      <div class="rule" id="r-time" aria-hidden="true"></div>
+      <div class="timer"><span id="t-left">Reenviar en 1:00</span><button class="link" type="button" id="b-resend" disabled>Reenviar código</button></div>
+    </div>
+
+    <div class="corner"><svg class="px" viewBox="0 0 180 150" aria-hidden="true"></svg></div>
+    <div class="foot">
+      <button class="btn" id="b-verify" type="submit">Conectarme</button>
+    </div>
+  </form>
+
+  <!-- 3 · conectado -->
+  <section class="step done" id="s-listo" hidden>
+    <div class="done-c">
+      <h1 class="h1">Listo, ya estás <em>conectado</em></h1>
+      <p class="lead">Puedes cerrar esta ventana y navegar con normalidad</p>
+      <div class="rule" id="r-done" aria-hidden="true"></div>
+      <a class="btn" id="b-go" href="https://www.byteservices.net/" style="text-decoration:none">Empezar a navegar</a>
+    </div>
+  </section>
+</main>
+<div class="corner-d"><svg class="px" viewBox="0 0 180 150" aria-hidden="true"></svg></div>
+<aside class="terms" id="terminos" aria-labelledby="t-terms">
+  <h2 id="t-terms">Términos de uso</h2>
+  <p>Texto pendiente: Byte aún no ha definido los términos de esta red.</p>
+  <a class="btn" href="#" style="text-decoration:none">Cerrar</a>
+</aside>
+
+<script src="app.js"></script>
+</body>
+</html>

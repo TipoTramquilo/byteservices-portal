@@ -1,9 +1,9 @@
-// Builds dist/: one self-contained index.html (CSS inlined, minified) plus fonts/.
-// No dependencies: `node build.mjs`
+// Builds dist/ from src/: one self-contained index.html (byte.css and app.js inlined, minified) plus fonts/.
+// No dependencies: `node apps/web/build.mjs` (paths resolve from this file, any cwd works)
 import { readFile, writeFile, mkdir, cp, rm } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 
-const SRC = 'portal', OUT = 'dist';
+const SRC = `${import.meta.dirname}/src`, OUT = `${import.meta.dirname}/dist`;
 
 const minCss = (css) => css
   .replace(/\/\*[\s\S]*?\*\//g, '')
@@ -23,12 +23,14 @@ const minHtml = (html) => html
 
 let html = await readFile(`${SRC}/index.html`, 'utf8');
 const css = await readFile(`${SRC}/byte.css`, 'utf8');
+const js = await readFile(`${SRC}/app.js`, 'utf8');
 
 // keep scripts and styles out of the HTML whitespace pass, minify each on its own
 const blocks = [];
 const keep = (s) => `\u0000${blocks.push(s) - 1}\u0000`;
 html = html
   .replace('<link rel="stylesheet" href="byte.css">', () => keep(`<style>${minCss(css)}</style>`))
+  .replace('<script src="app.js"></script>', () => keep(`<script>${minJs(js)}</script>`))
   .replace(/<style>([\s\S]*?)<\/style>/g, (_, c) => keep(`<style>${minCss(c)}</style>`))
   .replace(/<script>([\s\S]*?)<\/script>/g, (_, j) => keep(`<script>${minJs(j)}</script>`));
 html = minHtml(html).replace(/\u0000(\d+)\u0000/g, (_, i) => blocks[i]);

@@ -81,9 +81,9 @@ if(n.split(' ').length<2||n.length<4){err('nombre',true);bad=bad||'nombre'}
 if(c.length<6){err('cedula',true);bad=bad||'cedula'}
 if(!telOk(t)){err('tel',true);$('r-tel').classList.add('is-error');bad=bad||'tel'}
 if(bad)return $(bad).focus();
-data={nombre:n,cedula:document.querySelector('[name=nac]:checked').value+c,telefono:'+'+$('cc').value+t};
+data={name:n,id_number:document.querySelector('[name=nac]:checked').value+c,phone:'+'+$('cc').value+t};
 var b=$('b-send');busy(b,true);err('send',false);
-post(C.send,data).then(function(r){busy(b,false);launch($('s-datos'),r&&r.verificado?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
+post(C.send,data).then(function(r){busy(b,false);launch($('s-datos'),r&&r.verified?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})},function(){busy(b,false);err('send',true)})});
 function toCode(){$('sent-to').textContent='+'+$('cc').value+' '+fmt(digits($('tel').value));show('s-codigo');paint();timer();$('code').focus()}
 function timer(){var left=WAIT;clearInterval(tick);$('b-resend').disabled=true;
 function step(){rule($('r-time'),Math.round(left/WAIT*RULE));
@@ -98,7 +98,7 @@ $('code').addEventListener('input',function(){this.value=this.value.replace(/\D/
 $('code').addEventListener('focus',paint);$('code').addEventListener('blur',paint);
 $('s-codigo').addEventListener('submit',function(e){e.preventDefault();var v=$('code').value,b=$('b-verify');
 if(v.length<6)return $('code').focus();busy(b,true);
-var p=DEMO?new Promise(function(ok,no){setTimeout(v==='123456'?ok:no,700)}):post(C.verify,{telefono:data.telefono,codigo:v});
+var p=DEMO?new Promise(function(ok,no){setTimeout(v==='123456'?ok:no,700)}):post(C.verify,{phone:data.phone,code:v});
 p.then(function(r){busy(b,false);clearInterval(tick);done(r&&r.redirect)},function(){busy(b,false);$('otp').classList.add('is-error');$('e-code').classList.add('show');$('code').select()})});
 function done(url){if(url)$('b-go').href=url;show('s-listo');rule($('r-done'),RULE);wave();
 $('net').classList.add('ok');$('net').lastChild.textContent='Conectado'}
@@ -106,7 +106,7 @@ rule($('r-tel'),0);
 if(DEMO){var d=document.createElement('p');d.className='demo';d.textContent='modo demo · código 123456';document.body.appendChild(d)}
 var q=location.search.match(/step=([\w-]+)/);
 if(q){$('nombre').value='María González';$('cedula').value='18.456.789';$('tel').value='04125551234';onTel();
-data={nombre:'María González',cedula:'V18456789',telefono:'+584125551234'};
+data={name:'María González',id_number:'V18456789',phone:'+584125551234'};
 if(q[1]==='codigo'||q[1]==='error'){toCode();if(q[1]==='error'){$('code').value='483920';paint();$('otp').classList.add('is-error');$('e-code').classList.add('show')}}
 if(q[1]==='listo')done();
 if(q[1]==='datos-error'){$('tel').value='2125551';onTel();$('s-datos').requestSubmit()}}

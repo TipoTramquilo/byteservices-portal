@@ -367,26 +367,26 @@
       {
         "family": "Satoshi",
         "weight": 700,
-        "file": "portal/fonts/satoshi-700.woff2",
+        "file": "apps/web/src/fonts/satoshi-700.woff2",
         "size": "17.1 KB",
         "preload": true
       },
       {
         "family": "Plex Mono",
         "weight": 400,
-        "file": "portal/fonts/plex-mono-400.woff2",
+        "file": "apps/web/src/fonts/plex-mono-400.woff2",
         "size": "13.6 KB"
       },
       {
         "family": "Plex Mono",
         "weight": 500,
-        "file": "portal/fonts/plex-mono-500.woff2",
+        "file": "apps/web/src/fonts/plex-mono-500.woff2",
         "size": "14.0 KB"
       },
       {
         "family": "Plex Sans",
         "weight": 400,
-        "file": "portal/fonts/plex-sans-400.woff2",
+        "file": "apps/web/src/fonts/plex-sans-400.woff2",
         "size": "21.0 KB"
       }
     ],

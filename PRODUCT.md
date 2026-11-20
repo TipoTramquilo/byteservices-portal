@@ -37,7 +37,7 @@ Built and operated by Byte Services, a Venezuelan cybersecurity / Zero Trust inf
 
 ## Brand Commitments
 
-Byte brand only (no white-label). Binding source: `Adaptador PAYMUL DIRDEB para Bangente (1)/Manual Byte.pdf` (Manual de Identidad Rev. 2, Nov 2026), with the PAYMUL deck as the reference for how it looks on screen. byteservices.net is older and is not the authority where they differ.
+Byte brand only (no white-label). Binding source: `brand/Manual Byte.pdf` (Manual de Identidad Rev. 2, Nov 2026), with the PAYMUL deck as the reference for how it looks on screen. byteservices.net is older and is not the authority where they differ.
 
 - Type: Satoshi Bold for titles; IBM Plex Mono for buttons, UI and short text; IBM Plex Sans for long text.
 - Colour: Azul Byte #309AE7 (primary), Violeta #5036EA, Azul Profundo #1A6FB8, Celeste #5FD6FF, Negro Byte #0A0F1C (never pure black). Greys #161D2E, #3A4358, #8A93A8, #D3D8E3, Blanco lila #EDEAF5, white for text only. States: success #22C55E (alt: Azul Byte), warning #F5A523, error #EF4444.
@@ -46,7 +46,7 @@ Byte brand only (no white-label). Binding source: `Adaptador PAYMUL DIRDEB para 
 
 ## Evidence on Hand
 
-Brand assets in `Adaptador PAYMUL DIRDEB para Bangente (1)/Recursos` (fonts Satoshi / IBM Plex, vector logos). The gradient isotipo SVGs embed 1–2 MB PNGs and are unusable in the portal. No legal/terms copy provided; do not invent it.
+Brand assets in `brand/Recursos` (fonts Satoshi / IBM Plex, vector logos). The gradient isotipo SVGs embed 1–2 MB PNGs and are unusable in the portal. No legal/terms copy provided; do not invent it.
 
 ## Product Principles
 
