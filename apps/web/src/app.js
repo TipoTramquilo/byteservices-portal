@@ -1,13 +1,10 @@
-/* Backend hooks. Set before this script, e.g. window.BYTE_PORTAL={send:"/api/send",verify:"/api/verify"}.
+/* Backend hooks. Set before this script, e.g. window.BYTE_PORTAL={send:"/api/send"}.
    The API identifies the device by the request's IP, so the page sends no device id.
-   send   POST {name, id_number:"V18456789", company, phone:"+584125551234"}  -> 2xx {verified?, redirect?}
-          verified:true = number already verified on an earlier day: no code, straight to "conectado"
-          429 {error:"too_soon"} = a code went out less than 60 s ago and still works: treat as sent
-   verify POST {phone, code}                                        -> 2xx {redirect?}
-   Without endpoints the portal runs in demo mode (code 123456). */
+   send   POST {name, id_number:"V18456789", company, phone:"+584125551234"}  -> 2xx {verified:true, redirect?}
+   Without an endpoint the portal runs in demo mode. */
 (function(){
 var C=window.BYTE_PORTAL||{},DEMO=!C.send,$=function(i){return document.getElementById(i)};
-var RULE=40,WAIT=60,data={},tick;
+var RULE=40,data={};
 
 /* the byte pattern: drawn once per corner, densest at the bottom-right, azul -> violeta */
 var PAL=['#161D2E','#3A4358','#1A6FB8','#309AE7','#5FD6FF','#309AE7','#5036EA','#5036EA'];
@@ -24,10 +21,10 @@ var EASE='cubic-bezier(.16,1,.3,1)',CEL={fill:'#5FD6FF',opacity:1,transform:'sca
 function fx(c,frames,ms,delay){if(c.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches)c.animate(frames,{duration:ms,delay:delay||0,easing:EASE})}
 function visible(){return [].filter.call(document.querySelectorAll('.px'),function(s){return s.getClientRects().length})}
 function delayOf(c){return parseFloat(c.style.getPropertyValue('--in'))||0}
-/* phone and code keystrokes: the whole pattern blinks in its own colours */
+/* phone keystrokes: the whole pattern blinks in its own colours */
 function blink(){visible().forEach(function(svg){[].forEach.call(svg.querySelectorAll('rect'),function(c){
   fx(c,[{},{opacity:1,transform:'scale(1.14)',offset:.25},{}],340)})})}
-/* plus a few celeste squares on the phone and code fields */
+/* plus a few celeste squares on the phone field */
 function spark(n){visible().forEach(function(svg){var r=svg.querySelectorAll('rect');
   for(var i=0;i<n&&r.length;i++)fx(r[Math.random()*r.length|0],[CEL,{fill:'#5FD6FF',opacity:1,offset:.35},{}],800)})}
 /* idle pulse every 4s: brightness wave out of the corner, each square keeps its colour */
@@ -39,7 +36,7 @@ function rule(el,n){if(!el.children.length)for(var i=0;i<RULE;i++)el.appendChild
   for(var k=0;k<RULE;k++){var t=k/(RULE-1),on=k<n,c=el.children[k];c.className=on?'on':'';
     c.style.setProperty('--c','rgb('+Math.round(48+32*t)+','+Math.round(154-100*t)+','+Math.round(231+3*t)+')')}}
 function err(id,on){var e=$('e-'+id);e.classList.toggle('show',on);var f=$(id);if(f&&f.closest('.line'))f.closest('.line').classList.toggle('is-error',on)}
-function show(id){['s-datos','s-codigo','s-listo'].forEach(function(s){$(s).hidden=s!==id;$(s).classList.remove('launch','land')})}
+function show(id){['s-datos','s-listo'].forEach(function(s){$(s).hidden=s!==id;$(s).classList.remove('launch','land')})}
 /* the rocket: Byte colours, flame drawn in byte squares */
 var ROCKET='<svg viewBox="0 0 48 92" aria-hidden="true"><path d="M24 2C34 12 38 26 38 44V58H10V44C10 26 14 12 24 2Z" fill="#EDEAF5"/>'+
   '<rect x="10" y="47" width="28" height="3" fill="#309AE7"/><circle cx="24" cy="30" r="5.5" fill="#0A0F1C" stroke="#309AE7" stroke-width="3"/>'+
@@ -102,9 +99,8 @@ $('empresa').addEventListener('input',function(){err('empresa',false)});
 ['nombre','cedula','empresa','tel'].forEach(function(id,i,all){$(id).addEventListener('keydown',function(e){if(e.key!=='Enter')return;e.preventDefault();
   var nxt=all.slice(i+1).filter(function(f){return !$(f).value.trim()})[0];
   if(nxt)$(nxt).focus();else this.blur()})});
-$('code').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();this.blur()}});
 
-function post(url,body){return DEMO?new Promise(function(ok){setTimeout(ok,700)}):fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw j;return j})})}
+function post(url,body){return DEMO?new Promise(function(ok){setTimeout(function(){ok({verified:true})},700)}):fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw j;return j})})}
 function busy(b,on){b.setAttribute('aria-busy',on);b.disabled=on}
 
 $('s-datos').addEventListener('submit',function(e){e.preventDefault();
@@ -117,41 +113,18 @@ $('s-datos').addEventListener('submit',function(e){e.preventDefault();
   document.activeElement.blur();  /* GO on the phone keyboard: hide it while the rocket flies */
   data={name:n,id_number:document.querySelector('[name=nac]:checked').value+c,company:e,phone:'+'+$('cc').value+t};
   var b=$('b-send');busy(b,true);err('send',false);
-  function next(r){busy(b,false);launch($('s-datos'),r&&r.verified?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})}
-  /* too_soon: el código salió hace menos de 60 s y sigue valiendo, así que pasa al paso del código */
-  post(C.send,data).then(next,function(e){if(e&&e.error==='too_soon')return next({});busy(b,false);err('send',true)})});
-
-function toCode(){$('sent-to').textContent='+'+$('cc').value+' '+fmt(digits($('tel').value));show('s-codigo');paint();timer();$('code').focus()}
-/* the pixel rule drains with the resend countdown */
-function timer(){var left=WAIT;clearInterval(tick);$('b-resend').disabled=true;
-  function step(){rule($('r-time'),Math.round(left/WAIT*RULE));
-    $('t-left').textContent=left>0?'Reenviar en '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'¿No te llegó?';
-    $('b-resend').hidden=left>0;if(left<=0){clearInterval(tick);$('b-resend').disabled=false}left--}
-  step();tick=setInterval(step,1000)}
-$('b-resend').addEventListener('click',function(){var b=this;b.disabled=true;post(C.send,data).then(timer,function(e){if(e&&e.error==='too_soon')return timer();b.disabled=false})});
-$('b-edit').addEventListener('click',function(){clearInterval(tick);show('s-datos');$('tel').focus()});
-
-function paint(){var v=$('code').value,cells=$('otp').querySelectorAll('span'),f=document.activeElement===$('code');
-  cells.forEach(function(s,i){s.textContent=v[i]||'';s.classList.toggle('cur',f&&i===Math.min(v.length,5))})}
-$('code').addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);blink();spark(6);$('otp').classList.remove('is-error');$('e-code').classList.remove('show');paint()});
-$('code').addEventListener('focus',paint);$('code').addEventListener('blur',paint);
-
-$('s-codigo').addEventListener('submit',function(e){e.preventDefault();var v=$('code').value,b=$('b-verify');
-  if(v.length<6)return $('code').focus();busy(b,true);
-  var p=DEMO?new Promise(function(ok,no){setTimeout(v==='123456'?ok:no,700)}):post(C.verify,{phone:data.phone,code:v});
-  p.then(function(r){busy(b,false);clearInterval(tick);done(r&&r.redirect)},function(){busy(b,false);$('otp').classList.add('is-error');$('e-code').classList.add('show');$('code').select()})});
+  post(C.send,data).then(function(r){busy(b,false);launch($('s-datos'),function(){done(r&&r.redirect)})},function(){busy(b,false);err('send',true)})});
 
 function done(url){if(url)$('b-go').href=url;show('s-listo');rule($('r-done'),RULE);wave();
   $('net').classList.add('ok');$('net').lastChild.textContent='Conectado'}
 
 rule($('r-tel'),0);
-if(DEMO){var d=document.createElement('p');d.className='demo';d.textContent='modo demo · código 123456';document.body.appendChild(d)}
+if(DEMO){var d=document.createElement('p');d.className='demo';d.textContent='modo demo';document.body.appendChild(d)}
 
-/* preview hook for the design-system page: ?step=codigo|error|listo */
+/* preview hook for the design-system page: ?step=listo|datos-error */
 var q=location.search.match(/step=([\w-]+)/);
 if(q){$('nombre').value='María González';$('cedula').value='18.456.789';$('empresa').value='Inversiones Demo';$('tel').value='04125551234';onTel();
   data={name:'María González',id_number:'V18456789',company:'Inversiones Demo',phone:'+584125551234'};
-  if(q[1]==='codigo'||q[1]==='error'){toCode();if(q[1]==='error'){$('code').value='483920';paint();$('otp').classList.add('is-error');$('e-code').classList.add('show')}}
   if(q[1]==='listo')done();
   if(q[1]==='datos-error'){$('tel').value='2125551';onTel();$('s-datos').requestSubmit()}}
 })();

@@ -77,7 +77,7 @@ figcaption b{color:var(--g200);font-weight:500}
   <div class="hero">
     <h1>El número que escribes <em>es la interfaz</em>.</h1>
     <div>
-      <p>Sistema del portal Wi-Fi de Byte: nombre, cédula y WhatsApp, código de 6 dígitos y listo. Fondo Negro Byte, acción en Azul Byte, títulos en Satoshi y todo lo operativo en IBM Plex Mono. La regla de píxeles se llena con cada dígito y se vacía con el tiempo de reenvío.</p>
+      <p>Sistema del portal Wi-Fi de Byte: nombre, cédula, empresa y WhatsApp, y listo. Fondo Negro Byte, acción en Azul Byte, títulos en Satoshi y todo lo operativo en IBM Plex Mono. La regla de píxeles se llena con cada dígito y se vacía con el tiempo de reenvío.</p>
       <div class="rule" id="hero-rule"></div>
     </div>
   </div>
@@ -113,7 +113,7 @@ figcaption b{color:var(--g200);font-weight:500}
     <div class="type">
       <div><small>Número · Satoshi 700<br>clamp(30, 10.4vw, 44)</small><span class="s1">412 555 1234</span></div>
       <div><small>Título · Satoshi 700 · 30</small><span class="s2">¿Quién se conecta?</span></div>
-      <div><small>Botón · Plex Mono 500 · 16</small><span class="s3">Enviar código por WhatsApp</span></div>
+      <div><small>Botón · Plex Mono 500 · 16</small><span class="s3">Conectarme</span></div>
       <div><small>Texto · Plex Sans 400 · 15</small><span class="s4">Puedes cerrar esta ventana y navegar con normalidad.</span></div>
       <div><small>Etiqueta · Plex Mono 400 · 12.5</small><span class="s5">Nombre y apellido</span></div>
     </div>
@@ -146,24 +146,12 @@ figcaption b{color:var(--g200);font-weight:500}
           <div><div class="big"><span class="cc" style="background:none;padding:0">+58</span><input value="212 555 1" aria-label="ejemplo" readonly style="font-size:34px"></div><div class="rule is-error" data-fill="28"></div><p class="err show">El número está incompleto. Revísalo.</p><small>error</small></div>
         </div>
       </div>
-      <div class="card">
-        <h3>Código de 6 dígitos</h3><p class="note">Un solo input real con autocompletado one-time-code; seis celdas lo reflejan. Se envía solo al sexto dígito.</p>
-        <div class="stack">
-          <div class="otp"><span>4</span><span>8</span><span class="cur"></span><span></span><span></span><span></span></div>
-          <div class="otp is-error"><span>4</span><span>8</span><span>3</span><span>9</span><span>2</span><span>0</span></div>
-        </div>
       </div>
-      <div class="card">
-        <h3>Reenvío</h3><p class="note">La misma regla se vacía en 60 s; luego se activa el enlace.</p>
-        <div class="stack">
-          <div><div class="rule" data-fill="22"></div><div class="timer" style="display:flex;justify-content:space-between;margin-top:14px;font:400 12.5px var(--mono);color:var(--g400)"><span>Reenviar en 0:33</span></div></div>
-          <div><div class="rule" data-fill="0"></div><div class="timer" style="display:flex;justify-content:space-between;margin-top:14px;font:400 12.5px var(--mono);color:var(--g400)"><span>¿No te llegó?</span><button class="link">Reenviar código</button></div></div>
-        </div>
       </div>
       <div class="card">
         <h3>Botón</h3><p class="note">Texto Negro Byte sobre Azul Byte (contraste 6.4:1). Radio 10 px.</p>
         <div class="stack">
-          <button class="btn">Enviar código por WhatsApp</button>
+          <button class="btn">Conectarme</button>
           <div class="states">
             <div><button class="btn demo-hover">Hover</button></div>
             <div><button class="btn" aria-busy="true">Cargando</button><small>cargando</small></div>
@@ -175,7 +163,6 @@ figcaption b{color:var(--g200);font-weight:500}
         <h3>Red, enlace, aviso legal</h3><p class="note">La píldora cambia a verde al conectar.</p>
         <div class="stack">
           <div style="display:flex;gap:10px;flex-wrap:wrap"><span class="pill"><i></i>Byte Invitados</span><span class="pill ok"><i></i>Conectado</span></div>
-          <p class="sent" style="color:var(--g400)">Enviado a <b style="font:500 15px var(--mono);color:var(--g200)">+58 412 555 1234</b> · <button class="link">Cambiar</button></p>
           <p class="legal" style="text-align:left">Al continuar aceptas los <a href="#">términos de uso</a> de la red.</p>
         </div>
       </div>
@@ -188,8 +175,7 @@ figcaption b{color:var(--g200);font-weight:500}
     <div class="screens">
       <figure><div class="frame"><iframe src="src/" title="Datos" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>01 Datos</b> · vacío</figcaption></figure>
       <figure><div class="frame"><iframe src="src/?step=datos-error" title="Datos con error" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>01 Datos</b> · número inválido</figcaption></figure>
-      <figure><div class="frame"><iframe src="src/?step=error" title="Código incorrecto" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>02 Código</b> · incorrecto</figcaption></figure>
-      <figure><div class="frame"><iframe src="src/?step=listo" title="Conectado" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>03 Listo</b> · conectado</figcaption></figure>
+      <figure><div class="frame"><iframe src="src/?step=listo" title="Conectado" loading="lazy" tabindex="-1"></iframe></div><figcaption><b>02 Listo</b> · conectado</figcaption></figure>
     </div>
   </section>
 
