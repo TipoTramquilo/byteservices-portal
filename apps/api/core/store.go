@@ -11,6 +11,7 @@ var ErrNotFound = errors.New("not found")
 type Visitor struct {
 	Name     string
 	IDNumber string // cédula con su letra: V18456789
+	Company  string // empresa donde trabaja
 	Phone    string // E.164: +584125551234
 }
 

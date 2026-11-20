@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS verified (
   name        TEXT NOT NULL CHECK (length(name) BETWEEN 3 AND 100),
   id_number   TEXT NOT NULL CHECK (id_number GLOB '[VE]*' AND length(id_number) BETWEEN 7 AND 9
                                    AND substr(id_number, 2) NOT GLOB '*[^0-9]*'),  -- V18456789
+  company     TEXT NOT NULL CHECK (length(company) BETWEEN 2 AND 100),
   verified_at TEXT NOT NULL CHECK (datetime(verified_at) IS NOT NULL)
 ) STRICT;
 
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS codes (
   name        TEXT NOT NULL CHECK (length(name) BETWEEN 3 AND 100),
   id_number   TEXT NOT NULL CHECK (id_number GLOB '[VE]*' AND length(id_number) BETWEEN 7 AND 9
                                    AND substr(id_number, 2) NOT GLOB '*[^0-9]*'),
+  company     TEXT NOT NULL CHECK (length(company) BETWEEN 2 AND 100),
   hash        TEXT NOT NULL CHECK (length(hash) = 64),  -- HMAC-SHA256 en hex, nunca el código
   expires_at  TEXT NOT NULL CHECK (datetime(expires_at) IS NOT NULL),
   attempts    INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),

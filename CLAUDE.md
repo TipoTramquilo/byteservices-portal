@@ -47,7 +47,7 @@ Root:
 
 The portal reads `window.BYTE_PORTAL` (set before the inline script; `apps/api` injects it when serving the page):
 
-- `send` — `POST {name, id_number:"V18456789", phone:"+584125551234"}` → 2xx, optional `{verified:true, redirect}` when the number was already verified on an earlier day (skips the code step, goes straight to "conectado"). Also used for resend. The network grants 1h of internet on `send` so the WhatsApp OTP can arrive (once a day per IP, MAC, phone and cédula: any of them used blocks it); verifying extends it until the daily reset at `RESET_AT` (02:00 local; all times are stored in UTC). The device is identified by the request's IP; the backend asks the `Router` adapter for its MAC (the page never sends it).
+- `send` — `POST {name, id_number:"V18456789", company, phone:"+584125551234"}` → 2xx, optional `{verified:true, redirect}` when the number was already verified on an earlier day (skips the code step, goes straight to "conectado"). Also used for resend. The network grants 1h of internet on `send` so the WhatsApp OTP can arrive (once a day per IP, MAC, phone and cédula: any of them used blocks it); verifying extends it until the daily reset at `RESET_AT` (02:00 local; all times are stored in UTC). The device is identified by the request's IP; the backend asks the `Router` adapter for its MAC (the page never sends it).
 - `verify` — `POST {phone, code}` → 2xx, optional `{redirect}` used for the "Empezar a navegar" link.
 
 If `send` is unset the portal runs in **demo mode** (fake 700 ms latency, code `123456`, a "modo demo" badge).

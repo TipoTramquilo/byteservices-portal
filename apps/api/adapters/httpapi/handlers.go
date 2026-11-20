@@ -19,6 +19,7 @@ import (
 type sendRequest struct {
 	Name     string `json:"name"`
 	IDNumber string `json:"id_number"`
+	Company  string `json:"company"`
 	Phone    string `json:"phone"`
 }
 
@@ -43,7 +44,7 @@ func New(svc *core.Service, portalDir, redirect string) http.Handler {
 		if !decode(w, r, &req) {
 			return
 		}
-		verified, err := svc.Send(r.Context(), core.Visitor{Name: req.Name, IDNumber: req.IDNumber, Phone: req.Phone}, clientIP(r))
+		verified, err := svc.Send(r.Context(), core.Visitor{Name: req.Name, IDNumber: req.IDNumber, Company: req.Company, Phone: req.Phone}, clientIP(r))
 		if err != nil {
 			fail(w, err)
 			return

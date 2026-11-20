@@ -63,10 +63,10 @@ func (s *Store) IsVerified(ctx context.Context, phone string) (bool, error) {
 
 func (s *Store) SaveVerified(ctx context.Context, v core.Visitor, at time.Time) error {
 	_, err := s.db.ExecContext(ctx, `
-		INSERT INTO verified (phone, name, id_number, verified_at) VALUES (?, ?, ?, ?)
+		INSERT INTO verified (phone, name, id_number, company, verified_at) VALUES (?, ?, ?, ?, ?)
 		ON CONFLICT (phone) DO UPDATE SET name = excluded.name, id_number = excluded.id_number,
-			verified_at = excluded.verified_at`,
-		v.Phone, v.Name, v.IDNumber, iso(at))
+			company = excluded.company, verified_at = excluded.verified_at`,
+		v.Phone, v.Name, v.IDNumber, v.Company, iso(at))
 	return err
 }
 
@@ -74,9 +74,9 @@ func (s *Store) GetCode(ctx context.Context, phone string) (core.Code, error) {
 	var c core.Code
 	var expires, sent string
 	err := s.rdb.QueryRowContext(ctx, `
-		SELECT phone, name, id_number, hash, expires_at, attempts, sent_at, day, sends_today
+		SELECT phone, name, id_number, company, hash, expires_at, attempts, sent_at, day, sends_today
 		FROM codes WHERE phone = ?`, phone).
-		Scan(&c.Phone, &c.Name, &c.IDNumber, &c.Hash, &expires, &c.Attempts, &sent, &c.Day, &c.SendsToday)
+		Scan(&c.Phone, &c.Name, &c.IDNumber, &c.Company, &c.Hash, &expires, &c.Attempts, &sent, &c.Day, &c.SendsToday)
 	if errors.Is(err, sql.ErrNoRows) {
 		return c, core.ErrNotFound
 	}
@@ -92,12 +92,12 @@ func (s *Store) GetCode(ctx context.Context, phone string) (core.Code, error) {
 
 func (s *Store) SaveCode(ctx context.Context, c core.Code) error {
 	_, err := s.db.ExecContext(ctx, `
-		INSERT INTO codes (phone, name, id_number, hash, expires_at, attempts, sent_at, day, sends_today)
-		VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)
+		INSERT INTO codes (phone, name, id_number, company, hash, expires_at, attempts, sent_at, day, sends_today)
+		VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?)
 		ON CONFLICT (phone) DO UPDATE SET name = excluded.name, id_number = excluded.id_number,
-			hash = excluded.hash, expires_at = excluded.expires_at, attempts = 0,
+			company = excluded.company, hash = excluded.hash, expires_at = excluded.expires_at, attempts = 0,
 			sent_at = excluded.sent_at, day = excluded.day, sends_today = excluded.sends_today`,
-		c.Phone, c.Name, c.IDNumber, c.Hash, iso(c.ExpiresAt), iso(c.SentAt), c.Day, c.SendsToday)
+		c.Phone, c.Name, c.IDNumber, c.Company, c.Hash, iso(c.ExpiresAt), iso(c.SentAt), c.Day, c.SendsToday)
 	return err
 }
 

@@ -73,8 +73,10 @@ var (
 // (y con ella la IP) y el teléfono y la cédula los escribe el visitante, ninguno basta solo
 func (s *Service) Send(ctx context.Context, v Visitor, ip string) (verified bool, err error) {
 	v.Name = strings.Join(strings.Fields(v.Name), " ")
+	v.Company = strings.Join(strings.Fields(v.Company), " ")
 	ip, ok := normalizeIP(ip)
 	if len(strings.Fields(v.Name)) < 2 || utf8.RuneCountInString(v.Name) > 100 || !idNumberRe.MatchString(v.IDNumber) ||
+		utf8.RuneCountInString(v.Company) < 2 || utf8.RuneCountInString(v.Company) > 100 ||
 		!phoneRe.MatchString(v.Phone) || !ok {
 		return false, ErrInvalid
 	}

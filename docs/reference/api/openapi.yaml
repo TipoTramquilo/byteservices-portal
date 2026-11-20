@@ -199,7 +199,7 @@ components:
 
     SendRequest:
       type: object
-      required: [name, id_number, phone]
+      required: [name, id_number, company, phone]
       properties:
         name:
           type: string
@@ -211,6 +211,12 @@ components:
           description: Cédula con su letra, sin puntos
           pattern: '^[VE]\d{6,8}$'
           examples: ['V18456789']
+        company:
+          type: string
+          description: Empresa donde trabaja el visitante; entre 2 y 100 caracteres. Los espacios repetidos se normalizan
+          minLength: 2
+          maxLength: 100
+          examples: ['Inversiones Demo']
         phone:
           $ref: '#/components/schemas/Phone'
     SendResponse:

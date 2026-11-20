@@ -13,12 +13,14 @@ erDiagram
         TEXT phone PK
         TEXT name
         TEXT id_number
+        TEXT company
         TEXT verified_at
     }
     codes {
         TEXT phone PK
         TEXT name
         TEXT id_number
+        TEXT company
         TEXT hash
         TEXT expires_at
         INTEGER attempts
@@ -51,6 +53,7 @@ Teléfonos que pasaron el código; se saltan el código los días siguientes
 | `phone`       | TEXT | PK. E.164: `+[1-9]`, 9 a 16 caracteres   |
 | `name`        | TEXT | 3 a 100 caracteres                       |
 | `id_number`   | TEXT | `V` o `E` + 6 a 8 dígitos (`V18456789`)  |
+| `company`     | TEXT | 2 a 100 caracteres: empresa donde trabaja |
 | `verified_at` | TEXT | ISO 8601 UTC                             |
 
 ## `codes`
@@ -62,6 +65,7 @@ Un código pendiente por teléfono; cada envío reemplaza al anterior y reinicia
 | `phone`       | TEXT    | PK. E.164                                              |
 | `name`        | TEXT    | 3 a 100 caracteres; pasa a `verified` al verificar     |
 | `id_number`   | TEXT    | Igual que en `verified`                                |
+| `company`     | TEXT    | Igual que en `verified`                                |
 | `hash`        | TEXT    | 64 caracteres: HMAC-SHA256 en hex de `phone:código`    |
 | `expires_at`  | TEXT    | ISO 8601 UTC                                           |
 | `attempts`    | INTEGER | ≥ 0                                                    |

@@ -1,6 +1,6 @@
 /* Backend hooks. Set before this script, e.g. window.BYTE_PORTAL={send:"/api/send",verify:"/api/verify"}.
    The API identifies the device by the request's IP, so the page sends no device id.
-   send   POST {name, id_number:"V18456789", phone:"+584125551234"}  -> 2xx {verified?, redirect?}
+   send   POST {name, id_number:"V18456789", company, phone:"+584125551234"}  -> 2xx {verified?, redirect?}
           verified:true = number already verified on an earlier day: no code, straight to "conectado"
           429 {error:"too_soon"} = a code went out less than 60 s ago and still works: treat as sent
    verify POST {phone, code}                                        -> 2xx {redirect?}
@@ -96,9 +96,10 @@ $('tel').addEventListener('paste',function(){setTimeout(onTel)});
 $('cedula').addEventListener('input',function(){var d=this.value.replace(/\D/g,'').slice(0,8);  /* max 12.345.678 */
   this.value=d.replace(/\B(?=(\d{3})+(?!\d))/g,'.');err('cedula',false)});
 $('nombre').addEventListener('input',function(){err('nombre',false)});
+$('empresa').addEventListener('input',function(){err('empresa',false)});
 /* GO / NEXT: va al siguiente campo sin llenar; si no queda ninguno, oculta el teclado sin enviar.
    El paso siguiente lo da solo el botón */
-['nombre','cedula','tel'].forEach(function(id,i,all){$(id).addEventListener('keydown',function(e){if(e.key!=='Enter')return;e.preventDefault();
+['nombre','cedula','empresa','tel'].forEach(function(id,i,all){$(id).addEventListener('keydown',function(e){if(e.key!=='Enter')return;e.preventDefault();
   var nxt=all.slice(i+1).filter(function(f){return !$(f).value.trim()})[0];
   if(nxt)$(nxt).focus();else this.blur()})});
 $('code').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();this.blur()}});
@@ -107,13 +108,14 @@ function post(url,body){return DEMO?new Promise(function(ok){setTimeout(ok,700)}
 function busy(b,on){b.setAttribute('aria-busy',on);b.disabled=on}
 
 $('s-datos').addEventListener('submit',function(e){e.preventDefault();
-  var n=$('nombre').value.trim().replace(/\s+/g,' '),c=$('cedula').value.replace(/\D/g,''),t=digits($('tel').value),bad=null;
+  var n=$('nombre').value.trim().replace(/\s+/g,' '),c=$('cedula').value.replace(/\D/g,''),e=$('empresa').value.trim().replace(/\s+/g,' '),t=digits($('tel').value),bad=null;
   if(n.split(' ').length<2||n.length<4){err('nombre',true);bad=bad||'nombre'}
   if(c.length<6){err('cedula',true);bad=bad||'cedula'}
+  if(e.length<2){err('empresa',true);bad=bad||'empresa'}
   if(!telOk(t)){err('tel',true);$('r-tel').classList.add('is-error');bad=bad||'tel'}
   if(bad)return $(bad).focus();
   document.activeElement.blur();  /* GO on the phone keyboard: hide it while the rocket flies */
-  data={name:n,id_number:document.querySelector('[name=nac]:checked').value+c,phone:'+'+$('cc').value+t};
+  data={name:n,id_number:document.querySelector('[name=nac]:checked').value+c,company:e,phone:'+'+$('cc').value+t};
   var b=$('b-send');busy(b,true);err('send',false);
   function next(r){busy(b,false);launch($('s-datos'),r&&r.verified?function(){done(r.redirect)}:function(){toCode();$('s-codigo').classList.add('land')})}
   /* too_soon: el código salió hace menos de 60 s y sigue valiendo, así que pasa al paso del código */
@@ -147,8 +149,8 @@ if(DEMO){var d=document.createElement('p');d.className='demo';d.textContent='mod
 
 /* preview hook for the design-system page: ?step=codigo|error|listo */
 var q=location.search.match(/step=([\w-]+)/);
-if(q){$('nombre').value='María González';$('cedula').value='18.456.789';$('tel').value='04125551234';onTel();
-  data={name:'María González',id_number:'V18456789',phone:'+584125551234'};
+if(q){$('nombre').value='María González';$('cedula').value='18.456.789';$('empresa').value='Inversiones Demo';$('tel').value='04125551234';onTel();
+  data={name:'María González',id_number:'V18456789',company:'Inversiones Demo',phone:'+584125551234'};
   if(q[1]==='codigo'||q[1]==='error'){toCode();if(q[1]==='error'){$('code').value='483920';paint();$('otp').classList.add('is-error');$('e-code').classList.add('show')}}
   if(q[1]==='listo')done();
   if(q[1]==='datos-error'){$('tel').value='2125551';onTel();$('s-datos').requestSubmit()}}

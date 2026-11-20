@@ -21,7 +21,7 @@ sin datos móviles el código nunca llega. El portal es para un **torneo de un d
 **1. Conexión.** El visitante se conecta al Wi-Fi. El router todavía no le da internet y el sistema operativo abre el
 portal cautivo (en iOS y Android, un mini-navegador)
 
-**2. Datos.** El visitante escribe nombre, cédula y WhatsApp, y el portal llama a `POST /api/send`. La página no manda
+**2. Datos.** El visitante escribe nombre, cédula, empresa donde trabaja y WhatsApp, y el portal llama a `POST /api/send`. La página no manda
 nada que identifique al dispositivo: la API toma la **IP de la conexión** y con ella le pide la **MAC al router**, que
 la conoce por ARP. Si el router no la sabe, se sigue sin MAC
 
@@ -62,8 +62,8 @@ sequenceDiagram
 
     V->>R: se conecta al Wi-Fi
     R-->>V: abre el portal cautivo
-    V->>P: nombre, cédula, WhatsApp
-    P->>A: POST /api/send {name, id_number, phone}
+    V->>P: nombre, cédula, empresa, WhatsApp
+    P->>A: POST /api/send {name, id_number, company, phone}
     Note over A: IP = la de la conexión
     A->>R: MAC(ip)
     R-->>A: MAC por ARP, o vacía
