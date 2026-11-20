@@ -21,6 +21,7 @@ services:
       # Sin OTP_SECRET los códigos pendientes dejan de servir al reiniciar el contenedor
       - OTP_SECRET=${OTP_SECRET:-}
       - REDIRECT=${REDIRECT:-}
+      - TIMEZONE=${TIMEZONE:-}
       # Hora local del reset diario (por defecto 02:00)
       - RESET_AT=${RESET_AT:-}
       # Twilio (código por WhatsApp). Sin TWILIO_ACCOUNT_SID el código sale en el log

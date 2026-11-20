@@ -18,5 +18,5 @@ Las lee [main.go](/apps/api/main.go). Ninguna es obligatoria para correr en loca
 | `TWILIO_WHATSAPP_FROM` | vacío                    | Número de WhatsApp de Twilio en E.164 (`+14155238886`)                           |
 | `TWILIO_CONTENT_SID`   | vacío                    | ID de la plantilla aprobada (`HX…`) con `{{1}}` para el código                   |
 
-El compose ([docker-compose.yaml](/docker/docker-compose.yaml)) pasa `OTP_SECRET`, `REDIRECT`, `RESET_AT` y las de Twilio, y
+El compose ([docker-compose.yaml](/docker/docker-compose.yaml)) pasa `TIMEZONE`, `OTP_SECRET`, `REDIRECT`, `RESET_AT` y las de Twilio, lee todas desde `.env` (en la raíz; `make` se lo pasa con `--env-file`), y
 publica el puerto en `PORTAL_PORT` (por defecto `8080`)

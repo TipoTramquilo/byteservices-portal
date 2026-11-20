@@ -11,3 +11,5 @@ apps/web/dist/
 
 # loadtest: resultados y muestras de las corridas
 loadtest/results/
+
+.env

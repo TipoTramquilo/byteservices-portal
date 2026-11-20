@@ -2,7 +2,7 @@
 ENGINE ?= $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
 ENGINE := $(if $(strip $(ENGINE)),$(strip $(ENGINE)),docker)
 
-DC = "$(ENGINE)" compose -f docker/docker-compose.yaml
+DC = "$(ENGINE)" compose --env-file .env -f docker/docker-compose.yaml
 
 .PHONY: help web web-dev fonts api build up down logs
 
