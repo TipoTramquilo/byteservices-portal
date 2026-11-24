@@ -51,7 +51,7 @@ func (o *OPNsense) MAC(ctx context.Context, ip string) (string, error) {
 		MAC string `json:"mac"`
 		IP  string `json:"ip"`
 	}
-	if err := o.do(ctx, http.MethodGet, "/api/diagnostics/interface/getArp", nil, &arp); err != nil {
+	if err := o.do(ctx, http.MethodGet, "/api/diagnostics/interface/get_arp", nil, &arp); err != nil {
 		return "", err
 	}
 	for _, e := range arp {
