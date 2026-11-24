@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Estado actual: API de Byte en fwportal</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1b2233; line-height: 1.5; }
+  h1 { color: #0A0F1C; border-bottom: 3px solid #309AE7; padding-bottom: .3rem; }
+  h2 { color: #1A6FB8; margin-top: 2rem; }
+  table { border-collapse: collapse; width: 100%; margin: .5rem 0; }
+  th, td { border: 1px solid #d0d7e2; padding: .45rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #eef4fb; }
+  .ok { color: #1a7f37; font-weight: 600; }
+  .warn { color: #9a6700; font-weight: 600; }
+  code, pre { background: #f4f6fa; border-radius: 4px; font-family: ui-monospace, monospace; }
+  code { padding: .1rem .3rem; }
+  pre { padding: .7rem; overflow-x: auto; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+
+<h1>Estado actual: API de Byte en fwportal</h1>
+<p>Actualizado el 24/11/2026. Equipo: <code>fwportal.byteservices.net</code>, OPNsense 26.7.9_3.</p>
+
+<h2>Configuración</h2>
+<table>
+  <tr><th>Elemento</th><th>Valor</th></tr>
+  <tr><td>LAN de visitantes</td><td><code>172.16.0.1/22</code></td></tr>
+  <tr><td>WAN</td><td><code>10.0.0.156/24</code> (DHCP)</td></tr>
+  <tr><td>Certificado de la GUI</td><td>Let's Encrypt, para <code>fwportal.byteservices.net</code>, vence 18/02/2027</td></tr>
+  <tr><td>Portal cautivo (lighttpd)</td><td><code>:8000</code> y <code>:9000</code>. Reenvía <code>/api</code> a <code>127.0.0.1:8085</code> y manda la IP real en <code>X-Forwarded-For</code></td></tr>
+  <tr><td>API de Byte</td><td><code>127.0.0.1:8085</code>, con <code>OPNSENSE_SERVER_NAME=fwportal.byteservices.net</code> y sin archivo de CA</td></tr>
+  <tr><td>Base de datos</td><td>SQLite en <code>/var/db/byte/portal.db</code></td></tr>
+</table>
+
+<h2>Estado</h2>
+<table>
+  <tr><th>Parte</th><th>Estado</th></tr>
+  <tr><td>Formulario (<code>POST /api/send</code>)</td><td class="ok">Funciona</td></tr>
+  <tr><td>IP del visitante</td><td class="ok">Correcta: la API toma la IP real de <code>X-Forwarded-For</code></td></tr>
+  <tr><td>Autorización de internet</td><td class="ok">Funciona: los dispositivos navegan</td></tr>
+  <tr><td>Registro en la base</td><td class="ok">Guarda los visitantes</td></tr>
+  <tr><td>Samsung: abre el portal al conectarse</td><td class="ok">Resuelto quitando el override de <code>gstatic</code></td></tr>
+  <tr><td>Pixel tras quitar el override de <code>gstatic</code></td><td class="ok">Funciona</td></tr>
+  <tr><td>Nombre de la red en la página (<code>NETWORK_NAME</code>)</td><td class="warn">Pendiente confirmar el nombre final</td></tr>
+  <tr><td>Arranque tras reinicio de OPNsense</td><td class="warn">Pendiente</td></tr>
+  <tr><td>Rotación de la API key</td><td class="warn">Pendiente si la clave apareció en un chat o log compartido</td></tr>
+</table>
+
+<h2>Comandos</h2>
+
+<p><strong>Ver el log</strong>:</p>
+<pre>tail -20 /var/log/byte-api.log</pre>
+
+<p><strong>Ver la base</strong>:</p>
+<pre>sqlite3 /var/db/byte/portal.db 'select ip,mac,phone,kind,start_at,end_at from access order by start_at desc limit 5;'
+sqlite3 /var/db/byte/portal.db 'select name,phone,verified_at from verified order by verified_at desc limit 5;'</pre>
+
+<p><strong>Reiniciar la API</strong> (en OPNsense, dentro de <code>sh -c '...'</code>):</p>
+<pre>pkill -x byte-api; sleep 2; set -a; . /usr/local/etc/byte/apikey.env; set +a; export OPNSENSE_URL=https://127.0.0.1 OPNSENSE_SERVER_NAME=fwportal.byteservices.net OPNSENSE_ZONE=0 ADDR=127.0.0.1:8085 DB=/var/db/byte/portal.db PORTAL_DIR=/usr/local/www/byte TIMEZONE=America/Caracas RESET_AT=02:00; daemon -p /var/run/byte-api.pid -o /var/log/byte-api.log /usr/local/sbin/byte-api; sleep 3; tail -3 /var/log/byte-api.log</pre>
+
+</body>
+</html>

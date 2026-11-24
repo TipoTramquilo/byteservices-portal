@@ -5,9 +5,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"html"
 	"log"
 	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -40,7 +42,9 @@ func New(svc *core.Service, portalDir, redirect string) http.Handler {
 		if !decode(w, r, &req) {
 			return
 		}
-		if err := svc.Send(r.Context(), core.Visitor{Name: req.Name, IDNumber: req.IDNumber, Company: req.Company, Phone: req.Phone}, clientIP(r)); err != nil {
+		ip := clientIP(r)
+		log.Printf("send desde %s (peer=%s X-Real-Ip=%q X-Forwarded-For=%q)", ip, r.RemoteAddr, r.Header.Get("X-Real-Ip"), r.Header.Get("X-Forwarded-For"))
+		if err := svc.Send(r.Context(), core.Visitor{Name: req.Name, IDNumber: req.IDNumber, Company: req.Company, Phone: req.Phone}, ip); err != nil {
 			fail(w, err)
 			return
 		}
@@ -51,21 +55,27 @@ func New(svc *core.Service, portalDir, redirect string) http.Handler {
 	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 
 	files := http.FileServer(http.Dir(portalDir))
-	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) { index(w, portalDir) })
+	network := os.Getenv("NETWORK_NAME")
+	if network == "" {
+		network = "Byte Invitados"
+	}
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) { index(w, portalDir, network) })
 	// el redirect del portal cautivo llega a /index.html: también lleva la configuración del portal
-	mux.HandleFunc("GET /index.html", func(w http.ResponseWriter, r *http.Request) { index(w, portalDir) })
+	mux.HandleFunc("GET /index.html", func(w http.ResponseWriter, r *http.Request) { index(w, portalDir, network) })
 	mux.Handle("GET /", files)
 	return cors(captive(methods(mux), os.Getenv("CAPTIVE_HOME")), os.Getenv("CORS_ORIGIN"))
 }
 
-// index sirve el portal con los endpoints de la API puestos, como lo haría la página alojada en el router
-func index(w http.ResponseWriter, portalDir string) {
+// index sirve el portal con los endpoints de la API puestos, como lo haría la página alojada en el router.
+// network reemplaza el nombre de la red ("Byte Invitados" en la página) en el título y la pastilla
+func index(w http.ResponseWriter, portalDir, network string) {
 	page, err := os.ReadFile(filepath.Join(portalDir, "index.html"))
 	if err != nil {
 		log.Print(err)
 		http.Error(w, "portal not built", http.StatusInternalServerError)
 		return
 	}
+	page = bytes.ReplaceAll(page, []byte("Byte Invitados"), []byte(html.EscapeString(network)))
 	page = bytes.Replace(page, []byte("<script>"),
 		[]byte(`<script>window.BYTE_PORTAL={send:"/api/send"}</script><script>`), 1)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -73,14 +83,34 @@ func index(w http.ResponseWriter, portalDir string) {
 	w.Write(page)
 }
 
-// clientIP es la IP de la conexión. No se leen X-Forwarded-For ni similares: la API recibe
-// a los visitantes directo en la LAN y esas cabeceras las puede escribir cualquiera
+// clientIP es la IP del visitante. Normalmente es la de la conexión. Si la conexión viene de
+// 127.0.0.1 (el lighttpd del portal reenvía a la API en local), la IP real sale de X-Real-Ip o
+// de la primera IP de X-Forwarded-For. Desde otras IP esas cabeceras se ignoran: las puede escribir cualquiera
 func clientIP(r *http.Request) string {
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		return r.RemoteAddr
+		host = r.RemoteAddr
+	}
+	if ip, perr := netip.ParseAddr(host); perr == nil && ip.IsLoopback() {
+		if real, ok := forwardedIP(r); ok {
+			return real
+		}
 	}
 	return host
+}
+
+// forwardedIP lee la IP real de las cabeceras que pone el proxy local, si es una IP válida
+func forwardedIP(r *http.Request) (string, bool) {
+	candidates := []string{r.Header.Get("X-Real-Ip")}
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		candidates = append(candidates, strings.TrimSpace(strings.Split(xff, ",")[0]))
+	}
+	for _, c := range candidates {
+		if ip, err := netip.ParseAddr(strings.TrimSpace(c)); err == nil {
+			return ip.String(), true
+		}
+	}
+	return "", false
 }
 
 func decode(w http.ResponseWriter, r *http.Request, v any) bool {

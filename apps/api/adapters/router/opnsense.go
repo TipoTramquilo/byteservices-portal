@@ -71,14 +71,16 @@ func (o *OPNsense) GrantAccess(ctx context.Context, ip string, until time.Time) 
 		return fmt.Errorf("opnsense: la hora de acceso para %s ya pasó", ip)
 	}
 	body := map[string]any{"zoneid": o.zone, "ip": ip, "sessionTimeout": secs}
+	var raw json.RawMessage
+	if err := o.do(ctx, http.MethodPost, "/api/captiveportal/session/connect", body, &raw); err != nil {
+		return err
+	}
 	var res struct {
 		ClientState string `json:"clientState"`
 	}
-	if err := o.do(ctx, http.MethodPost, "/api/captiveportal/session/connect", body, &res); err != nil {
-		return err
-	}
-	if res.ClientState != "AUTHORIZED" {
-		return fmt.Errorf("opnsense: sesión de %s en estado %q", ip, res.ClientState)
+	if err := json.Unmarshal(raw, &res); err != nil || res.ClientState != "AUTHORIZED" {
+		// Se incluye la respuesta cruda: así se ve qué devuelve esta versión de OPNsense
+		return fmt.Errorf("opnsense: sesión de %s sin AUTHORIZED: %.300s", ip, raw)
 	}
 	return nil
 }

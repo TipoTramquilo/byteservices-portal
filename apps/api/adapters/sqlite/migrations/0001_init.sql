@@ -4,7 +4,7 @@
 -- Teléfonos: E.164 ('+' y hasta 15 dígitos, sin 0 inicial). IP: IPv4 o IPv6 en forma canónica (la valida la API)
 -- MAC: EUI-48 en mayúsculas con ':'
 
--- Visitantes que enviaron el formulario; el teléfono queda registrado para el torneo
+-- Visitantes que enviaron el formulario; el teléfono queda registrado para el evento
 CREATE TABLE IF NOT EXISTS verified (
   phone       TEXT PRIMARY KEY CHECK (phone GLOB '+[1-9]*' AND length(phone) BETWEEN 9 AND 16
                                       AND substr(phone, 2) NOT GLOB '*[^0-9]*'),
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS verified (
   verified_at TEXT NOT NULL CHECK (datetime(verified_at) IS NOT NULL)
 ) STRICT;
 
--- Cada vez que se da internet (una sesión de 30 min al enviar el formulario): registro del torneo
+-- Cada vez que se da internet (una sesión de 30 min al enviar el formulario): registro del evento
 CREATE TABLE IF NOT EXISTS access (
   id        INTEGER PRIMARY KEY,
   ip        TEXT NOT NULL CHECK (length(ip) BETWEEN 3 AND 39 AND ip NOT GLOB '*[^0-9a-f.:]*'),

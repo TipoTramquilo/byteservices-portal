@@ -30,7 +30,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # ---------- Runtime: scratch (solo el binario, el portal y los certificados) ----------
 FROM scratch
 
-# Certificados CA para la API de Twilio por HTTPS: es lo único del sistema que usa el binario
+# Certificados CA para hablar por HTTPS con la GUI de OPNsense (si no es un certificado público, OPNSENSE_CA_FILE)
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /out/captiveportal /app/captiveportal
 COPY --from=web /src/apps/web/dist/ /app/dist/

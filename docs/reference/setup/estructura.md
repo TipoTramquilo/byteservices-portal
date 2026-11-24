@@ -2,7 +2,7 @@
 
 > **Estado:** Aprobado
 
-Monorepo con dos apps; nombres según la convención de Turborepo y Nx (`apps/web`, `apps/api`)
+Monorepo con dos apps: `apps/web` (portal) y `apps/api` (backend Go)
 
 ```
 cautive-portal/
@@ -15,9 +15,12 @@ cautive-portal/
 │   │   ├── subset-fonts.mjs    recorta fonts-src/ a src/fonts/ (make fonts)
 │   │   └── design-system.html  muestrario de tokens y del portal en cada estado
 │   └── api/                    backend Go
-│       ├── main.go
-│       ├── core/               lógica y puertos
-│       └── adapters/           httpapi, sqlite (+ migrations/), whatsapp, router
+│       ├── main.go             configuración desde variables de entorno
+│       ├── core/               lógica (Send) y puertos (Store, Router)
+│       └── adapters/
+│           ├── httpapi/        JSON sobre HTTP, portal compilado y redirección cautiva
+│           ├── sqlite/         Store + migrations/
+│           └── router/         OPNsense (API REST) y log
 ├── docker/                     Dockerfile y docker-compose.yaml (contexto: la raíz)
 ├── docs/                       esta documentación (Diátaxis)
 ├── brand/                      Manual Byte, logos y fuentes de referencia
@@ -40,4 +43,4 @@ cautive-portal/
 | `make down`    | Para el contenedor                                          |
 | `make logs`    | Sigue los logs                                              |
 
-Un solo `.gitignore` en la raíz. El `.dockerignore` solo deja pasar `apps/api/`, `apps/web/build.mjs` y `apps/web/src/`
+Un solo `.gitignore` en la raíz. El `.dockerignore` deja pasar solo `apps/api/`, `apps/web/build.mjs` y `apps/web/src/`.

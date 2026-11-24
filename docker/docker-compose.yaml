@@ -18,19 +18,13 @@ services:
     image: byte-portal:latest
     container_name: byte-portal
     environment:
-      # Sin OTP_SECRET los códigos pendientes dejan de servir al reiniciar el contenedor
-      - OTP_SECRET=${OTP_SECRET:-}
       - REDIRECT=${REDIRECT:-}
+      - NETWORK_NAME=${NETWORK_NAME:-}
       - TIMEZONE=${TIMEZONE:-}
-      # Hora local del reset diario (por defecto 02:00)
+      # Hora local que define el día (por defecto 02:00)
       - RESET_AT=${RESET_AT:-}
-      # Twilio (código por WhatsApp). Sin TWILIO_ACCOUNT_SID el código sale en el log
-      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
-      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
-      - TWILIO_WHATSAPP_FROM=${TWILIO_WHATSAPP_FROM:-}
-      - TWILIO_CONTENT_SID=${TWILIO_CONTENT_SID:-}
     volumes:
-      # Base SQLite: verificados, códigos y registro de accesos del torneo
+      # Base SQLite: visitantes y registro de accesos del evento
       - portal_data:/data
     ports:
       - '0.0.0.0:${PORTAL_PORT:-8080}:8080'

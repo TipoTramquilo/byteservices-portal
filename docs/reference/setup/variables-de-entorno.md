@@ -2,21 +2,28 @@
 
 > **Estado:** Aprobado
 
-Las lee [main.go](/apps/api/main.go). Ninguna es obligatoria para correr en local
+Lo que lee `apps/api` al arrancar. Fuente: [main.go](/apps/api/main.go) y [handlers.go](/apps/api/adapters/httpapi/handlers.go)
 
-| Variable               | Por defecto              | Uso                                                                              |
-| ---------------------- | ------------------------ | -------------------------------------------------------------------------------- |
-| `ADDR`                 | `:8080`                  | Dirección de escucha                                                             |
-| `DB`                   | `portal.db`              | Archivo SQLite. En el contenedor: `/data/portal.db`                              |
-| `PORTAL_DIR`           | `../web/dist`            | Portal compilado que se sirve en `/`. En el contenedor: `/app/dist`              |
-| `TIMEZONE`             | `America/Caracas`        | Zona horaria para ubicar el reset y la columna `day`. Las horas se guardan en UTC |
-| `RESET_AT`             | `02:00`                  | Hora local (`HH:MM`) del reset diario: vencen los accesos y se reinician los límites diarios |
-| `REDIRECT`             | vacío                    | Enlace de "Empezar a navegar"; vacío deja el del portal                          |
-| `OTP_SECRET`           | aleatoria al arrancar    | Clave HMAC de los códigos. **Fijarla en producción**: si no, un reinicio invalida los códigos pendientes |
-| `TWILIO_ACCOUNT_SID`   | vacío                    | Sin ella el código se imprime en el log en vez de mandarse                        |
-| `TWILIO_AUTH_TOKEN`    | vacío                    | Token de la cuenta de Twilio                                                     |
-| `TWILIO_WHATSAPP_FROM` | vacío                    | Número de WhatsApp de Twilio en E.164 (`+14155238886`)                           |
-| `TWILIO_CONTENT_SID`   | vacío                    | ID de la plantilla aprobada (`HX…`) con `{{1}}` para el código                   |
+| Variable               | Por defecto           | Uso                                                                                  |
+| ---------------------- | --------------------- | ------------------------------------------------------------------------------------ |
+| `ADDR`                 | `:8080`               | Dirección de escucha. En OPNsense: `127.0.0.1:8085` (lo que espera el `lighttpd` del portal) |
+| `DB`                   | `portal.db`           | Archivo SQLite. En el contenedor: `/data/portal.db`                                  |
+| `PORTAL_DIR`           | `../web/dist`         | Portal compilado que se sirve en `/`                                                 |
+| `TIMEZONE`             | `America/Caracas`     | Zona horaria para calcular el día (`day`) y el reset                                 |
+| `RESET_AT`             | `02:00`               | Hora local (`HH:MM`) en que cambia el día. Define la columna `day`; no corta sesiones |
+| `REDIRECT`             | vacío                 | Enlace de "Empezar a navegar". Vacío deja el del portal                              |
+| `NETWORK_NAME`         | `Byte Invitados`      | Nombre de la red que muestra la página (título y pastilla). Se escapa como HTML      |
+| `CAPTIVE_HOME`         | vacío                 | Si está definida, cualquier host distinto del portal recibe `302` a esta URL          |
+| `CORS_ORIGIN`          | vacío                 | Origen que puede llamar a la API desde otra página. Vacío: sin encabezados CORS     |
+| `OPNSENSE_URL`         | vacío                 | GUI de OPNsense, por ejemplo `https://127.0.0.1`. **Sin ella, el acceso no se abre** (solo se registra en el log) |
+| `OPNSENSE_KEY`         | vacío                 | Key de la API de un usuario de OPNsense                                              |
+| `OPNSENSE_SECRET`      | vacío                 | Secret de esa key                                                                    |
+| `OPNSENSE_ZONE`        | `0`                   | ID de la zona del portal cautivo                                                     |
+| `OPNSENSE_CA_FILE`     | vacío                 | PEM de la CA de la GUI, si no es un certificado público. Con Let's Encrypt no hace falta |
+| `OPNSENSE_SERVER_NAME` | vacío                 | Nombre que trae el certificado de la GUI (SAN). Hace falta si `OPNSENSE_URL` usa una IP |
 
-El compose ([docker-compose.yaml](/docker/docker-compose.yaml)) pasa `TIMEZONE`, `OTP_SECRET`, `REDIRECT`, `RESET_AT` y las de Twilio, lee todas desde `.env` (en la raíz; `make` se lo pasa con `--env-file`), y
-publica el puerto en `PORTAL_PORT` (por defecto `8080`)
+Ejemplo de la configuración en uso en `fwportal`: ver [opnsense.md](/docs/reference/setup/opnsense.md).
+
+## Contenedor
+
+En el compose se leen del archivo `.env` de la raíz. Ver [contenedores.md](/docs/explanation/ops/contenedores.md).

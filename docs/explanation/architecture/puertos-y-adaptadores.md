@@ -4,9 +4,8 @@
 
 ## Contexto
 
-La API depende de tres cosas externas, dos sin decidir al escribirla: el router que da internet (MikroTik u
-OpenWrt) y el proveedor del mensaje (finalmente Twilio). La lógica (hora gratis, código, reset diario) no debe
-cambiar cuando cambien
+La API depende de un router (OPNsense en el sitio real) que da o quita internet. La lógica (sesión de 30 minutos,
+registro del visitante) no debe cambiar al cambiar el router ni la base.
 
 ## Decisión
 
@@ -16,40 +15,36 @@ Hexagonal ligero: un núcleo `core/` con la lógica y sus puertos, y un paquete 
 apps/api/
 ├── main.go             arma todo: elige adaptadores según las variables de entorno
 ├── core/
-│   ├── service.go      Send(), Verify(): toda la lógica
-│   ├── otp.go          generar, hashear y comparar el código
-│   ├── store.go        puerto Store + tipos (Visitor, Code, Access)
-│   ├── sender.go       puerto Sender
+│   ├── service.go      Send(): toda la lógica
+│   ├── store.go        puerto Store + tipos (Visitor, Access)
 │   └── router.go       puerto Router
 └── adapters/
     ├── httpapi/        entrada: JSON sobre HTTP y el portal compilado
     ├── sqlite/         Store con SQL directo + migraciones
-    ├── whatsapp/       Sender: Twilio o consola
-    └── router/         Router: solo log hasta elegir router
+    └── router/         Router: OPNsense (API REST) o solo log si no hay OPNSENSE_URL
 ```
 
-Regla de dependencias: `core` no importa nada de `adapters`; los adaptadores importan `core`
+Regla de dependencias: `core` no importa nada de `adapters`; los adaptadores importan `core`.
 
-| Puerto   | Definición                                     | Adaptadores                                                                 |
-| -------- | ---------------------------------------------- | --------------------------------------------------------------------------- |
-| `Store`  | [store.go](/apps/api/core/store.go) (línea 47) | [sqlite](/apps/api/adapters/sqlite/store.go)                                |
-| `Sender` | [sender.go](/apps/api/core/sender.go)          | [Twilio](/apps/api/adapters/whatsapp/twilio.go), [consola](/apps/api/adapters/whatsapp/console.go) |
-| `Router` | [router.go](/apps/api/core/router.go): `MAC(ip)` y `GrantAccess(ip, until)` | [log](/apps/api/adapters/router/log.go) (OPNsense: planificado)   |
+| Puerto   | Definición                                            | Adaptadores                                              |
+| -------- | ----------------------------------------------------- | -------------------------------------------------------- |
+| `Store`  | [store.go](/apps/api/core/store.go)                   | [sqlite](/apps/api/adapters/sqlite/store.go)             |
+| `Router` | [router.go](/apps/api/core/router.go): `MAC(ip)` y `GrantAccess(ip, until)` | [opnsense](/apps/api/adapters/router/opnsense.go), [log](/apps/api/adapters/router/log.go) |
+
+Sin WhatsApp: el código de verificación y su puerto `Sender` se retiraron.
 
 ## Razones
 
-- **Puertos dentro de `core`, no en `ports/`.** En Go la interfaz la define quien la usa. Con un paquete `ports/`
-  aparte, los tipos que comparten núcleo y puertos tendrían que vivir en `ports/` para evitar imports circulares
-- **Un archivo por puerto, no un paquete por puerto.** En Go los archivos ordenan y los paquetes aíslan: un paquete
-  por puerto obligaría a otro paquete más para los tipos compartidos
+- **Puertos dentro de `core`, no en `ports/`.** En Go la interfaz la define quien la usa.
+- **Un archivo por puerto, no un paquete por puerto.** En Go los archivos ordenan y los paquetes aíslan.
 - **Sin Clean Architecture completa.** Capas `domain/application/infrastructure` con DTOs entre ellas serían
-  ceremonia para dos endpoints y tres tablas
-- **`httpapi` y no `http`.** Un paquete `http` choca con `net/http` en cada import
+  ceremonia para dos endpoints y dos tablas.
+- **`httpapi` y no `http`.** Un paquete `http` choca con `net/http` en cada import.
 
 ## Convenciones
 
 - Identificadores, archivos y tablas en inglés; comentarios en español, sin punto final
 - Sin framework HTTP: `net/http` enruta por método desde Go 1.22 (`POST /api/send`)
-- Dependencias directas: `modernc.org/sqlite` y `github.com/twilio/twilio-go`
+- Dependencias directas: `modernc.org/sqlite`
 
-Ver [api-rest.md](/docs/explanation/architecture/api-rest.md) y [sqlite.md](/docs/explanation/database/sqlite.md)
+Ver [api-rest.md](/docs/explanation/architecture/api-rest.md) y [sqlite.md](/docs/explanation/database/sqlite.md).

@@ -6,34 +6,33 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 ## Explicación (por qué se decidió)
 
 - **Core**
-  - [core/acceso-wifi.md](/docs/explanation/core/acceso-wifi.md) - hora gratis al enviar, internet hasta el reset (2:00 AM) al verificar, sin código los días siguientes
+  - [core/acceso-wifi.md](/docs/explanation/core/acceso-wifi.md) - registro del visitante y sesión de 30 minutos, sin código
 - **Arquitectura**
   - [architecture/puertos-y-adaptadores.md](/docs/explanation/architecture/puertos-y-adaptadores.md) - `core/` con sus puertos y un paquete por adaptador
-  - [architecture/api-rest.md](/docs/explanation/architecture/api-rest.md) - Go, REST con JSON y mismo origen que el portal
+  - [architecture/api-rest.md](/docs/explanation/architecture/api-rest.md) - Go, REST con JSON, mismo origen que el portal y redirección cautiva
 - **Base de datos**
-  - [database/sqlite.md](/docs/explanation/database/sqlite.md) - SQLite en proceso, sin ORM, restricciones según estándares y migraciones forward-only
-- **Integraciones**
-  - [integrations/twilio.md](/docs/explanation/integrations/twilio.md) - código por WhatsApp con la librería oficial de Twilio
+  - [database/sqlite.md](/docs/explanation/database/sqlite.md) - SQLite en proceso, sin ORM, tablas `STRICT` y migraciones forward-only
 - **Operación**
-  - [ops/contenedores.md](/docs/explanation/ops/contenedores.md) - imagen sobre `scratch` con Podman y dónde usarla
+  - [ops/contenedores.md](/docs/explanation/ops/contenedores.md) - imagen sobre `scratch` con Podman
 
 ## Referencia (datos exactos, para consultar)
 
 - **API**
   - [api/openapi.yaml](/docs/reference/api/openapi.yaml) - contrato OpenAPI 3.2.0
-  - [api/contrato-portal.md](/docs/reference/api/contrato-portal.md) - `window.BYTE_PORTAL`, cómo se identifica al dispositivo y cómo reacciona el portal
+  - [api/contrato-portal.md](/docs/reference/api/contrato-portal.md) - `window.BYTE_PORTAL` y cómo reacciona el portal
 - **Base de datos**
   - [database/esquema.md](/docs/reference/database/esquema.md) - tablas, columnas y reglas
 - **Setup**
   - [setup/estructura.md](/docs/reference/setup/estructura.md) - árbol del monorepo y comandos del `Makefile`
   - [setup/variables-de-entorno.md](/docs/reference/setup/variables-de-entorno.md) - variables que lee la API
+  - [setup/opnsense.md](/docs/reference/setup/opnsense.md) - configuración del equipo: zona, DNS, API key y arranque de la API
 
 ## How-to (pasos para lograr algo)
 
-- [correr-el-proyecto.md](/docs/how-to/correr-el-proyecto.md) - API en el host, en contenedor o solo el portal
+- [correr-el-proyecto.md](/docs/how-to/correr-el-proyecto.md) - API en el host o en contenedor, y compilar para OPNsense
+- [diagnosticar-portal.md](/docs/how-to/diagnosticar-portal.md) - errores reales (500, 403, TLS, Samsung, DNS y shell) con su causa y solución
 - [agregar-migracion.md](/docs/how-to/agregar-migracion.md) - agregar una migración de SQLite
 - [actualizar-openapi.md](/docs/how-to/actualizar-openapi.md) - cambiar el contrato OpenAPI
-- [configurar-twilio.md](/docs/how-to/configurar-twilio.md) - mandar el código por WhatsApp de verdad
 
 ## Tutorial (aprender haciendo)
 
@@ -41,8 +40,9 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 
 ## Pendiente (sin decisión cerrada)
 
-- [ops/router.md](/docs/pending/ops/router.md) - mini PC con OPNsense o Raspberry: topología y adaptador del router
-- [web/portal.md](/docs/pending/web/portal.md) - términos de uso y textos
+- [ops/router.md](/docs/pending/ops/router.md) - estado del equipo real y lo que falta: arranque tras reinicio y nombre de la red
+- [ops/estado-fwportal.html](/docs/pending/ops/estado-fwportal.html) - resumen visual del estado de `fwportal` y sus pendientes (se abre en el navegador)
+- [web/portal.md](/docs/pending/web/portal.md) - términos de uso, nombre de la red y textos
 
 ## Estados
 
@@ -61,6 +61,6 @@ Cada documento lleva una línea `> **Estado:** ...` debajo del título (exactame
 - **Estado actual, sin históricos.** Describe cómo está hoy el sistema
 - **Decisiones con motivo** y, cuando aporta, la alternativa descartada
 - **Diagramas en Mermaid**; árboles de carpetas en ASCII
-- **Referencias con ruta absoluta** y líneas cuando es código: `[service.go](/apps/api/core/service.go) (líneas 58-118)`
+- **Referencias con ruta absoluta** y líneas cuando es código
 - **Tono impersonal**, en español, sin punto final en listas y descripciones
 - **Nombres reales:** lo citado existe en el repo o se marca como planificado

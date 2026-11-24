@@ -2,7 +2,8 @@
 
 > **Estado:** Aprobado
 
-Seguir una visita de punta a punta, del portal a la base, sin Twilio ni router
+Seguir una visita de punta a punta, del portal a la base, sin router real. Para el equipo real, ver
+[diagnosticar-portal.md](/docs/how-to/diagnosticar-portal.md).
 
 ## 1. Levantar la API
 
@@ -10,37 +11,37 @@ Seguir una visita de punta a punta, del portal a la base, sin Twilio ni router
 make api
 ```
 
-En la terminal: `listening on :8080` y un aviso de `OTP_SECRET vacío` (esperado en local)
+En la terminal: `listening on :8080`. Sin `OPNSENSE_URL` no hay router: la API solo registra el acceso en el log.
 
 ## 2. Enviar los datos
 
-Abrir `http://localhost:8080` a 390×844 y completar nombre, cédula y un WhatsApp venezolano.
-En la terminal aparecen dos líneas:
+Abrir `http://localhost:8080` a 390×844 y completar nombre y apellido, cédula (V o E), empresa y un teléfono
+(por ejemplo `+584125551234`). Al enviar:
 
 ```
-[whatsapp] code for +58…: 123456           ← el código (adaptador de consola)
-(sin línea de router: al enviar no se da internet)
+[router] grant <ip> until <hora UTC>      ← sin OPNsense, el acceso solo se registra en el log
 ```
 
-Qué pasó: [Send](/apps/api/core/service.go) (líneas 58-118) validó los datos, guardó el hash del código en `codes` y lo mandó con el `Sender`. No llamó a `GrantAccess`:
-al enviar no hay internet, solo el walled garden
+Qué pasó: [Send](/apps/api/core/service.go) validó los datos, guardó al visitante en `verified`, pidió la MAC al
+router y registró la sesión en `access` con fin 30 minutos después.
 
-## 3. Equivocarse
+## 3. Ver la base
 
-Escribir `000000`: el portal muestra "Código incorrecto" y `codes.attempts` sube a 1
+```bash
+sqlite3 portal.db 'select name,phone,company from verified;'
+sqlite3 portal.db 'select ip,phone,start_at,end_at from access;'
+```
 
-## 4. Verificar
+El fin de cada sesión debe quedar 30 minutos después del inicio.
 
-Escribir el código de la terminal: "Listo, ya estás conectado". En la terminal, `[router] grant` hasta las 2:00 AM (en el log, `06:00:00Z`: las horas van en UTC).
-[Verify](/apps/api/core/service.go) (líneas 122-161) movió los datos a `verified`, borró el código y registró el
-acceso `verified`
+## 4. Volver a enviar
 
-## 5. Volver otro día
+Enviar el mismo teléfono de nuevo: la respuesta sigue siendo `200 {"verified": true}`. Cada envío abre una sesión nueva;
+no hay límite de envíos ni espera entre ellos.
 
-Recargar la página y mandar el mismo teléfono (como si fuera otro día u otro dispositivo): el portal salta
-directo a "conectado", sin código. `send` respondió `{"verified": true}`
+## 5. Probar los errores
 
-## 6. Mirar los límites
+- Dejar el nombre con una sola palabra: `400 {"error": "invalid"}`
+- Pedir `GET /api/send`: `405` con la cabecera `Allow: POST`
 
-Pedir el código de nuevo antes de 60 s responde `429 too_soon`; ver la tabla de límites en
-[acceso-wifi.md](/docs/explanation/core/acceso-wifi.md)
+Contrato exacto: [openapi.yaml](/docs/reference/api/openapi.yaml). Diseño del flujo: [acceso-wifi.md](/docs/explanation/core/acceso-wifi.md).
