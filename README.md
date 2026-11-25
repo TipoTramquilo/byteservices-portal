@@ -240,36 +240,33 @@ porque no existen en todos los teléfonos.
 ```
 📁 byteservices-portal/
 ├── 📁 apps/
-│   ├── 📁 web/                      🌐 portal: HTML, CSS y JavaScript ES2020, sin dependencias
+│   ├── 📁 web/                 🌐 portal
 │   │   ├── 📁 src/
-│   │   │   ├── 📄 index.html        las dos pantallas: datos y "ya estás conectado"
-│   │   │   ├── 📄 app.mjs           todo el comportamiento (validación, envío, animaciones)
-│   │   │   ├── 📄 byte.css          estilos y tokens de la marca
-│   │   │   └── 📁 fonts/            fuentes recortadas a los caracteres del portal
-│   │   ├── 📁 fonts-src/            fuentes originales completas
-│   │   ├── 📄 build.mjs             arma dist/: un solo index.html con el CSS y el JS adentro
-│   │   ├── 📄 subset-fonts.mjs      recorta las fuentes (task web:fonts)
-│   │   └── 📄 design-system.html    muestrario de colores, tipografías y pantallas
-│   └── 📁 api/                      ⚙️ API en Go (binario byte-api)
-│       ├── 📄 main.go               arranque y configuración por variables de entorno
-│       ├── 📁 core/                 la lógica: registrar al visitante y abrir la sesión
-│       ├── 📁 adapters/
-│       │   ├── 📁 httpapi/          rutas HTTP (/api/send, /api/health) y la página
-│       │   ├── 📁 sqlite/           base de datos y migraciones
-│       │   └── 📁 router/           OPNsense (abre el acceso) o log (sin router)
-│       └── 📄 .golangci.yaml        reglas del linter de Go
-├── 📁 docker/                       🐳 Dockerfile y docker-compose.yaml
-├── 📁 infra/local/                  🧪 OPNsense en una VM + tu PC como AP "Byte" (task local:*)
-├── 📁 loadtest/                     📈 pruebas de carga con k6
-├── 📁 tools/                        🔧 herramientas de Go: golangci-lint, govulncheck, task, actionlint
-├── 📁 docs/                         📚 documentación (decisiones, referencia, guías, pendientes)
-├── 📁 .github/                      ♾️ workflow de CI y Dependabot
-├── 📁 .husky/                       🪝 hooks de git: pre-commit, commit-msg, pre-push, post-checkout
-├── 📄 Taskfile.yml                  todas las tareas del repo (task --list)
-├── 📄 package.json                  herramientas de JS (pnpm): oxlint, oxfmt, husky, commitlint
-├── 📄 .env.example                  plantilla del .env (task env la copia)
-├── 📄 .oxlintrc.json                reglas del linter de JS
-└── 📄 .oxfmtrc.json                 formato de JS, CSS, JSON, Markdown y YAML
+│   │   │   ├── 📄 index.html
+│   │   │   ├── 📄 app.mjs
+│   │   │   ├── 📄 byte.css
+│   │   │   └── 📁 fonts/
+│   │   ├── 📁 fonts-src/
+│   │   ├── 📄 build.mjs        compila dist/
+│   │   ├── 📄 subset-fonts.mjs recorta fuentes
+│   │   └── 📄 design-system.html
+│   └── 📁 api/                 ⚙️ API en Go
+│       ├── 📄 main.go
+│       ├── 📁 core/            lógica
+│       └── 📁 adapters/
+│           ├── 📁 httpapi/
+│           ├── 📁 sqlite/
+│           └── 📁 router/      OPNsense
+├── 📁 docker/                  🐳 imagen y compose
+├── 📁 infra/local/             🧪 OPNsense en VM
+├── 📁 loadtest/                📈 k6
+├── 📁 tools/                   🔧 herramientas de Go
+├── 📁 docs/                    📚 documentación
+├── 📁 .github/                 ♾️ CI y Dependabot
+├── 📁 .husky/                  🪝 hooks de git
+├── 📄 Taskfile.yml             tareas
+├── 📄 package.json             herramientas de JS
+└── 📄 .env.example             plantilla del .env
 ```
 
 Más detalle de cada carpeta: [estructura.md](docs/reference/setup/estructura.md).
