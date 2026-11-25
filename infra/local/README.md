@@ -64,7 +64,7 @@ flowchart TB
 
 | Tarea                                 | Qué hace                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------ |
-| `env`                                 | Crea `.env` en la raíz desde `.env.example` si falta                           |
+| `:env` (raíz)                         | Crea `.env` en la raíz desde `.env.example` si falta                           |
 | `image`                               | Descarga la imagen nano de OPNsense 26.7, verifica su SHA-256 y la descomprime |
 | `host:up`                             | Crea `br0`, `br-lan` y levanta el AP `Byte` (requiere `sudo`)                  |
 | `host:down`                           | Quita el AP y los puentes, y devuelve la cableada a NetworkManager             |

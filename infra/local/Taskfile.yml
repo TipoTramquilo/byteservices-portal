@@ -22,14 +22,6 @@ tasks:
     cmds:
       - task --list
 
-  env:
-    desc: 'Crea .env en la raíz desde .env.example si todavía no existe'
-    status:
-      - test -f "{{.ROOT_DIR}}/.env"
-    cmds:
-      - cp "{{.ROOT_DIR}}/.env.example" "{{.ROOT_DIR}}/.env"
-      - echo "Creado .env desde .env.example (ajusta WAN_NIC, WIFI_NIC y SSID si hace falta)"
-
   image:
     desc: 'Descarga y verifica la imagen oficial de OPNsense (una vez por máquina)'
     cmds:
@@ -108,7 +100,7 @@ tasks:
   up:
     desc: 'Todo: imagen, host y VM'
     cmds:
-      - task: env
+      - task: :env
       - task: image
       - task: host:up
       - task: tf:apply

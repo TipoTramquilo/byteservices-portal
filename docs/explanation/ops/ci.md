@@ -32,28 +32,30 @@ mismo y no se puede saltar
 
 ## Chequeos
 
-| Área   | Chequeo                                          | Herramienta                                                | Tarea               |
-| ------ | ------------------------------------------------ | ---------------------------------------------------------- | ------------------- |
-| Portal | Lint estricto (misma base que HRZN-core)         | oxlint, `--max-warnings=0`                                 | `pnpm lint`         |
-| Portal | Formato de JS, CSS, JSON, Markdown y YAML        | oxfmt                                                      | `pnpm format:check` |
-| Portal | ES2020, sintaxis y APIs                          | es-check `--checkFeatures`                                 | `pnpm es-check`     |
-| Portal | Build y presupuesto de 12 KB gzip                | `build.mjs`                                                | `pnpm build`        |
-| Portal | Vulnerabilidades y firmas de dependencias        | `pnpm audit`, `pnpm audit signatures`                      | `pnpm audit:deps`   |
-| API    | `go.mod`/`go.sum` ordenados y verificados        | `go mod tidy -diff`, `go mod verify`                       | `task api:mod`      |
-| API    | Formato (gofmt + goimports)                      | golangci-lint fmt                                          | `task api:fmt`      |
-| API    | Lint: bugs, seguridad, recursos sin cerrar       | go vet, golangci-lint ([config](/apps/api/.golangci.yaml)) | `task api:lint`     |
-| API    | Tests con detector de carreras                   | `go test -race`                                            | `task api:test`     |
-| API    | Vulnerabilidades en código alcanzable            | govulncheck                                                | `task api:vuln`     |
-| Repo   | Scripts de shell y hooks                         | shellcheck                                                 | `task repo:shell`   |
-| Repo   | Dockerfile                                       | hadolint                                                   | `task repo:docker`  |
-| Repo   | Workflows de GitHub                              | actionlint                                                 | `task repo:actions` |
-| Repo   | Terraform del entorno local                      | `terraform fmt`, `terraform validate`                      | `task repo:tf`      |
-| Repo   | Secretos en todo el historial                    | trufflehog `--only-verified`                               | `task secrets`      |
-| Imagen | El Dockerfile construye con las últimas imágenes | docker buildx (sin push)                                   | solo CI             |
-| PR     | Nombre de rama y mensajes de commit              | `.husky/branch-name.sh`, commitlint                        | solo CI             |
+| Área   | Chequeo                                          | Herramienta                                                | Tarea                |
+| ------ | ------------------------------------------------ | ---------------------------------------------------------- | -------------------- |
+| Portal | `pnpm-lock.yaml` al día con `package.json`       | `pnpm install --frozen-lockfile`                           | `task check:web`, CI |
+| Portal | Lint estricto (misma base que HRZN-core)         | oxlint, `--max-warnings=0`                                 | `pnpm lint`          |
+| Portal | Formato de JS, CSS, JSON, Markdown y YAML        | oxfmt                                                      | `pnpm format:check`  |
+| Portal | ES2020, sintaxis y APIs                          | es-check `--checkFeatures`                                 | `pnpm es-check`      |
+| Portal | Build y presupuesto de 12 KB gzip                | `build.mjs`                                                | `pnpm build`         |
+| Portal | Vulnerabilidades y firmas de dependencias        | `pnpm audit`, `pnpm audit signatures`                      | `pnpm audit:deps`    |
+| API    | `go.mod`/`go.sum` ordenados y verificados        | `go mod tidy -diff`, `go mod verify`                       | `task api:mod`       |
+| API    | Formato (gofmt + goimports)                      | golangci-lint fmt                                          | `task api:fmt`       |
+| API    | Lint: bugs, seguridad, recursos sin cerrar       | go vet, golangci-lint ([config](/apps/api/.golangci.yaml)) | `task api:lint`      |
+| API    | Tests con detector de carreras                   | `go test -race`                                            | `task api:test`      |
+| API    | Vulnerabilidades en código alcanzable            | govulncheck                                                | `task api:vuln`      |
+| Repo   | Scripts de shell y hooks                         | shellcheck                                                 | `task repo:shell`    |
+| Repo   | Dockerfile                                       | hadolint                                                   | `task repo:docker`   |
+| Repo   | Workflows de GitHub                              | actionlint                                                 | `task repo:actions`  |
+| Repo   | Terraform del entorno local                      | `terraform fmt`, `terraform validate`                      | `task repo:tf`       |
+| Repo   | Secretos en todo el historial                    | trufflehog `--only-verified`                               | `task secrets`       |
+| Imagen | El Dockerfile construye con las últimas imágenes | docker buildx (sin push)                                   | solo CI              |
+| PR     | Nombre de rama y mensajes de commit              | regex de `.husky/pre-push`, commitlint                     | solo CI              |
 
 `task check` corre todo menos la imagen y las convenciones del PR. shellcheck, hadolint, terraform y trufflehog son
-herramientas del sistema: en local, si faltan, la tarea avisa y sigue; en CI (`CI=true`) faltar es un error
+herramientas del sistema. Si no están instaladas, en local la tarea avisa y se salta ese chequeo (CI lo corre igual);
+en CI (`CI=true`) el job falla, para que un chequeo nunca quede en verde sin haber corrido
 
 ## Decisiones
 

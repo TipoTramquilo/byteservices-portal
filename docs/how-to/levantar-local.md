@@ -35,7 +35,7 @@ task local:up      # desde la raíz del repo: imagen + host + VM
 
 Eso ejecuta, en orden:
 
-1. `env`: crea el `.env` de la raíz desde [.env.example](/.env.example) si no existe.
+1. `env` (tarea de la raíz): crea el `.env` desde [.env.example](/.env.example) si no existe.
 2. `image`: descarga la imagen oficial de OPNsense, verifica su SHA-256 y la descomprime en `~/.cache/byte-local/images`.
 3. `host:up`: crea el puente `br0` (WAN), el puente `br-lan` (LAN) y levanta `hostapd` con la red `Byte`.
 4. `tf:apply`: crea la VM con dos NIC: WAN en `br0`, LAN en `br-lan`.

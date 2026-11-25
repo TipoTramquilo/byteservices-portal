@@ -11,6 +11,7 @@
   "endOfLine": "lf",
   // HTML fuera: build.mjs reemplaza literal <link rel="stylesheet" href="byte.css"> y
   // <script src="app.mjs"></script>, y el formateador los convierte en <link ... />.
-  // El resto es material de terceros o generado
-  "ignorePatterns": ["*.html", "apps/web/fonts-src/**", "pnpm-lock.yaml"]
+  // El resto es material de terceros o generado. El README de la raíz (HTML centrado y badges al
+  // estilo HRZN-core) se edita a mano; los demás .md sí se formatean
+  "ignorePatterns": ["*.html", "apps/web/fonts-src/**", "pnpm-lock.yaml", "/README.md"]
 }

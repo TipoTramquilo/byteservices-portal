@@ -1,14 +1,21 @@
-# FASE 1: nombre de rama (instantáneo)
-# shellcheck source=branch-name.sh
-. "$(dirname "$0")/branch-name.sh"
+#!/usr/bin/env bash
+set -e
+
+# FASE 1: Branch name validation (instantaneous)
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-if ! branch_ok "$BRANCH"; then
-  echo ""
-  echo "✖ Push cancelado: nombre de rama inválido ('$BRANCH')"
-  branch_help
-  echo ""
-  exit 1
+if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "develop" ] && [ "$BRANCH" != "staging" ]; then
+  if ! echo "$BRANCH" | grep -qE '^(feature|fix|refactor|hotfix|chore|docs)/[a-z0-9-]+$'; then
+    echo ""
+    echo "✖ Push aborted: invalid branch name."
+    echo "  Current branch: $BRANCH"
+    echo "  Expected format: <type>/<scope|-|description>"
+    echo "  Valid types: feature|fix|refactor|hotfix|chore|docs"
+    echo "  Example: feature/scrum-101-new-endpoint"
+    echo "  Create it correctly with: git checkout -b <type>/<description>"
+    echo ""
+    exit 1
+  fi
 fi
 
-# FASE 2: lo mismo que CI salvo la imagen. Si pasa aquí, CI no debería romperse por lint, formato o tests
+# FASE 2: Full quality gate (same checks as CI, except the image build)
 task check

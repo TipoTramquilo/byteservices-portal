@@ -99,7 +99,8 @@
 
 > [!NOTE]
 > El `.env` va en la raíz del proyecto (plantilla: [`.env.example`](.env.example)). Lo leen Task
-> (`task api`, `task local:*`) y compose (`task up`). `task local:env` lo crea si no existe
+> (`task api`, `task local:*`) y compose (`task up`). Esas tareas lo crean desde la plantilla si no existe
+> (también `task env`); si ya existe no lo pisan
 >
 > Si usas Podman, instalar el plugin de compose
 >
@@ -163,14 +164,14 @@ Guía: [levantar-local.md](docs/how-to/levantar-local.md).
 
 ### ✅ Calidad de código
 
-| Comando           | Descripción                                                    |
-| :---------------- | :------------------------------------------------------------- |
-| `task check`      | Todo lo que valida CI salvo la imagen (lo corre el `pre-push`) |
-| `task check:web`  | Portal: oxlint, oxfmt, ES2020 y build con presupuesto de peso  |
-| `task check:api`  | API: módulos, formato, lint, tests con `-race` y govulncheck   |
-| `task check:repo` | shellcheck, hadolint, actionlint y Terraform                   |
-| `task fmt`        | Formatea JS, CSS, JSON, Markdown, YAML, Go y Terraform         |
-| `task secrets`    | Escanea todo el historial de git con trufflehog                |
+| Comando           | Descripción                                                                    |
+| :---------------- | :----------------------------------------------------------------------------- |
+| `task check`      | Todo lo que valida CI salvo la imagen (lo corre el `pre-push`)                 |
+| `task check:web`  | Portal: lockfile al día, oxlint, oxfmt, ES2020 y build con presupuesto de peso |
+| `task check:api`  | API: módulos, formato, lint, tests con `-race` y govulncheck                   |
+| `task check:repo` | shellcheck, hadolint, actionlint y Terraform                                   |
+| `task fmt`        | Formatea JS, CSS, JSON, Markdown, YAML, Go y Terraform                         |
+| `task secrets`    | Escanea todo el historial de git con trufflehog                                |
 
 ## 🚢 Despliegue
 

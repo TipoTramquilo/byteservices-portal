@@ -32,6 +32,14 @@ tasks:
 
   # ---------- portal y API ----------
 
+  env:
+    desc: Crea .env desde .env.example si no existe (no pisa uno existente)
+    status:
+      - test -f .env
+    cmds:
+      - cp .env.example .env
+      - echo "Creado .env desde .env.example (revisar valores; WAN_NIC, WIFI_NIC y SSID para task local:up)"
+
   web:
     desc: Compila apps/web/dist (index.html autocontenido + fuentes; falla si pasa de 12 KB gzip)
     cmds:
@@ -49,30 +57,32 @@ tasks:
 
   api:
     desc: Compila el portal y levanta la API en :8080
-    deps: [web]
+    deps: [env, web]
     dir: apps/api
     cmds:
       - go run .
 
   build:
     desc: Construye la imagen
-    deps: [web]
+    deps: [env, web]
     cmds:
       - '{{.DC}} build'
 
   up:
     desc: Levanta el contenedor (construye si hace falta)
-    deps: [web]
+    deps: [env, web]
     cmds:
       - '{{.DC}} up -d --build'
 
   down:
     desc: Para el contenedor
+    deps: [env]
     cmds:
       - '{{.DC}} down'
 
   logs:
     desc: Sigue los logs
+    deps: [env]
     cmds:
       - '{{.DC}} logs -f'
 
@@ -117,8 +127,10 @@ tasks:
       - terraform fmt -recursive infra
 
   check:web:
-    desc: 'Portal: oxlint, oxfmt, ES2020 y build con presupuesto de peso'
+    desc: 'Portal: lockfile al día, oxlint, oxfmt, ES2020 y build con presupuesto de peso'
     cmds:
+      # Como en CI: falla si package.json y pnpm-lock.yaml no coinciden, en vez de actualizar el lock
+      - pnpm install --frozen-lockfile --prefer-offline
       - pnpm check
 
   check:api:
@@ -180,7 +192,7 @@ tasks:
       - task: optional
         vars:
           TOOL: shellcheck
-          RUN: shellcheck loadtest/*.sh && shellcheck -s sh -x --source-path=SCRIPTDIR .husky/pre-commit .husky/commit-msg .husky/pre-push .husky/post-checkout .husky/branch-name.sh
+          RUN: shellcheck loadtest/*.sh .husky/commit-msg .husky/pre-push && shellcheck -s sh .husky/pre-commit .husky/post-checkout
 
   repo:docker:
     desc: hadolint sobre el Dockerfile
@@ -215,7 +227,8 @@ tasks:
           TOOL: trufflehog
           RUN: trufflehog git file://. --only-verified --fail
 
-  # Herramienta del sistema: en local, si falta, avisa y sigue; en CI (CI=true) faltar es un error
+  # Herramienta del sistema (shellcheck, hadolint, terraform, trufflehog). Si no está instalada:
+  # en local avisa y se salta; en CI (CI=true) falla, para que un chequeo nunca pase sin haber corrido
   optional:
     internal: true
     silent: true

@@ -1,12 +1,21 @@
-# Después de cada checkout; $3 = 1 cuando fue un cambio de rama (no de archivos)
-[ "$3" = "1" ] || exit 0
-# shellcheck source=branch-name.sh
-. "$(dirname "$0")/branch-name.sh"
-BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-if branch_ok "$BRANCH"; then
-  exit 0
+# Runs after every checkout / branch switch.
+# $3 == "1" means it was a branch switch (not a file checkout).
+if [ "$3" = "1" ]; then
+  BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "develop" ] && [ "$BRANCH" != "staging" ]; then
+    if echo "$BRANCH" | grep -qE '^(feature|fix|refactor|hotfix|chore|docs)/[a-z0-9-]+$'; then
+      echo ""
+      echo "✔ Current branch is valid: $BRANCH"
+      echo ""
+    else
+      echo ""
+      echo "⚠ Invalid branch name: '$BRANCH'"
+      echo "  Expected format: <type>/<scope|-|description>"
+      echo "  Valid types: feature|fix|refactor|hotfix|chore|docs"
+      echo "  Example: feature/scrum-101-new-endpoint"
+      echo "  Note: this branch cannot be pushed (pre-push will block it)."
+      echo "  Create it correctly with: git checkout -b <type>/<description>"
+      echo ""
+    fi
+  fi
 fi
-echo ""
-echo "⚠ Nombre de rama inválido: '$BRANCH' (el pre-push no la dejará subir)"
-branch_help
-echo ""

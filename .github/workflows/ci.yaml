@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      # Con CI definido, una herramienta del sistema que falta es un error (en local solo avisa)
+      # Con CI=true, si falta una herramienta del sistema el job falla en vez de saltarse el chequeo
       CI: 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -163,15 +163,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # El mismo patrón que el hook pre-push (.husky/branch-name.sh)
+      # El mismo patrón que el hook pre-push (FASE 1 de .husky/pre-push)
       - name: Nombre de rama
         env:
           BRANCH: ${{ github.head_ref }}
         run: |
-          . .husky/branch-name.sh
-          if ! branch_ok "$BRANCH"; then
-            echo "::error::nombre de rama inválido: $BRANCH"
-            branch_help
+          if ! echo "$BRANCH" | grep -qE '^(feature|fix|refactor|hotfix|chore|docs)/[a-z0-9-]+$'; then
+            echo "::error::nombre de rama inválido: $BRANCH (formato: <tipo>/<descripción>, tipos feature|fix|refactor|hotfix|chore|docs)"
             exit 1
           fi
 
