@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  // Misma base que HRZN-core (categorías en warn + --max-warnings=0, así cualquier hallazgo
-  // rompe CI) sin las reglas de TypeScript ni vitest: aquí todo es JavaScript
+  // Base estricta: categorías en warn + --max-warnings=0, así cualquier hallazgo rompe el commit
+  // y CI. Sin reglas de TypeScript: aquí todo es JavaScript
   "plugins": ["unicorn", "oxc", "promise", "node", "import"],
   "categories": {
     "correctness": "warn",

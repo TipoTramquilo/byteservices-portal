@@ -7,7 +7,8 @@ Todos los comandos salen del [Taskfile](/Taskfile.yml), desde la raíz (`task --
 ## Requisitos
 
 - **[Task](https://taskfile.dev)** para las tareas del repo
-- **Node.js** 26+ (`engines` en `package.json`) y **pnpm** (versión en `packageManager`, vía `corepack enable`):
+- **Node.js** 26+ (`engines` en `package.json`) y **pnpm**, que se instala aparte porque Node ya no trae Corepack
+  (`npm install -g pnpm`). Cualquier versión sirve: en el repo pnpm usa la fijada en `packageManager`.
   `build.mjs` no tiene dependencias, pnpm solo instala las herramientas de calidad
 - **Go** para la API (la versión de `apps/api/go.mod`; con un Go más viejo se descarga sola)
 

@@ -35,7 +35,7 @@ mismo y no se puede saltar
 | Área   | Chequeo                                          | Herramienta                                                | Tarea                |
 | ------ | ------------------------------------------------ | ---------------------------------------------------------- | -------------------- |
 | Portal | `pnpm-lock.yaml` al día con `package.json`       | `pnpm install --frozen-lockfile`                           | `task check:web`, CI |
-| Portal | Lint estricto (misma base que HRZN-core)         | oxlint, `--max-warnings=0`                                 | `pnpm lint`          |
+| Portal | Lint estricto                                    | oxlint, `--max-warnings=0`                                 | `pnpm lint`          |
 | Portal | Formato de JS, CSS, JSON, Markdown y YAML        | oxfmt                                                      | `pnpm format:check`  |
 | Portal | ES2020, sintaxis y APIs                          | es-check `--checkFeatures`                                 | `pnpm es-check`      |
 | Portal | Build y presupuesto de 12 KB gzip                | `build.mjs`                                                | `pnpm build`         |
@@ -67,19 +67,19 @@ en CI (`CI=true`) el job falla, para que un chequeo nunca quede en verde sin hab
   [tools/go.mod](/tools/go.mod) (directiva `tool`) y actionlint en [tools/actionlint/go.mod](/tools/actionlint/go.mod),
   aparte porque su versión de la librería YAML choca con la de golangci-lint. Separadas de `apps/api/go.mod` para que
   sus dependencias no cambien las versiones que compila la API. Dependabot las actualiza como cualquier otra
-- **Acciones fijadas por SHA** con la versión en comentario, como en HRZN-core; Dependabot las sube
+- **Acciones fijadas por SHA** con la versión en comentario; Dependabot las sube
 - **El Dockerfile usa la última imagen** de `node:alpine` y `golang:alpine` sin fijar versión. El job de imagen
   construye en cada push con `pull: true`, así que si una versión nueva rompe el build se ve en CI y no el día del
   despliegue. Por eso Dependabot no vigila Docker
-- **Lint de JS tan estricto como HRZN-core**, sin las reglas de TypeScript ni vitest. El portal suma las de
+- **Lint de JS estricto** (`--max-warnings=0`), sin reglas de TypeScript. El portal suma las de
   [ES2020](/docs/explanation/web/es2020.md)
 - **HTML fuera del formateador.** `build.mjs` reemplaza literalmente `<link rel="stylesheet" href="byte.css">` y
   `<script src="app.mjs"></script>`; oxfmt los reescribe como `<link ... />` y el portal saldría sin estilos. El build
   falla si no encuentra esas etiquetas
 - **Presupuesto de peso de 12 KB gzip** en `build.mjs`: la página viaja antes de que el visitante tenga internet.
   Subirlo es un cambio explícito, no un efecto secundario
-- **Ramas `<tipo>/<descripción>`** (`feature`, `fix`, `refactor`, `hotfix`, `chore`, `docs`) y Conventional Commits,
-  como en HRZN-core. `main`, `develop` y `staging` quedan libres
+- **Ramas `<tipo>/<descripción>`** (`feature`, `fix`, `refactor`, `hotfix`, `chore`, `docs`) y Conventional Commits.
+  `main`, `develop` y `staging` quedan libres
 
 ### Descartado
 

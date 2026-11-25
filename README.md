@@ -62,7 +62,7 @@
 | **Task**                | Todas las tareas del repo                   | 3.x                                           |
 | **Go**                  | La API (con uno más viejo se descarga solo) | la de [`apps/api/go.mod`](apps/api/go.mod)    |
 | **Node.js**             | Compilar el portal y las herramientas de JS | 26+ (`engines` en `package.json`)             |
-| **pnpm**                | Dependencias de desarrollo                  | `packageManager` en `package.json` (corepack) |
+| **pnpm**                | Dependencias de desarrollo                  | `packageManager` en `package.json`           |
 | **Podman** o **Docker** | Contenedor                                  | con compose                                   |
 
 </div>
@@ -83,7 +83,9 @@
 </div>
 
 > [!NOTE]
-> pnpm llega con Node vía corepack: `corepack enable pnpm`. La versión exacta la fija `packageManager`
+> pnpm se instala aparte: Node dejó de traer Corepack desde la versión 25. Cualquier pnpm sirve
+> (`npm install -g pnpm`, `brew install pnpm` o `curl -fsSL https://get.pnpm.io/install.sh | sh -`): al correrlo
+> en el repo, pnpm lee `packageManager` y usa la versión fijada ahí
 >
 > Primera vez en el repo: `task install` (dependencias de JS, hooks de git y herramientas de Go en `.bin/`)
 
@@ -226,7 +228,7 @@ Detalle de cada chequeo y sus decisiones: [ci.md](docs/explanation/ops/ci.md).
 
 ### 🔍 Linting (`--max-warnings=0`)
 
-Oxlint usa la misma base estricta que HRZN-core con `--max-warnings=0`: **cualquier warning bloquea el commit y el
+Oxlint usa una base estricta con `--max-warnings=0`: **cualquier warning bloquea el commit y el
 CI**. El portal suma las reglas de [ES2020](docs/explanation/web/es2020.md), que bloquean APIs posteriores a 2020
 porque no existen en todos los teléfonos.
 
