@@ -237,26 +237,57 @@ porque no existen en todos los teléfonos.
 
 ## 📁 Estructura
 
-| Carpeta        | Qué es                                                               |
-| -------------- | -------------------------------------------------------------------- |
-| `apps/web/`    | Portal: HTML, CSS y JavaScript ES2020 sin dependencias               |
-| `apps/api/`    | API en Go: registro, sesiones y adaptador de OPNsense                |
-| `infra/local/` | Entorno local: OPNsense en una VM y AP `Byte` en el PC               |
-| `docker/`      | Imagen y compose                                                     |
-| `loadtest/`    | Pruebas de carga con k6                                              |
-| `tools/`       | Herramientas de Go (golangci-lint, govulncheck, task, actionlint)    |
-| `docs/`        | Documentación (Diátaxis): decisiones, referencia, guías y pendientes |
+```
+📁 byteservices-portal/
+├── 📁 apps/
+│   ├── 📁 web/                      🌐 portal: HTML, CSS y JavaScript ES2020, sin dependencias
+│   │   ├── 📁 src/
+│   │   │   ├── 📄 index.html        las dos pantallas: datos y "ya estás conectado"
+│   │   │   ├── 📄 app.mjs           todo el comportamiento (validación, envío, animaciones)
+│   │   │   ├── 📄 byte.css          estilos y tokens de la marca
+│   │   │   └── 📁 fonts/            fuentes recortadas a los caracteres del portal
+│   │   ├── 📁 fonts-src/            fuentes originales completas
+│   │   ├── 📄 build.mjs             arma dist/: un solo index.html con el CSS y el JS adentro
+│   │   ├── 📄 subset-fonts.mjs      recorta las fuentes (task web:fonts)
+│   │   └── 📄 design-system.html    muestrario de colores, tipografías y pantallas
+│   └── 📁 api/                      ⚙️ API en Go (binario byte-api)
+│       ├── 📄 main.go               arranque y configuración por variables de entorno
+│       ├── 📁 core/                 la lógica: registrar al visitante y abrir la sesión
+│       ├── 📁 adapters/
+│       │   ├── 📁 httpapi/          rutas HTTP (/api/send, /api/health) y la página
+│       │   ├── 📁 sqlite/           base de datos y migraciones
+│       │   └── 📁 router/           OPNsense (abre el acceso) o log (sin router)
+│       └── 📄 .golangci.yaml        reglas del linter de Go
+├── 📁 docker/                       🐳 Dockerfile y docker-compose.yaml
+├── 📁 infra/local/                  🧪 OPNsense en una VM + tu PC como AP "Byte" (task local:*)
+├── 📁 loadtest/                     📈 pruebas de carga con k6
+├── 📁 tools/                        🔧 herramientas de Go: golangci-lint, govulncheck, task, actionlint
+├── 📁 docs/                         📚 documentación (decisiones, referencia, guías, pendientes)
+├── 📁 .github/                      ♾️ workflow de CI y Dependabot
+├── 📁 .husky/                       🪝 hooks de git: pre-commit, commit-msg, pre-push, post-checkout
+├── 📄 Taskfile.yml                  todas las tareas del repo (task --list)
+├── 📄 package.json                  herramientas de JS (pnpm): oxlint, oxfmt, husky, commitlint
+├── 📄 .env.example                  plantilla del .env (task env la copia)
+├── 📄 .oxlintrc.json                reglas del linter de JS
+└── 📄 .oxfmtrc.json                 formato de JS, CSS, JSON, Markdown y YAML
+```
 
-Árbol completo: [estructura.md](docs/reference/setup/estructura.md).
+Más detalle de cada carpeta: [estructura.md](docs/reference/setup/estructura.md).
+
+### 🔀 Cómo funciona una visita
 
 ```mermaid
 flowchart LR
-  P[apps/web portal] -->|task web| D[apps/web/dist]
-  D --> A[apps/api Go]
-  A -->|OPNSENSE_URL| O[OPNsense captive portal]
-  A --> DB[(SQLite)]
-  L[infra/local] -.->|task local:up| O
+  T["📱 Teléfono<br/>se conecta al Wi-Fi"] -->|"1 · OPNsense lo manda<br/>al portal"| L["lighttpd de OPNsense<br/>:8000"]
+  L -->|"2 · nombre, cédula,<br/>empresa y teléfono"| A["⚙️ byte-api<br/>127.0.0.1:8085"]
+  A -->|"3 · guarda la visita"| DB[("🗄️ SQLite")]
+  A -->|"4 · abre 30 min<br/>de internet"| O["🛡️ API de OPNsense<br/>(portal cautivo)"]
 ```
+
+1. El teléfono entra a la red y OPNsense lo redirige a la página del portal, que sirve su `lighttpd`
+2. El visitante llena el formulario; `lighttpd` reenvía `/api/send` a la API de Byte
+3. La API guarda la visita en SQLite
+4. La API le pide a OPNsense que abra el acceso a esa IP por 30 minutos, y el teléfono ya navega
 
 ## 📚 Documentación
 
