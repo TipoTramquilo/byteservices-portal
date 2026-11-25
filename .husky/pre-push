@@ -17,5 +17,5 @@ if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "develop" ] && [ "$BRANCH" != "stag
   fi
 fi
 
-# FASE 2: Full quality gate (same checks as CI, except the image build)
+# FASE 2: Full quality gate (same checks as CI)
 task check

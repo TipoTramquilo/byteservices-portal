@@ -50,7 +50,7 @@ byteservices-portal/
 | `task up`        | Levanta el contenedor                                                                          |
 | `task down`      | Para el contenedor                                                                             |
 | `task logs`      | Sigue los logs                                                                                 |
-| `task check`     | Todo lo que valida CI salvo la imagen (lo corre el hook pre-push)                              |
+| `task check`     | Todo lo que valida CI (lo corre el hook pre-push)                                              |
 | `task fmt`       | Formatea JS, CSS, JSON, Markdown, YAML, Go y Terraform                                         |
 | `task secrets`   | Escanea el historial de git con trufflehog                                                     |
 | `task local:up`  | Entorno local con OPNsense en una VM (ver [levantar-local.md](/docs/how-to/levantar-local.md)) |

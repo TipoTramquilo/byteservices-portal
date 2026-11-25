@@ -111,7 +111,7 @@ tasks:
       - cd tools/actionlint && go build -o {{.BIN}}/ github.com/rhysd/actionlint/cmd/actionlint
 
   check:
-    desc: Todo lo que valida CI salvo la imagen (lo corre el hook pre-push)
+    desc: Todo lo que valida CI (lo corre el hook pre-push)
     cmds:
       - task: check:web
       - task: check:api
@@ -216,7 +216,8 @@ tasks:
           TOOL: terraform
           RUN: >-
             terraform fmt -check -recursive infra &&
-            terraform -chdir=infra/local/terraform init -backend=false -input=false >/dev/null &&
+            ([ -d infra/local/terraform/.terraform/providers ] ||
+            terraform -chdir=infra/local/terraform init -backend=false -input=false >/dev/null) &&
             terraform -chdir=infra/local/terraform validate
 
   secrets:

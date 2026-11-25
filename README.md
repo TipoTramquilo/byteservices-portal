@@ -2,7 +2,7 @@
 
 <p align="center">
   El visitante escribe nombre, cédula, empresa y teléfono y recibe 30 minutos de internet.<br />
-  El acceso lo abre OPNsense a través de la API de Byte. Sin código ni WhatsApp
+  El acceso lo abre OPNsense a través de la API de Byte.
 </p>
 
 <p align="center">
@@ -168,7 +168,7 @@ Guía: [levantar-local.md](docs/how-to/levantar-local.md).
 
 | Comando           | Descripción                                                                    |
 | :---------------- | :----------------------------------------------------------------------------- |
-| `task check`      | Todo lo que valida CI salvo la imagen (lo corre el `pre-push`)                 |
+| `task check`      | Todo lo que valida CI (lo corre el `pre-push`)                 |
 | `task check:web`  | Portal: lockfile al día, oxlint, oxfmt, ES2020 y build con presupuesto de peso |
 | `task check:api`  | API: módulos, formato, lint, tests con `-race` y govulncheck                   |
 | `task check:repo` | shellcheck, hadolint, actionlint y Terraform                                   |
@@ -188,27 +188,26 @@ No hay CD: el binario se compila y se copia a mano. Pasos en
 
 | Workflow          | Trigger            | Descripción                                                                |
 | ----------------- | ------------------ | -------------------------------------------------------------------------- |
-| `ci.yaml`         | PR y push a `main` | Quality gate: trufflehog, portal, API, repo, build de la imagen (sin push) |
+| `ci.yaml`         | PR y push a `main` | Quality gate: trufflehog, portal, API y repo                               |
 | `dependabot.yaml` | Semanal            | PRs de Go, pnpm, GitHub Actions y Terraform (minor/patch agrupados)        |
 
 Detalle de cada chequeo y sus decisiones: [ci.md](docs/explanation/ops/ci.md).
 
 ### 🧪 Estrategia de Tests
 
-| Capa           | Herramienta    | Qué valida                                                               | Velocidad   |
-| -------------- | -------------- | ------------------------------------------------------------------------ | ----------- |
-| **Pre-commit** | `lint-staged`  | oxfmt, oxlint `--fix`, es-check y gofmt sobre lo que está en stage       | Instantáneo |
-| **Commit-msg** | `commitlint`   | Conventional Commits                                                     | Instantáneo |
-| **Pre-push**   | `task check`   | Nombre de rama + todo el repo (portal, API, shell, workflows, Terraform) | Rápido      |
-| **CI (PR)**    | jobs paralelos | Todo lo anterior + imagen + rama y commits del PR                        | Lento       |
-| **CI (push)**  | jobs paralelos | Todo lo anterior + imagen                                                | Lento       |
+| Capa               | Herramienta    | Qué valida                                                               |
+| ------------------ | -------------- | ------------------------------------------------------------------------ |
+| **Pre-commit**     | `lint-staged`  | oxfmt, oxlint `--fix`, es-check y gofmt sobre lo que está en stage       |
+| **Commit-msg**     | `commitlint`   | Conventional Commits                                                     |
+| **Pre-push**       | `task check`   | Nombre de rama + todo el repo (portal, API, shell, workflows, Terraform) |
+| **CI (PR y push)** | jobs paralelos | Todo lo de `task check` (secretos, portal, API y repo)                   |
 
 #### Ramas y commits
 
 | Regla              | Formato                                                                            | Dónde se valida                                     |
 | ------------------ | ---------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Nombre de rama** | `<tipo>/<descripción>` con `feature`, `fix`, `refactor`, `hotfix`, `chore`, `docs` | `post-checkout` (avisa), `pre-push` y CI (bloquean) |
-| **Commits**        | `<tipo>(<alcance>): <descripción>`                                                 | `commit-msg` y CI                                   |
+| **Nombre de rama** | `<tipo>/<descripción>` con `feature`, `fix`, `refactor`, `hotfix`, `chore`, `docs` | `post-checkout` (avisa) y `pre-push` (bloquea)      |
+| **Commits**        | `<tipo>(<alcance>): <descripción>`                                                 | `commit-msg`                                        |
 
 `main`, `develop` y `staging` quedan libres del formato de rama.
 
@@ -240,17 +239,17 @@ porque no existen en todos los teléfonos.
 ```
 📁 byteservices-portal/
 ├── 📁 apps/
-│   ├── 📁 web/
+│   ├── 📁 web/                 🌐 portal
 │   │   ├── 📁 src/
 │   │   │   ├── 📄 index.html
 │   │   │   ├── 📄 app.mjs
 │   │   │   ├── 📄 byte.css
 │   │   │   └── 📁 fonts/
 │   │   ├── 📁 fonts-src/
-│   │   ├── 📄 build.mjs
-│   │   ├── 📄 subset-fonts.mjs
+│   │   ├── 📄 build.mjs        compila dist/
+│   │   ├── 📄 subset-fonts.mjs recorta fuentes
 │   │   └── 📄 design-system.html
-│   └── 📁 api/
+│   └── 📁 api/                 ⚙️ API en Go
 │       ├── 📄 main.go
 │       ├── 📁 core/
 │       └── 📁 adapters/

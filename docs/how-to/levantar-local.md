@@ -13,7 +13,7 @@ El código vive en [infra/local/](/infra/local/README.md).
 | `/dev/kvm` y módulo cargado                                | Sin esto, la VM no arranca                             | `ls -l /dev/kvm`                                             |
 | libvirt y QEMU, con tu usuario en `libvirt` y `kvm`        | Terraform crea la VM sin `sudo`                        | `id -nG \| grep -E 'libvirt\|kvm'`                           |
 | Pool `default` de libvirt activo                           | Ahí se guarda el disco de la VM                        | `virsh pool-list`                                            |
-| Terraform 1.17.1                                           | Versión fijada del proyecto                            | `terraform version`                                          |
+| Terraform 1.17.x                                           | Versión fijada del proyecto                            | `terraform version`                                          |
 | Task 3.54.0                                                | Ejecuta el Taskfile                                    | `task --version`                                             |
 | NetworkManager (`nmcli`)                                   | Crea los puentes y conecta la red                      | `nmcli -v`                                                   |
 | `hostapd`                                                  | Emite el Wi-Fi `Byte`                                  | `hostapd -v`                                                 |
