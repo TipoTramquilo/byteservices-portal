@@ -240,33 +240,33 @@ porque no existen en todos los teléfonos.
 ```
 📁 byteservices-portal/
 ├── 📁 apps/
-│   ├── 📁 web/                 🌐 portal
+│   ├── 📁 web/
 │   │   ├── 📁 src/
 │   │   │   ├── 📄 index.html
 │   │   │   ├── 📄 app.mjs
 │   │   │   ├── 📄 byte.css
 │   │   │   └── 📁 fonts/
 │   │   ├── 📁 fonts-src/
-│   │   ├── 📄 build.mjs        compila dist/
-│   │   ├── 📄 subset-fonts.mjs recorta fuentes
+│   │   ├── 📄 build.mjs
+│   │   ├── 📄 subset-fonts.mjs
 │   │   └── 📄 design-system.html
-│   └── 📁 api/                 ⚙️ API en Go
+│   └── 📁 api/
 │       ├── 📄 main.go
-│       ├── 📁 core/            lógica
+│       ├── 📁 core/
 │       └── 📁 adapters/
 │           ├── 📁 httpapi/
 │           ├── 📁 sqlite/
-│           └── 📁 router/      OPNsense
-├── 📁 docker/                  🐳 imagen y compose
-├── 📁 infra/local/             🧪 OPNsense en VM
-├── 📁 loadtest/                📈 k6
-├── 📁 tools/                   🔧 herramientas de Go
-├── 📁 docs/                    📚 documentación
-├── 📁 .github/                 ♾️ CI y Dependabot
-├── 📁 .husky/                  🪝 hooks de git
-├── 📄 Taskfile.yml             tareas
-├── 📄 package.json             herramientas de JS
-└── 📄 .env.example             plantilla del .env
+│           └── 📁 router/
+├── 📁 docker/
+├── 📁 infra/local/
+├── 📁 loadtest/
+├── 📁 tools/
+├── 📁 docs/
+├── 📁 .github/
+├── 📁 .husky/
+├── 📄 Taskfile.yml
+├── 📄 package.json
+└── 📄 .env.example
 ```
 
 Más detalle de cada carpeta: [estructura.md](docs/reference/setup/estructura.md).
