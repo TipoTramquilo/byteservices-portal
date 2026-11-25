@@ -1,0 +1,123 @@
+# Entorno local del portal: OPNsense en una VM + AP Byte en el host.
+# Uso: `task up` (primera vez), `task down` (al terminar). Ver `task --list`.
+version: '3'
+
+# Lee .env local si existe (ver .env.example); si no, usa los valores por defecto
+dotenv: ['.env']
+
+vars:
+  IMAGE_BZ2:
+    sh: grep '^IMAGE_BZ2=' image.env | cut -d= -f2
+  IMAGE_URL:
+    sh: grep '^IMAGE_URL=' image.env | cut -d= -f2
+  IMAGE_SHA256:
+    sh: grep '^IMAGE_SHA256=' image.env | cut -d= -f2
+  CACHE: '{{.HOME}}/.cache/byte-local/images'
+  IMG: '{{trimSuffix ".bz2" .IMAGE_BZ2}}'
+  WAN_NIC: '{{env "WAN_NIC" | default "enp5s0"}}'
+  WIFI_NIC: '{{env "WIFI_NIC" | default "wlp0s20f3"}}'
+  WIFI_CON: '{{env "WIFI_CON" | default ""}}'
+  SSID: '{{env "SSID" | default "Byte"}}'
+  TF_DIR: terraform
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  env:
+    desc: "Crea .env desde .env.example si todavía no existe"
+    status:
+      - test -f .env
+    cmds:
+      - cp .env.example .env
+      - echo "Creado .env desde .env.example (ajusta WAN_NIC, WIFI_NIC y SSID si hace falta)"
+
+  image:
+    desc: "Descarga y verifica la imagen oficial de OPNsense (una vez por máquina)"
+    cmds:
+      - mkdir -p "{{.CACHE}}"
+      - test -f "{{.CACHE}}/{{.IMAGE_BZ2}}" || curl -fL --retry 3 -o "{{.CACHE}}/{{.IMAGE_BZ2}}" "{{.IMAGE_URL}}"
+      - echo "{{.IMAGE_SHA256}}  {{.CACHE}}/{{.IMAGE_BZ2}}" | sha256sum -c -
+      - test -f "{{.CACHE}}/{{.IMG}}" || bunzip2 -k -c "{{.CACHE}}/{{.IMAGE_BZ2}}" > "{{.CACHE}}/{{.IMG}}"
+    status:
+      - test -f "{{.CACHE}}/{{.IMG}}"
+
+  host:up:
+    desc: "Puente cableado (WAN) + AP Byte en br-lan (requiere sudo; corta el Wi-Fi si WIFI_CON está definido)"
+    cmds:
+      - |
+        if ! nmcli -t -f NAME con show | grep -qx br0; then
+          sudo nmcli con add type bridge ifname br0 con-name br0 ipv4.method auto
+          sudo nmcli con add type bridge-slave ifname {{.WAN_NIC}} master br0 con-name br0-{{.WAN_NIC}}
+          sudo nmcli con modify netplan-{{.WAN_NIC}} connection.autoconnect no 2>/dev/null || true
+          sudo nmcli con up br0
+        fi
+      - |
+        if ! nmcli -t -f NAME con show | grep -qx br-lan; then
+          sudo nmcli con add type bridge ifname br-lan con-name br-lan ipv4.method disabled ipv6.method disabled
+        fi
+      - |
+        sudo mkdir -p /etc/hostapd
+        sudo tee /etc/hostapd/byte-local.conf >/dev/null <<EOC
+        interface={{.WIFI_NIC}}
+        bridge=br-lan
+        driver=nl80211
+        ssid={{.SSID}}
+        hw_mode=g
+        channel=6
+        country_code=VE
+        wpa=0
+        EOC
+      - |
+        if [ -n "{{.WIFI_CON}}" ]; then
+          sudo nmcli con modify "{{.WIFI_CON}}" connection.autoconnect no
+          sudo nmcli con down "{{.WIFI_CON}}" || true
+        fi
+      - sudo pgrep -x hostapd >/dev/null || sudo hostapd -B /etc/hostapd/byte-local.conf
+
+  host:down:
+    desc: "Deshace el AP y el puente de br-lan; devuelve la cableada a NetworkManager"
+    cmds:
+      - sudo pkill -x hostapd || true
+      - nmcli -t -f NAME con show | grep -qx br-lan && sudo nmcli con delete br-lan || true
+      - nmcli -t -f NAME con show | grep -qx br0 && sudo nmcli con delete br0 br0-{{.WAN_NIC}} || true
+      - sudo nmcli con modify netplan-{{.WAN_NIC}} connection.autoconnect yes 2>/dev/null || true
+      - sudo nmcli con up netplan-{{.WAN_NIC}} 2>/dev/null || true
+      - sudo rm -f /etc/hostapd/byte-local.conf
+
+  tf:init:
+    dir: '{{.TF_DIR}}'
+    cmds:
+      - terraform init -input=false
+
+  tf:plan:
+    dir: '{{.TF_DIR}}'
+    deps: [tf:init]
+    cmds:
+      - terraform plan -var image_path="{{.CACHE}}/{{.IMG}}"
+
+  tf:apply:
+    dir: '{{.TF_DIR}}'
+    deps: [tf:init]
+    cmds:
+      - terraform apply -var image_path="{{.CACHE}}/{{.IMG}}"
+
+  tf:destroy:
+    dir: '{{.TF_DIR}}'
+    cmds:
+      - terraform destroy -var image_path="{{.CACHE}}/{{.IMG}}"
+
+  up:
+    desc: "Todo: imagen, host y VM"
+    cmds:
+      - task: env
+      - task: image
+      - task: host:up
+      - task: tf:apply
+
+  down:
+    desc: "Destruye la VM y deshace el host"
+    cmds:
+      - task: tf:destroy
+      - task: host:down

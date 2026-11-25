@@ -13,3 +13,12 @@ apps/web/dist/
 loadtest/results/
 
 .env
+
+# Entorno local (infra/local): estado de Terraform y caché local
+infra/local/terraform/.terraform/
+infra/local/terraform/*.tfstate
+infra/local/terraform/*.tfstate.*
+infra/local/terraform/*.tfvars
+
+# Entorno local: copia local de variables
+infra/local/.env

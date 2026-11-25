@@ -30,6 +30,7 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 ## How-to (pasos para lograr algo)
 
 - [correr-el-proyecto.md](/docs/how-to/correr-el-proyecto.md) - API en el host o en contenedor, y compilar para OPNsense
+- [levantar-local.md](/docs/how-to/levantar-local.md) - OPNsense en una VM y el AP `Byte` en el PC, para probar en un teléfono
 - [diagnosticar-portal.md](/docs/how-to/diagnosticar-portal.md) - errores reales (500, 403, TLS, Samsung, DNS y shell) con su causa y solución
 - [agregar-migracion.md](/docs/how-to/agregar-migracion.md) - agregar una migración de SQLite
 - [actualizar-openapi.md](/docs/how-to/actualizar-openapi.md) - cambiar el contrato OpenAPI
