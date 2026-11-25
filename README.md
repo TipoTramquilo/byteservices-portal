@@ -182,8 +182,6 @@ No hay CD: el binario se compila y se copia a mano. Pasos en
 [correr-el-proyecto.md](docs/how-to/correr-el-proyecto.md#compilar-para-opnsense) y configuración del equipo en
 [opnsense.md](docs/reference/setup/opnsense.md).
 
-<div align="center">
-
 ## ♾️ CI
 
 ### ❯❯❯❯ Pipeline
@@ -194,8 +192,6 @@ No hay CD: el binario se compila y se copia a mano. Pasos en
 | `dependabot.yaml` | Semanal            | PRs de Go, pnpm, GitHub Actions y Terraform (minor/patch agrupados)        |
 
 Detalle de cada chequeo y sus decisiones: [ci.md](docs/explanation/ops/ci.md).
-
-</div>
 
 ### 🧪 Estrategia de Tests
 
