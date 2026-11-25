@@ -277,6 +277,9 @@ Más detalle de cada carpeta: [estructura.md](docs/reference/setup/estructura.md
 ### 🔀 Cómo funciona una visita
 
 ```mermaid
+---
+title: Recorrido de una visita al portal
+---
 flowchart LR
   T["📱 Teléfono<br/>se conecta al Wi-Fi"] -->|"1 · OPNsense lo manda<br/>al portal"| L["lighttpd de OPNsense<br/>:8000"]
   L -->|"2 · nombre, cédula,<br/>empresa y teléfono"| A["⚙️ byte-api<br/>127.0.0.1:8085"]
