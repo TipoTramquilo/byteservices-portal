@@ -7,14 +7,14 @@ comprobaciones se hacen en la shell de OPNsense (`tcsh`, ver [opnsense.md](/docs
 
 ## Errores de la API
 
-| Síntoma en el navegador | Causa comprobada | Cómo se comprobó | Solución |
-| --- | --- | --- | --- |
-| `500` en `POST /api/send` | La API escuchaba en `:8080`; `lighttpd` reenvía `/api` a `127.0.0.1:8085` | `listening on :8080` en el log | Arrancar con `ADDR=127.0.0.1:8085` |
-| `500` y log con `certificate is valid for fwportal.byteservices.net, not wifi.byteservices.net` | `OPNSENSE_SERVER_NAME` no coincidía con el certificado de la GUI | Log de `getArp` | `OPNSENSE_SERVER_NAME=fwportal.byteservices.net` |
-| Log con `falta certificado CA local` | Se creía que hacía falta un PEM de CA | El certificado de la GUI es de Let's Encrypt (`openssl s_client`) | No hace falta `OPNSENSE_CA_FILE`: el sistema ya confía en Let's Encrypt |
-| `getArp: HTTP 403` | La API key no tiene el privilegio de diagnóstico ARP | Log del 20/11 entre 21:52 y 21:58 | No vuelve a aparecer desde el reinicio del 24/11; confirmar en *System → Access → Users* |
-| Sesión autorizada para `127.0.0.1` y sin internet | `lighttpd` reenvía desde su propio proceso; la API tomaba `127.0.0.1` como IP | Log `send desde 127.0.0.1` | La API toma la IP real de `X-Forwarded-For` cuando la conexión viene de loopback |
-| Log con `sesión de 127.0.0.1 en estado ""` | Consecuencia de lo anterior: OPNsense recibía `127.0.0.1` | Log del 24/11 15:32 a 15:34 | Corregido con el cambio de IP; no aparece en los envíos posteriores |
+| Síntoma en el navegador                                                                         | Causa comprobada                                                              | Cómo se comprobó                                                  | Solución                                                                                 |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `500` en `POST /api/send`                                                                       | La API escuchaba en `:8080`; `lighttpd` reenvía `/api` a `127.0.0.1:8085`     | `listening on :8080` en el log                                    | Arrancar con `ADDR=127.0.0.1:8085`                                                       |
+| `500` y log con `certificate is valid for fwportal.byteservices.net, not wifi.byteservices.net` | `OPNSENSE_SERVER_NAME` no coincidía con el certificado de la GUI              | Log de `getArp`                                                   | `OPNSENSE_SERVER_NAME=fwportal.byteservices.net`                                         |
+| Log con `falta certificado CA local`                                                            | Se creía que hacía falta un PEM de CA                                         | El certificado de la GUI es de Let's Encrypt (`openssl s_client`) | No hace falta `OPNSENSE_CA_FILE`: el sistema ya confía en Let's Encrypt                  |
+| `getArp: HTTP 403`                                                                              | La API key no tiene el privilegio de diagnóstico ARP                          | Log del 20/11 entre 21:52 y 21:58                                 | No vuelve a aparecer desde el reinicio del 24/11; confirmar en _System → Access → Users_ |
+| Sesión autorizada para `127.0.0.1` y sin internet                                               | `lighttpd` reenvía desde su propio proceso; la API tomaba `127.0.0.1` como IP | Log `send desde 127.0.0.1`                                        | La API toma la IP real de `X-Forwarded-For` cuando la conexión viene de loopback         |
+| Log con `sesión de 127.0.0.1 en estado ""`                                                      | Consecuencia de lo anterior: OPNsense recibía `127.0.0.1`                     | Log del 24/11 15:32 a 15:34                                       | Corregido con el cambio de IP; no aparece en los envíos posteriores                      |
 
 Para ver la IP que llega a la API:
 
@@ -26,11 +26,11 @@ Cada envío registra `send desde <IP> (peer=... X-Real-Ip=... X-Forwarded-For=..
 
 ## Errores del dispositivo
 
-| Dispositivo | Síntoma | Estado |
-| --- | --- | --- |
-| iPhone | Abre el portal al conectarse | Funciona |
-| Pixel | Abre el portal al conectarse | Funciona, también sin el override de `gstatic` (24/11/2026) |
-| Samsung | Dice "sin conexión", ofrece conectarse, al tocar no abre el portal | **Resuelto** el 24/11/2026: conecta después de quitar el override de `gstatic` |
+| Dispositivo | Síntoma                                                            | Estado                                                                         |
+| ----------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| iPhone      | Abre el portal al conectarse                                       | Funciona                                                                       |
+| Pixel       | Abre el portal al conectarse                                       | Funciona, también sin el override de `gstatic` (24/11/2026)                    |
+| Samsung     | Dice "sin conexión", ofrece conectarse, al tocar no abre el portal | **Resuelto** el 24/11/2026: conecta después de quitar el override de `gstatic` |
 
 Lo que se comprobó en el Samsung:
 
@@ -61,7 +61,7 @@ Procedimiento para repetir la prueba en un dispositivo nuevo:
 - **`unbound-control` no funciona en el equipo** (`control-enable is 'no'`). No hay forma de vaciar la caché desde la shell.
 - **Después de borrar un override, la respuesta vieja sigue por su TTL.** Un `drill` dio `172.16.0.1` con TTL 3600 justo después de
   borrarlo; al repetir dio la IP pública con TTL 300. Esperar el TTL o reiniciar Unbound desde la GUI
-  (*Services → Unbound DNS → General*).
+  (_Services → Unbound DNS → General_).
 
 Comprobación:
 
@@ -73,7 +73,7 @@ La respuesta debe ser una IP pública si el override ya no existe.
 
 ## Sesiones que no se cortan o no aparecen
 
-- La columna **End** de *Services → Captive Portal → Sessions* es la **última actividad**, no el vencimiento: sube mientras
+- La columna **End** de _Services → Captive Portal → Sessions_ es la **última actividad**, no el vencimiento: sube mientras
   el dispositivo navega. Una sesión activa puede verse con fin de 3 minutos después del inicio.
 - Para confirmar la duración, la zona debe tener `hardtimeout 30` e `idletimeout 0` (ver [opnsense.md](/docs/reference/setup/opnsense.md)).
   Una sesión nueva debe cortarse 30 minutos después de su inicio.
@@ -88,10 +88,10 @@ Si no sale nada, el dispositivo no tiene sesión. La clave se lee del archivo de
 
 ## Errores de shell en OPNsense
 
-| Mensaje | Causa | Solución |
-| --- | --- | --- |
-| `Illegal variable name.` | `procstat -e` mezcla el PID con las variables | No usar `procstat` para recuperar el entorno; usar el archivo de variables |
-| `Ambiguous output redirect.` | `tcsh` no acepta `2>/dev/null` con comodines | Envolver en `sh -c '...'` |
-| `Bad -c option` | Comillas sin cerrar al pegar el comando | Pegar el comando completo en una línea |
-| `Unmatched '''.` | Lo mismo: el pegado cortó la línea | Pegar de nuevo |
-| `Ambiguous output redirect.` con `$(...)` | `tcsh` no soporta `$(...)` | Usar `sh -c` |
+| Mensaje                                   | Causa                                         | Solución                                                                   |
+| ----------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------- |
+| `Illegal variable name.`                  | `procstat -e` mezcla el PID con las variables | No usar `procstat` para recuperar el entorno; usar el archivo de variables |
+| `Ambiguous output redirect.`              | `tcsh` no acepta `2>/dev/null` con comodines  | Envolver en `sh -c '...'`                                                  |
+| `Bad -c option`                           | Comillas sin cerrar al pegar el comando       | Pegar el comando completo en una línea                                     |
+| `Unmatched '''.`                          | Lo mismo: el pegado cortó la línea            | Pegar de nuevo                                                             |
+| `Ambiguous output redirect.` con `$(...)` | `tcsh` no soporta `$(...)`                    | Usar `sh -c`                                                               |

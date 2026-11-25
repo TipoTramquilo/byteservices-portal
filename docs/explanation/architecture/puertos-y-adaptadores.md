@@ -26,9 +26,9 @@ apps/api/
 
 Regla de dependencias: `core` no importa nada de `adapters`; los adaptadores importan `core`.
 
-| Puerto   | Definición                                            | Adaptadores                                              |
-| -------- | ----------------------------------------------------- | -------------------------------------------------------- |
-| `Store`  | [store.go](/apps/api/core/store.go)                   | [sqlite](/apps/api/adapters/sqlite/store.go)             |
+| Puerto   | Definición                                                                  | Adaptadores                                                                                |
+| -------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `Store`  | [store.go](/apps/api/core/store.go)                                         | [sqlite](/apps/api/adapters/sqlite/store.go)                                               |
 | `Router` | [router.go](/apps/api/core/router.go): `MAC(ip)` y `GrantAccess(ip, until)` | [opnsense](/apps/api/adapters/router/opnsense.go), [log](/apps/api/adapters/router/log.go) |
 
 Sin WhatsApp: el código de verificación y su puerto `Sender` se retiraron.

@@ -1,0 +1,6 @@
+# Lint del contrato OpenAPI (docs/reference/api/openapi.yaml): CI y `make check`
+extends:
+  - recommended
+rules:
+  # El servidor declarado es el de desarrollo (`make api`): localhost es correcto
+  no-server-example.com: off

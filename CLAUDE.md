@@ -27,6 +27,7 @@ There is no lint or test setup. Verify changes by opening the page in a browser 
 ## Layout
 
 Web (`apps/web/`):
+
 - `src/index.html` — the portal markup: two steps (`#s-datos`, `#s-listo`) plus the terms sheet. The network name shown is "Byte Invitados", replaced by the API from `NETWORK_NAME`.
 - `src/app.js` — all behaviour, one ES5 IIFE (includes the `window.BYTE_PORTAL` contract comment).
 - `src/byte.css` — all styles/tokens. Also linked by `design-system.html`.
@@ -35,9 +36,11 @@ Web (`apps/web/`):
 - `build.mjs` — hand-rolled minifier: inlines `byte.css` and `app.js` into the HTML (it replaces the exact strings `<link rel="stylesheet" href="byte.css">` and `<script src="app.js"></script>` — keep both tags verbatim), minifies inline `<style>`/`<script>` separately, writes `dist/`, prints raw and gzip size. `dist/` is not committed (gitignored): the Dockerfile builds it, and `make web` rebuilds it for local runs (`make api` serves it).
 
 API (`apps/api/`):
+
 - Go API (`/api/send`, `/api/health`) that also serves `apps/web/dist/`. Ports and adapters: `core/` holds the logic and its ports (`Store`, `Router`); `adapters/` has `httpapi`, `sqlite` (plain SQL; numbered migrations in `migrations/`, embedded and applied on startup via `PRAGMA user_version`; never edit a published one, add the next) and `router` (`opnsense`, the OPNsense REST API, or `log` when `OPNSENSE_URL` is unset). Dependency: `modernc.org/sqlite`. Identifiers in English, comments in Spanish. Operational detail for the real equipment: `docs/reference/setup/opnsense.md`.
 
 Root:
+
 - `docs/` — documentation (Diátaxis); `docs/reference/api/openapi.yaml` is the API contract.
 - `docker/` — `Dockerfile` (build context is the repo root: stage `node` compiles the portal with `build.mjs`, stage `golang` builds the API, runtime `scratch`) and `docker-compose.yaml`.
 - `brand/` — brand reference material (Manual Byte PDF, fonts, logos). `Manual Byte.pdf` (Rev. 2) is the binding brand authority; byteservices.net is not.

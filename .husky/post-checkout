@@ -1,0 +1,11 @@
+# Después de cada checkout; $3 = 1 cuando fue un cambio de rama (no de archivos)
+[ "$3" = "1" ] || exit 0
+. "$(dirname "$0")/branch-name.sh"
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if branch_ok "$BRANCH"; then
+  exit 0
+fi
+echo ""
+echo "⚠ Nombre de rama inválido: '$BRANCH' (el pre-push no la dejará subir)"
+branch_help
+echo ""

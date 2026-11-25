@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"net/http"
@@ -44,7 +45,7 @@ func main() {
 	if url := os.Getenv("OPNSENSE_URL"); url != "" {
 		var ca []byte
 		if f := os.Getenv("OPNSENSE_CA_FILE"); f != "" {
-			if ca, err = os.ReadFile(f); err != nil {
+			if ca, err = os.ReadFile(f); err != nil { //nolint:gosec // G304: OPNSENSE_CA_FILE lo fija el operador
 				log.Fatal("OPNSENSE_CA_FILE: ", err)
 			}
 		}
@@ -79,8 +80,18 @@ func main() {
 // health es el healthcheck del contenedor: la imagen distroless no tiene shell ni curl
 func health() {
 	_, port, _ := net.SplitHostPort(env("ADDR", ":8080"))
-	res, err := (&http.Client{Timeout: 3 * time.Second}).Get("http://127.0.0.1:" + port + "/api/health")
-	if err != nil || res.StatusCode/100 != 2 {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://127.0.0.1:"+port+"/api/health", nil)
+	if err != nil {
+		os.Exit(1)
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		os.Exit(1)
+	}
+	_ = res.Body.Close()
+	if res.StatusCode/100 != 2 {
 		os.Exit(1)
 	}
 	os.Exit(0)

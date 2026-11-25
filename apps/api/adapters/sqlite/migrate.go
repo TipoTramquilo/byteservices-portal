@@ -52,7 +52,7 @@ func apply(db *sql.DB, version int, body string) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }() // tras Commit devuelve ErrTxDone: no hay nada que hacer
 	if _, err := tx.Exec(body); err != nil {
 		return err
 	}

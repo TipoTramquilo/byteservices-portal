@@ -38,13 +38,13 @@ Dos tablas y dos escrituras (`SaveVerified` y `SaveAccess`). Un ORM agregaría u
 SQLite ignora los largos tipo `VARCHAR(100)`: las reglas van como `CHECK` y las tablas son `STRICT`, que rechazan
 tipos equivocados en vez de convertirlos.
 
-| Dato       | Estándar           | Regla                                                              |
-| ---------- | ------------------ | ------------------------------------------------------------------ |
-| Teléfono   | E.164              | `+`, sin 0 inicial, hasta 15 dígitos                               |
-| IP         | IPv4 o IPv6        | La normaliza la API (`netip`)                                      |
-| MAC        | EUI-48             | `AA:BB:CC:DD:EE:FF`, mayúsculas con `:`; NULL si el router no la da |
-| Fecha-hora | ISO 8601 UTC       | `2026-11-24T18:03:00Z`; `datetime()` no puede dar NULL             |
-| Día        | ISO 8601           | `2026-11-24`, en la zona horaria del portal                        |
+| Dato       | Estándar     | Regla                                                               |
+| ---------- | ------------ | ------------------------------------------------------------------- |
+| Teléfono   | E.164        | `+`, sin 0 inicial, hasta 15 dígitos                                |
+| IP         | IPv4 o IPv6  | La normaliza la API (`netip`)                                       |
+| MAC        | EUI-48       | `AA:BB:CC:DD:EE:FF`, mayúsculas con `:`; NULL si el router no la da |
+| Fecha-hora | ISO 8601 UTC | `2026-11-24T18:03:00Z`; `datetime()` no puede dar NULL              |
+| Día        | ISO 8601     | `2026-11-24`, en la zona horaria del portal                         |
 
 SQLite no tiene tipo fecha: se eligió texto ISO 8601 sobre enteros Unix, porque se lee directo en el registro. El núcleo valida los mismos formatos antes de llegar a la base, así los errores salen como `400`.
 

@@ -32,15 +32,15 @@ cautive-portal/
 
 ## `Makefile`
 
-| Comando        | Qué hace                                                    |
-| -------------- | ----------------------------------------------------------- |
-| `make web`     | Compila `apps/web/dist`                                     |
-| `make web-dev` | Sirve `apps/web/src` en `:8000` (modo demo, sin API)        |
+| Comando        | Qué hace                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| `make web`     | Compila `apps/web/dist`                                                                  |
+| `make web-dev` | Sirve `apps/web/src` en `:8000` (modo demo, sin API)                                     |
 | `make fonts`   | Recorta las fuentes con `subset-font` vía `npx`; volver a correrlo si cambian los textos |
-| `make api`     | Compila el portal y levanta la API en `:8080`               |
-| `make build`   | Construye la imagen                                         |
-| `make up`      | Levanta el contenedor                                       |
-| `make down`    | Para el contenedor                                          |
-| `make logs`    | Sigue los logs                                              |
+| `make api`     | Compila el portal y levanta la API en `:8080`                                            |
+| `make build`   | Construye la imagen                                                                      |
+| `make up`      | Levanta el contenedor                                                                    |
+| `make down`    | Para el contenedor                                                                       |
+| `make logs`    | Sigue los logs                                                                           |
 
 Un solo `.gitignore` en la raíz. El `.dockerignore` deja pasar solo `apps/api/`, `apps/web/build.mjs` y `apps/web/src/`.

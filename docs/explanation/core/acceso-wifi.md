@@ -35,16 +35,16 @@ La lógica vive en [service.go](/apps/api/core/service.go) (función `Send`) y e
 
 ## Límites
 
-| Límite                    | Valor   | Dónde                                                     |
-| ------------------------- | ------- | --------------------------------------------------------- |
-| Duración de la sesión     | 30 min  | `SessionTime` (`apps/api/main.go`)                        |
-| Envíos por teléfono       | sin límite | `POST /api/send`                                       |
-| Zona del portal           | `OPNSENSE_ZONE` | OPNsense: Services → Captive Portal                 |
+| Límite                | Valor           | Dónde                               |
+| --------------------- | --------------- | ----------------------------------- |
+| Duración de la sesión | 30 min          | `SessionTime` (`apps/api/main.go`)  |
+| Envíos por teléfono   | sin límite      | `POST /api/send`                    |
+| Zona del portal       | `OPNSENSE_ZONE` | OPNsense: Services → Captive Portal |
 
 ## Riesgos asumidos
 
 - **Duración en OPNsense:** la zona tiene `hardtimeout 30` e `idletimeout 0` (verificado en `fwportal`). La columna
-  *End* de *Sessions* es la última actividad, no el vencimiento: la prueba es ver si una sesión nueva se corta a los 30 minutos.
+  _End_ de _Sessions_ es la última actividad, no el vencimiento: la prueba es ver si una sesión nueva se corta a los 30 minutos.
 - **Detección en Samsung:** el override DNS de `gstatic` impedía que el Samsung abriera el portal; se quitó el 24/11 y
   conectó, y el Pixel también abre el portal sin él. Ver [diagnosticar-portal.md](/docs/how-to/diagnosticar-portal.md).
 - **Número ajeno:** quien escriba el teléfono de otra persona queda con acceso; el sistema no verifica la identidad.

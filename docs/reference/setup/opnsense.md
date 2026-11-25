@@ -7,21 +7,21 @@ Lo que tiene que estar configurado en el equipo para que la API funcione. Los er
 
 ## Red
 
-| Elemento | Valor |
-| --- | --- |
-| LAN de visitantes (`vtnet1`) | `172.16.0.1/22` |
-| WAN (`vtnet0`) | DHCP |
-| Certificado de la GUI | Let's Encrypt, para `fwportal.byteservices.net` |
+| Elemento                         | Valor                                                        |
+| -------------------------------- | ------------------------------------------------------------ |
+| LAN de visitantes (`vtnet1`)     | `172.16.0.1/22`                                              |
+| WAN (`vtnet0`)                   | DHCP                                                         |
+| Certificado de la GUI            | Let's Encrypt, para `fwportal.byteservices.net`              |
 | Certificado del portal (`:8000`) | Let's Encrypt, SAN `wifi.byteservices.net`, vence 18/02/2027 |
 
 ## Portal cautivo
 
 **Services → Captive Portal → (zona)**
 
-| Campo | Valor | Por qué |
-| --- | --- | --- |
-| Hard timeout | `30` | Corta cada sesión a los 30 minutos |
-| Idle timeout | `0` | Sin corte por inactividad |
+| Campo        | Valor | Por qué                            |
+| ------------ | ----- | ---------------------------------- |
+| Hard timeout | `30`  | Corta cada sesión a los 30 minutos |
+| Idle timeout | `0`   | Sin corte por inactividad          |
 
 Verificado con la API: `GET /api/captiveportal/settings/get` devuelve `"hardtimeout":"30"` y `"idletimeout":"0"`.
 
@@ -35,12 +35,12 @@ la cabecera `X-Real-Ip`; la API además lee `X-Forwarded-For`.
 
 **Services → Unbound DNS → Overrides**
 
-| Host | Dominio | IP | Estado |
-| --- | --- | --- | --- |
-| `wifi` | `byteservices.net` | `172.16.0.4` | Activo: el portal la necesita |
-| `captive` | `apple.com` | `172.16.0.1` | Activo: detección de iPhone |
-| `www` | `msftconnecttest.com` | `172.16.0.1` | Activo: detección de Windows |
-| `connectivitycheck` | `gstatic.com` | — | **Borrado el 24/11/2026**: devolvía `172.16.0.1` y el Samsung no disparaba la detección (era `172.16.0.1`) |
+| Host                | Dominio               | IP           | Estado                                                                                                     |
+| ------------------- | --------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| `wifi`              | `byteservices.net`    | `172.16.0.4` | Activo: el portal la necesita                                                                              |
+| `captive`           | `apple.com`           | `172.16.0.1` | Activo: detección de iPhone                                                                                |
+| `www`               | `msftconnecttest.com` | `172.16.0.1` | Activo: detección de Windows                                                                               |
+| `connectivitycheck` | `gstatic.com`         | —            | **Borrado el 24/11/2026**: devolvía `172.16.0.1` y el Samsung no disparaba la detección (era `172.16.0.1`) |
 
 Si se vuelve a crear el de `gstatic.com`, hay que recordar que devuelve una IP privada y que los Samsung con Android
 reciente no disparan la detección con ella (ver [diagnosticar-portal.md](/docs/how-to/diagnosticar-portal.md)).
@@ -49,7 +49,7 @@ reciente no disparan la detección con ella (ver [diagnosticar-portal.md](/docs/
 
 - Archivo: `/usr/local/etc/byte/apikey.env`, permisos `600`, dueño `root`. Contiene `OPNSENSE_KEY` y `OPNSENSE_SECRET`
 - El usuario de la key necesita permisos para **diagnóstico ARP** (`getArp`) y **captive portal** (session connect/list/disconnect)
-- Si aparece `HTTP 403` en el log, revisar *System → Access → Users* del usuario de la key
+- Si aparece `HTTP 403` en el log, revisar _System → Access → Users_ del usuario de la key
 
 ## Arrancar la API
 
@@ -65,10 +65,10 @@ Pendiente: que el arranque sobreviva a un reinicio de OPNsense (servicio `rc.d` 
 
 ## Log y base
 
-| Qué | Dónde |
-| --- | --- |
-| Log de la API | `/var/log/byte-api.log` |
-| Base SQLite | `/var/db/byte/portal.db` |
+| Qué                    | Dónde                        |
+| ---------------------- | ---------------------------- |
+| Log de la API          | `/var/log/byte-api.log`      |
+| Base SQLite            | `/var/db/byte/portal.db`     |
 | Certificado del portal | `/var/etc/cert-cp-zone0.pem` |
 
 Consultas útiles:

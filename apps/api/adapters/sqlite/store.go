@@ -53,8 +53,6 @@ func (s *Store) Close() error { return errors.Join(s.rdb.Close(), s.db.Close()) 
 // Las horas se guardan en ISO 8601 UTC ('2026-11-19T18:03:00Z'), como exige el esquema
 func iso(t time.Time) string { return t.UTC().Format(time.RFC3339) }
 
-func parseISO(v string) (time.Time, error) { return time.Parse(time.RFC3339, v) }
-
 func (s *Store) SaveVerified(ctx context.Context, v core.Visitor, at time.Time) error {
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO verified (phone, name, id_number, company, verified_at) VALUES (?, ?, ?, ?, ?)

@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  // HTML fuera: build.mjs reemplaza literal <link rel="stylesheet" href="byte.css"> y
+  // <script src="app.js"></script>, y el formateador los convierte en <link ... />.
+  // El resto es material de terceros o generado
+  "ignorePatterns": [
+    "*.html",
+    ".claude/**",
+    ".impeccable/**",
+    "brand/**",
+    "apps/web/fonts-src/**",
+    "pnpm-lock.yaml"
+  ]
+}

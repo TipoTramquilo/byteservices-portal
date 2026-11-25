@@ -1,0 +1,48 @@
+# golangci-lint v2 (CI: job `go` en .github/workflows/ci.yaml; local: `make lint`)
+# `standard` (govet, errcheck, staticcheck, ineffassign, unused) más los que atrapan bugs
+# reales en una API expuesta a cualquier visitante del Wi-Fi: seguridad, cuerpos HTTP sin
+# cerrar, contexto perdido en peticiones, SQL sin cerrar y errores mal comparados
+version: '2'
+
+linters:
+  default: standard
+  enable:
+    - bodyclose # respuestas de la API de OPNsense sin Body.Close()
+    - contextcheck # funciones que pierden el contexto de la petición
+    - copyloopvar
+    - durationcheck # time.Duration * time.Duration
+    - errorlint # comparar errores con == en vez de errors.Is/As
+    - gosec # seguridad: TLS, inyección, permisos de archivos
+    - misspell
+    - nilerr # devolver nil cuando hay un error
+    - noctx # peticiones HTTP sin contexto (no se cancelan)
+    - rowserrcheck # rows.Err() sin revisar
+    - sqlclosecheck # rows/stmt de SQLite sin cerrar
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - wastedassign
+  settings:
+    misspell:
+      locale: US
+      # Los comentarios están en español: misspell solo revisa palabras en inglés conocidas
+    gosec:
+      excludes:
+        - G104 # ya lo cubre errcheck
+  exclusions:
+    presets:
+      - std-error-handling
+    rules:
+      - path: _test\.go
+        linters: [gosec, bodyclose, noctx]
+      # Las migraciones corren al arrancar, antes de servir: no hay petición que cancelar
+      - path: adapters/sqlite/migrate\.go
+        linters: [noctx]
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+run:
+  timeout: 5m

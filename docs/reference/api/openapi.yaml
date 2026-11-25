@@ -36,6 +36,9 @@ info:
 servers:
   - url: http://localhost:8080
     description: Desarrollo (`make api`)
+# Sin autenticación a propósito: el visitante todavía no tiene internet ni credenciales.
+# El dispositivo se identifica por la IP de la petición (ver info.description)
+security: []
 tags:
   - name: Acceso
     description: Datos del visitante y acceso a internet

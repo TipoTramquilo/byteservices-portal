@@ -22,46 +22,47 @@ const SALT = String(Date.now() % 1000).padStart(3, '0');
 
 export const options = {
   scenarios: {
-    carga: RATE > 0
-      ? {
-          executor: 'constant-arrival-rate',
-          rate: RATE,
-          timeUnit: '1s',
-          duration: DUR,
-          preAllocatedVUs: Math.min(2000, Math.max(50, Math.ceil(RATE / 10))),
-          maxVUs: Math.min(5000, Math.max(200, RATE)),
-        }
-      : {
-          executor: 'constant-vus',
-          vus: VUS,
-          duration: DUR,
-          gracefulStop: '10s',
-        },
+    carga:
+      RATE > 0
+        ? {
+            executor: 'constant-arrival-rate',
+            rate: RATE,
+            timeUnit: '1s',
+            duration: DUR,
+            preAllocatedVUs: Math.min(2000, Math.max(50, Math.ceil(RATE / 10))),
+            maxVUs: Math.min(5000, Math.max(200, RATE)),
+          }
+        : {
+            executor: 'constant-vus',
+            vus: VUS,
+            duration: DUR,
+            gracefulStop: '10s',
+          },
   },
   summaryTrendStats: ['avg', 'p(50)', 'p(95)', 'p(99)', 'max'],
 };
 
-export default function () {
+export default function portal() {
   if (MODE === 'health') {
-    const res = http.get(BASE + '/api/health');
-    check(res, { '204': (r) => r.status === 204 });
+    const res = http.get(`${BASE}/api/health`);
+    check(res, { 204: (r) => r.status === 204 });
   } else if (MODE === 'index') {
-    const res = http.get(BASE + '/');
-    check(res, { '200': (r) => r.status === 200 });
+    const res = http.get(`${BASE}/`);
+    check(res, { 200: (r) => r.status === 200 });
   } else {
     // teléfono y cédula únicos por iteración (+584 + sal + 8 dígitos)
     const n = String(__VU * 10000 + (__ITER % 10000)).padStart(8, '0');
     const body = JSON.stringify({
-      name: 'Carga ' + n,
-      id_number: 'V' + n,
-      phone: '+584' + SALT + n,
+      name: `Carga ${n}`,
+      id_number: `V${n}`,
+      phone: `+584${SALT}${n}`,
     });
-    const res = http.post(BASE + '/api/send', body, {
+    const res = http.post(`${BASE}/api/send`, body, {
       headers: { 'Content-Type': 'application/json' },
     });
     if (res.status === 429) r429.add(1);
     if (res.status >= 500) r500.add(1);
-    check(res, { '200': (r) => r.status === 200 });
+    check(res, { 200: (r) => r.status === 200 });
   }
   if (PAUSE > 0) sleep(PAUSE);
 }
@@ -84,7 +85,14 @@ export function handleSummary(data) {
     `r500=${m.resp_500?.values.count ?? 0}`,
   ].join(' ');
   return {
-    '/scripts/results/last.json': JSON.stringify({ mode: MODE, vus: VUS, rate: RATE, duration: DUR, pause: PAUSE, metrics: m }),
-    stdout: line + '\n',
+    '/scripts/results/last.json': JSON.stringify({
+      mode: MODE,
+      vus: VUS,
+      rate: RATE,
+      duration: DUR,
+      pause: PAUSE,
+      metrics: m,
+    }),
+    stdout: `${line}\n`,
   };
 }

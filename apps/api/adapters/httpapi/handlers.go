@@ -43,7 +43,8 @@ func New(svc *core.Service, portalDir, redirect string) http.Handler {
 			return
 		}
 		ip := clientIP(r)
-		log.Printf("send desde %s (peer=%s X-Real-Ip=%q X-Forwarded-For=%q)", ip, r.RemoteAddr, r.Header.Get("X-Real-Ip"), r.Header.Get("X-Forwarded-For"))
+		// ip ya pasó por netip.ParseAddr y las cabeceras van con %q (escapadas): no hay inyección en el log
+		log.Printf("send desde %s (peer=%s X-Real-Ip=%q X-Forwarded-For=%q)", ip, r.RemoteAddr, r.Header.Get("X-Real-Ip"), r.Header.Get("X-Forwarded-For")) //nolint:gosec // G706: ver arriba
 		if err := svc.Send(r.Context(), core.Visitor{Name: req.Name, IDNumber: req.IDNumber, Company: req.Company, Phone: req.Phone}, ip); err != nil {
 			fail(w, err)
 			return
@@ -69,7 +70,7 @@ func New(svc *core.Service, portalDir, redirect string) http.Handler {
 // index sirve el portal con los endpoints de la API puestos, como lo haría la página alojada en el router.
 // network reemplaza el nombre de la red ("Byte Invitados" en la página) en el título y la pastilla
 func index(w http.ResponseWriter, portalDir, network string) {
-	page, err := os.ReadFile(filepath.Join(portalDir, "index.html"))
+	page, err := os.ReadFile(filepath.Join(portalDir, "index.html")) //nolint:gosec // G304: PORTAL_DIR lo fija el operador, no el visitante
 	if err != nil {
 		log.Print(err)
 		http.Error(w, "portal not built", http.StatusInternalServerError)
@@ -80,7 +81,7 @@ func index(w http.ResponseWriter, portalDir, network string) {
 		[]byte(`<script>window.BYTE_PORTAL={send:"/api/send"}</script><script>`), 1)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
-	w.Write(page)
+	_, _ = w.Write(page) // si el visitante cerró la conexión no hay a quién avisarle
 }
 
 // clientIP es la IP del visitante. Normalmente es la de la conexión. Si la conexión viene de
@@ -135,7 +136,7 @@ func fail(w http.ResponseWriter, err error) {
 func reply(w http.ResponseWriter, status int, v response) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
+	_ = json.NewEncoder(w).Encode(v) // el status ya salió: un error aquí es la conexión cortada
 }
 
 // Métodos que admite cada ruta de la API; HEAD va con GET, como en el mux

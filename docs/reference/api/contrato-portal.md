@@ -9,9 +9,9 @@ cubre lo que el OpenAPI no describe: cómo el portal encuentra la API y cómo se
 
 El portal ([app.js](/apps/web/src/app.js)) lee la configuración, que debe existir antes de cargar el script
 
-| Campo  | Uso                                              |
-| ------ | ------------------------------------------------ |
-| `send` | URL de `POST /api/send`                          |
+| Campo  | Uso                     |
+| ------ | ----------------------- |
+| `send` | URL de `POST /api/send` |
 
 La API la inyecta al servir `/` y `/index.html`: `window.BYTE_PORTAL={send:"/api/send"}`. Sin `send`, el portal
 corre en **modo demo**: latencia falsa de 700 ms y una marca "modo demo"
@@ -25,11 +25,11 @@ acceso. Solo cuando la conexión llega desde `127.0.0.1` (el proxy `lighttpd` de
 
 ## Respuestas que cambian el flujo
 
-| Respuesta                    | Qué hace el portal                                    |
-| ---------------------------- | ----------------------------------------------------- |
-| `send` 2xx                   | Muestra "Conectado". Si trae `redirect`, el botón de navegar lo usa |
-| `send` 400                   | Marca los campos con error                            |
-| `send` 500 u otro no 2xx     | Muestra "No pudimos conectarte. Revisa tus datos"     |
+| Respuesta                | Qué hace el portal                                                  |
+| ------------------------ | ------------------------------------------------------------------- |
+| `send` 2xx               | Muestra "Conectado". Si trae `redirect`, el botón de navegar lo usa |
+| `send` 400               | Marca los campos con error                                          |
+| `send` 500 u otro no 2xx | Muestra "No pudimos conectarte. Revisa tus datos"                   |
 
 Solo hay dos vistas: el formulario de datos y "Conectado". No hay paso de código.
 

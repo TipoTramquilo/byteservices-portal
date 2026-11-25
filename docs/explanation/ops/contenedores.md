@@ -24,11 +24,11 @@ Una imagen con la API y el portal compilado, construida con [Dockerfile](/docker
 
 ## Dónde usarlo
 
-| Destino          | Recomendación                                              |
-| ---------------- | ---------------------------------------------------------- |
-| Equipo en la LAN | Contenedor                                                 |
+| Destino          | Recomendación                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------- |
+| Equipo en la LAN | Contenedor                                                                                                |
 | OPNsense         | Binario solo: OPNsense es FreeBSD y no corre Podman. Ver [opnsense.md](/docs/reference/setup/opnsense.md) |
-| Router pequeño   | Binario solo; Podman pesa demasiado para el router         |
+| Router pequeño   | Binario solo; Podman pesa demasiado para el router                                                        |
 
 ## Variables
 

@@ -26,7 +26,7 @@ tasks:
       - task --list
 
   env:
-    desc: "Crea .env desde .env.example si todavía no existe"
+    desc: 'Crea .env desde .env.example si todavía no existe'
     status:
       - test -f .env
     cmds:
@@ -34,7 +34,7 @@ tasks:
       - echo "Creado .env desde .env.example (ajusta WAN_NIC, WIFI_NIC y SSID si hace falta)"
 
   image:
-    desc: "Descarga y verifica la imagen oficial de OPNsense (una vez por máquina)"
+    desc: 'Descarga y verifica la imagen oficial de OPNsense (una vez por máquina)'
     cmds:
       - mkdir -p "{{.CACHE}}"
       - test -f "{{.CACHE}}/{{.IMAGE_BZ2}}" || curl -fL --retry 3 -o "{{.CACHE}}/{{.IMAGE_BZ2}}" "{{.IMAGE_URL}}"
@@ -44,7 +44,7 @@ tasks:
       - test -f "{{.CACHE}}/{{.IMG}}"
 
   host:up:
-    desc: "Puente cableado (WAN) + AP Byte en br-lan (requiere sudo; corta el Wi-Fi si WIFI_CON está definido)"
+    desc: 'Puente cableado (WAN) + AP Byte en br-lan (requiere sudo; corta el Wi-Fi si WIFI_CON está definido)'
     cmds:
       - |
         if ! nmcli -t -f NAME con show | grep -qx br0; then
@@ -77,7 +77,7 @@ tasks:
       - sudo pgrep -x hostapd >/dev/null || sudo hostapd -B /etc/hostapd/byte-local.conf
 
   host:down:
-    desc: "Deshace el AP y el puente de br-lan; devuelve la cableada a NetworkManager"
+    desc: 'Deshace el AP y el puente de br-lan; devuelve la cableada a NetworkManager'
     cmds:
       - sudo pkill -x hostapd || true
       - nmcli -t -f NAME con show | grep -qx br-lan && sudo nmcli con delete br-lan || true
@@ -109,7 +109,7 @@ tasks:
       - terraform destroy -var image_path="{{.CACHE}}/{{.IMG}}"
 
   up:
-    desc: "Todo: imagen, host y VM"
+    desc: 'Todo: imagen, host y VM'
     cmds:
       - task: env
       - task: image
@@ -117,7 +117,7 @@ tasks:
       - task: tf:apply
 
   down:
-    desc: "Destruye la VM y deshace el host"
+    desc: 'Destruye la VM y deshace el host'
     cmds:
       - task: tf:destroy
       - task: host:down

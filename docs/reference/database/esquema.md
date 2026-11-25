@@ -46,16 +46,16 @@ Visitantes que enviaron el formulario. Cada envío actualiza sus datos y `verifi
 
 Cada sesión de internet abierta: un registro por envío del formulario (30 minutos)
 
-| Columna     | Tipo    | Regla                                                                |
-| ----------- | ------- | -------------------------------------------------------------------- |
-| `id`        | INTEGER | PK                                                                   |
-| `ip`        | TEXT    | IPv4 o IPv6, la de la petición (IP real si vino del proxy local)     |
-| `mac`       | TEXT    | EUI-48 (`AA:BB:CC:DD:EE:FF`) que da el router; NULL si no la conoce  |
-| `phone`     | TEXT    | E.164                                                                |
-| `id_number` | TEXT    | `V` o `E` + dígitos                                                  |
-| `day`       | TEXT    | Fecha local (`YYYY-MM-DD`) en la que empezó la sesión                |
-| `kind`      | TEXT    | Solo `verified`                                                      |
-| `start_at`  | TEXT    | ISO 8601 UTC                                                         |
-| `end_at`    | TEXT    | ISO 8601 UTC, mayor que `start_at`; 30 minutos después               |
+| Columna     | Tipo    | Regla                                                               |
+| ----------- | ------- | ------------------------------------------------------------------- |
+| `id`        | INTEGER | PK                                                                  |
+| `ip`        | TEXT    | IPv4 o IPv6, la de la petición (IP real si vino del proxy local)    |
+| `mac`       | TEXT    | EUI-48 (`AA:BB:CC:DD:EE:FF`) que da el router; NULL si no la conoce |
+| `phone`     | TEXT    | E.164                                                               |
+| `id_number` | TEXT    | `V` o `E` + dígitos                                                 |
+| `day`       | TEXT    | Fecha local (`YYYY-MM-DD`) en la que empezó la sesión               |
+| `kind`      | TEXT    | Solo `verified`                                                     |
+| `start_at`  | TEXT    | ISO 8601 UTC                                                        |
+| `end_at`    | TEXT    | ISO 8601 UTC, mayor que `start_at`; 30 minutos después              |
 
 No hay índices definidos en la migración inicial.

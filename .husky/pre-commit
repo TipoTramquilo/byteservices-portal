@@ -1,0 +1,19 @@
+# FASE 1: secretos en lo que se va a commitear (trufflehog, opcional en local; CI escanea siempre)
+STAGED_DIFF=$(git diff --cached --diff-filter=d)
+if [ -n "$STAGED_DIFF" ]; then
+  if command -v trufflehog >/dev/null 2>&1; then
+    if ! echo "$STAGED_DIFF" | trufflehog stdin --only-verified --fail; then
+      echo "✖ trufflehog encontró un secreto activo en lo que se va a commitear. Commit cancelado"
+      exit 1
+    fi
+  else
+    echo ""
+    echo "⚠ trufflehog no está instalado: se salta el escaneo de secretos"
+    echo "  Detecta y verifica claves, tokens y contraseñas antes de que entren al historial"
+    echo "  Instalar: https://github.com/trufflesecurity/trufflehog"
+    echo ""
+  fi
+fi
+
+# FASE 2: formato y lint de lo que está en stage (con autofix)
+pnpm exec lint-staged

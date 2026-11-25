@@ -22,3 +22,9 @@ infra/local/terraform/*.tfvars
 
 # Entorno local: copia local de variables
 infra/local/.env
+
+# Herramientas de Go compiladas por `make tools`
+.bin/
+
+# pnpm
+node_modules/

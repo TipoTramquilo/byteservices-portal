@@ -34,14 +34,14 @@ k6 dibuja la barra de progreso; al terminar imprime `rps`, `p50/p95/p99`, `fail`
 
 ## Modos
 
-| Variable | Qué hace |
-| --- | --- |
-| `MODE=send` | `POST /api/send` con teléfono y cédula únicos por iteración (por defecto) |
-| `MODE=health` | `GET /api/health`, el techo del HTTP sin tocar la base |
-| `MODE=index` | `GET /`, el portal compilado (28 KB) |
-| `VUS=<n>` `DUR=<n>s` | VUs simultáneos y duración (por defecto 10 y 20s) |
-| `RATE=<n>` | modelo abierto: fija `n` peticiones por segundo en vez de VUs |
-| `SLEEP=<n>` | pausa entre iteraciones por VU (0 = sin pausa) |
+| Variable             | Qué hace                                                                  |
+| -------------------- | ------------------------------------------------------------------------- |
+| `MODE=send`          | `POST /api/send` con teléfono y cédula únicos por iteración (por defecto) |
+| `MODE=health`        | `GET /api/health`, el techo del HTTP sin tocar la base                    |
+| `MODE=index`         | `GET /`, el portal compilado (28 KB)                                      |
+| `VUS=<n>` `DUR=<n>s` | VUs simultáneos y duración (por defecto 10 y 20s)                         |
+| `RATE=<n>`           | modelo abierto: fija `n` peticiones por segundo en vez de VUs             |
+| `SLEEP=<n>`          | pausa entre iteraciones por VU (0 = sin pausa)                            |
 
 `SLEEP` no se usa en los scripts: la idea es la peor carga, todos pidiendo a la vez.
 

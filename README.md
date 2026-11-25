@@ -14,13 +14,13 @@ flowchart LR
   L[infra/local entorno local] -.->|task up| O
 ```
 
-| Carpeta | Qué es |
-| --- | --- |
-| `apps/web/` | Portal: HTML, CSS y JavaScript sin dependencias |
-| `apps/api/` | API en Go: registro, sesiones y adaptador de OPNsense |
+| Carpeta        | Qué es                                                       |
+| -------------- | ------------------------------------------------------------ |
+| `apps/web/`    | Portal: HTML, CSS y JavaScript sin dependencias              |
+| `apps/api/`    | API en Go: registro, sesiones y adaptador de OPNsense        |
 | `infra/local/` | Entorno local local: OPNsense en una VM y AP `Byte` en el PC |
-| `docker/` | Imagen y compose para el despliegue |
-| `docs/` | Documentación (Diátaxis): decisiones, referencia y guías |
+| `docker/`      | Imagen y compose para el despliegue                          |
+| `docs/`        | Documentación (Diátaxis): decisiones, referencia y guías     |
 
 ## Empezar
 
