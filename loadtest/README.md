@@ -6,7 +6,7 @@ corriendo. Sirve para saber cuántas peticiones simultáneas aguanta la API y cu
 ## Antes
 
 ```sh
-make up                                        # portal en :8080
+task up                                        # portal en :8080
 podman pull docker.io/grafana/k6
 ```
 
@@ -26,8 +26,8 @@ Para verlo en vivo, en dos terminales:
 ```sh
 podman stats byte-portal        # consumo del portal
 podman run --rm --name k6run --network byte-portal_default \
-  -v "$PWD/loadtest:/scripts" docker.io/grafana/k6 run \
-  -e MODE=send -e VUS=1000 -e DUR=30s /scripts/scripts/portal.js
+  -v "$PWD/loadtest:/loadtest" docker.io/grafana/k6 run \
+  -e MODE=send -e VUS=1000 -e DUR=30s /loadtest/k6/portal.mjs
 ```
 
 k6 dibuja la barra de progreso; al terminar imprime `rps`, `p50/p95/p99`, `fail`, `r429` y `r500`.

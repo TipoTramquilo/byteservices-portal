@@ -7,7 +7,7 @@ cubre lo que el OpenAPI no describe: cómo el portal encuentra la API y cómo se
 
 ## `window.BYTE_PORTAL`
 
-El portal ([app.js](/apps/web/src/app.js)) lee la configuración, que debe existir antes de cargar el script
+El portal ([app.mjs](/apps/web/src/app.mjs)) lee la configuración, que debe existir antes de cargar el script
 
 | Campo  | Uso                     |
 | ------ | ----------------------- |

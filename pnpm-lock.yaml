@@ -191,9 +191,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: 21.2.4
         version: 21.2.4
-      '@redocly/cli':
-        specifier: 2.83.0
-        version: 2.83.0
       es-check:
         specifier: 9.9.0
         version: 9.9.0
@@ -563,11 +560,6 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
-
-  '@redocly/cli@2.83.0':
-    resolution: {integrity: sha512-wH4JzRiNm38NDScf2B7oT7QmE2Wpa7q+Wnzt0L02rKxdgldAA8QLD6F1IDs+izSeJzLW2sGeygwO71Wn074oqQ==}
-    engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
-    hasBin: true
 
   '@simple-libs/child-process-utils@2.0.0':
     resolution: {integrity: sha512-dvNoRKLijXnD0XoJAz94pbNuB5GQgDr55UhpSPhffDkTT0Cmcqh9jSCOtwfT2d4H6MI9E7c4SgtMuJXZ6F3c6A==}
@@ -1187,8 +1179,6 @@ snapshots:
 
   '@oxlint/binding-win32-x64-msvc@1.95.0':
     optional: true
-
-  '@redocly/cli@2.83.0': {}
 
   '@simple-libs/child-process-utils@2.0.0':
     dependencies:

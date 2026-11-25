@@ -1,4 +1,4 @@
-module captiveportal
+module byte-api
 
 go 1.27.4
 

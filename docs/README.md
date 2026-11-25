@@ -1,7 +1,7 @@
 # Documentación del portal cautivo Byte
 
 Organizada según [Diátaxis](https://diataxis.fr/) en cuatro tipos de documento, más los pendientes sin decisión
-cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md](/DESIGN.md)
+cerrada
 
 ## Explicación (por qué se decidió)
 
@@ -12,8 +12,11 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
   - [architecture/api-rest.md](/docs/explanation/architecture/api-rest.md) - Go, REST con JSON, mismo origen que el portal y redirección cautiva
 - **Base de datos**
   - [database/sqlite.md](/docs/explanation/database/sqlite.md) - SQLite en proceso, sin ORM, tablas `STRICT` y migraciones forward-only
+- **Portal**
+  - [web/es2020.md](/docs/explanation/web/es2020.md) - JavaScript en ES2020: teléfonos objetivo, qué queda fuera y cómo se valida
 - **Operación**
   - [ops/contenedores.md](/docs/explanation/ops/contenedores.md) - imagen sobre `scratch` con Podman
+  - [ops/ci.md](/docs/explanation/ops/ci.md) - hooks de git, CI y Dependabot: qué valida cada uno y por qué
 
 ## Referencia (datos exactos, para consultar)
 
@@ -23,7 +26,7 @@ cerrada. Producto y diseño viven aparte: [PRODUCT.md](/PRODUCT.md) y [DESIGN.md
 - **Base de datos**
   - [database/esquema.md](/docs/reference/database/esquema.md) - tablas, columnas y reglas
 - **Setup**
-  - [setup/estructura.md](/docs/reference/setup/estructura.md) - árbol del monorepo y comandos del `Makefile`
+  - [setup/estructura.md](/docs/reference/setup/estructura.md) - árbol del monorepo y tareas del `Taskfile.yml`
   - [setup/variables-de-entorno.md](/docs/reference/setup/variables-de-entorno.md) - variables que lee la API
   - [setup/opnsense.md](/docs/reference/setup/opnsense.md) - configuración del equipo: zona, DNS, API key y arranque de la API
 

@@ -32,7 +32,7 @@ services:
     stop_grace_period: 10s
     # Se repite aquí porque podman construye en formato OCI, que descarta el HEALTHCHECK del Dockerfile
     healthcheck:
-      test: ['CMD', '/app/captiveportal', 'health']
+      test: ['CMD', '/app/byte-api', 'health']
       interval: 30s
       timeout: 5s
       retries: 3

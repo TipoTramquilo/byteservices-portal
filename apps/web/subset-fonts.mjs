@@ -1,5 +1,5 @@
 // Recorta las fuentes de fonts-src/ a los caracteres que puede mostrar el portal y las deja en src/fonts/
-// Se corre con `make fonts` (`pnpm fonts`); subset-font es una devDependency, no entra al portal
+// Se corre con `task web:fonts` (`pnpm fonts`); subset-font es una devDependency, no entra al portal
 import { readFile, writeFile, readdir, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import subsetFont from 'subset-font';
@@ -14,7 +14,7 @@ const range = (a, b) =>
 
 // Lo que muestran el portal y el design system, más ASCII imprimible
 let shown = range(0x20, 0x7e);
-const sources = ['src/index.html', 'src/app.js', 'design-system.html'];
+const sources = ['src/index.html', 'src/app.mjs', 'design-system.html'];
 shown = uniq(
   shown + (await Promise.all(sources.map((f) => readFile(join(DIR, f), 'utf8')))).join('')
 );

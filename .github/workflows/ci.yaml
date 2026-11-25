@@ -1,0 +1,192 @@
+# ============================================================
+#  Portal cautivo Byte - CI
+#  Quality gate en jobs paralelos: secretos, portal (JS), API (Go), repo (shell, Dockerfile,
+#  workflows, Terraform), imagen (build sin push) y convenciones del PR.
+#  Sin CD ni registro: el portal se despliega a mano en el equipo de la red local.
+#  En local corre lo mismo `task check` (hook pre-push).
+#  Ver docs/explanation/ops/ci.md
+# ============================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  secrets:
+    name: Secretos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Scan for secrets
+        uses: trufflesecurity/trufflehog@4ef51f69ca6347aaa76a5e64a87eac9c0c909f71 # v3.100.1
+        with:
+          extra_args: --only-verified
+
+  web:
+    name: Portal (JS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Sin `version`: la toma de packageManager en package.json
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Dependencias: vulnerabilidades conocidas y firmas del registro
+      - run: pnpm audit:deps
+      - run: pnpm audit:signatures
+
+      # oxlint, oxfmt, ES2020 y build con presupuesto de peso
+      - run: pnpm check
+
+  api:
+    name: API (Go)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: |
+            apps/api/go.sum
+            tools/go.sum
+            tools/actionlint/go.sum
+
+      # task sale de tools/go.mod: la misma versión que en local
+      - name: Install task
+        run: |
+          cd tools && go build -o "$GITHUB_WORKSPACE/.bin/" github.com/go-task/task/v3/cmd/task
+          echo "$GITHUB_WORKSPACE/.bin" >> "$GITHUB_PATH"
+
+      # go mod tidy/verify, golangci-lint (lint + formato), go vet, tests con -race y govulncheck
+      - run: task check:api
+
+  repo:
+    name: Repo (shell, Dockerfile, workflows, Terraform)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Con CI definido, una herramienta del sistema que falta es un error (en local solo avisa)
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: |
+            tools/go.sum
+            tools/actionlint/go.sum
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false
+
+      - name: Install task
+        run: |
+          cd tools && go build -o "$GITHUB_WORKSPACE/.bin/" github.com/go-task/task/v3/cmd/task
+          echo "$GITHUB_WORKSPACE/.bin" >> "$GITHUB_PATH"
+
+      # hadolint no viene en el runner: la acción lo corre en su contenedor
+      - uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: docker/Dockerfile
+
+      # shellcheck viene en el runner (actionlint también lo usa sobre los `run:` de los workflows)
+      - run: task repo:shell repo:actions repo:tf
+
+  image:
+    name: Imagen (build sin push)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # Compila el portal (etapa node) y la API (etapa golang) sobre las imágenes más recientes:
+      # un cambio en ellas que rompa el build aparece aquí y no el día del despliegue
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          platforms: linux/amd64
+          push: false
+          pull: true
+          cache-from: type=gha,scope=portal
+          cache-to: type=gha,mode=max,scope=portal
+
+  conventions:
+    name: Convenciones del PR
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # El mismo patrón que el hook pre-push (.husky/branch-name.sh)
+      - name: Nombre de rama
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          . .husky/branch-name.sh
+          if ! branch_ok "$BRANCH"; then
+            echo "::error::nombre de rama inválido: $BRANCH"
+            branch_help
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Cada commit del PR en Conventional Commits (el hook commit-msg lo valida en local)
+      - name: Mensajes de commit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose

@@ -26,4 +26,6 @@ Ejemplo de la configuración en uso en `fwportal`: ver [opnsense.md](/docs/refer
 
 ## Contenedor
 
-En el compose se leen del archivo `.env` de la raíz. Ver [contenedores.md](/docs/explanation/ops/contenedores.md).
+Un solo `.env` en la raíz (plantilla: [.env.example](/.env.example)). Lo carga Task, así que `task api` corre con
+esas variables, y compose lo usa para interpolar el `docker-compose.yaml` (`task up`). Ver
+[contenedores.md](/docs/explanation/ops/contenedores.md).

@@ -1,4 +1,4 @@
-// Builds dist/ from src/: one self-contained index.html (byte.css and app.js inlined, minified) plus fonts/.
+// Builds dist/ from src/: one self-contained index.html (byte.css and app.mjs inlined, minified) plus fonts/.
 // No dependencies: `node apps/web/build.mjs` (paths resolve from this file, any cwd works)
 import { readFile, writeFile, mkdir, cp, rm } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
@@ -30,11 +30,11 @@ const minHtml = (html) =>
 
 let html = await readFile(`${SRC}/index.html`, 'utf8');
 const css = await readFile(`${SRC}/byte.css`, 'utf8');
-const js = await readFile(`${SRC}/app.js`, 'utf8');
+const js = await readFile(`${SRC}/app.mjs`, 'utf8');
 
 // The CSS and JS are inlined by exact string match: if a tag changes (e.g. a formatter turns it
 // into `<link ... />`), fail instead of shipping a portal without styles or behaviour
-for (const tag of ['<link rel="stylesheet" href="byte.css">', '<script src="app.js"></script>']) {
+for (const tag of ['<link rel="stylesheet" href="byte.css">', '<script src="app.mjs"></script>']) {
   if (!html.includes(tag)) throw new Error(`src/index.html must contain exactly: ${tag}`);
 }
 
@@ -43,7 +43,7 @@ const blocks = [];
 const keep = (s) => `\u0000${blocks.push(s) - 1}\u0000`;
 html = html
   .replace('<link rel="stylesheet" href="byte.css">', () => keep(`<style>${minCss(css)}</style>`))
-  .replace('<script src="app.js"></script>', () => keep(`<script>${minJs(js)}</script>`))
+  .replace('<script src="app.mjs"></script>', () => keep(`<script>${minJs(js)}</script>`))
   .replaceAll(/<style>([\s\S]*?)<\/style>/g, (_, c) => keep(`<style>${minCss(c)}</style>`))
   .replaceAll(/<script>([\s\S]*?)<\/script>/g, (_, j) => keep(`<script>${minJs(j)}</script>`));
 // oxlint-disable-next-line no-control-regex -- \u0000 delimita los bloques reservados (ver keep)

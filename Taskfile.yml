@@ -1,0 +1,229 @@
+# Portal cautivo Byte: entrada única del repo. `task` (o `task --list`) muestra las tareas.
+# El entorno con OPNsense en una VM vive en infra/local y se usa desde aquí como `task local:<tarea>`
+version: '3'
+
+# Un solo .env en la raíz (ver .env.example) para todas las tareas: la API, compose y el entorno
+# local. Si no existe, cada tarea usa sus valores por defecto
+dotenv: ['.env']
+
+includes:
+  local:
+    taskfile: infra/local/Taskfile.yml
+    dir: infra/local
+
+vars:
+  # Motor de contenedores: podman si está, si no docker (forzar con `ENGINE=docker task up`)
+  ENGINE:
+    sh: echo "${ENGINE:-$(command -v podman || command -v docker || echo docker)}"
+  DC: '"{{.ENGINE}}" compose --env-file .env -f docker/docker-compose.yaml'
+  # Herramientas de Go en tools/go.mod y tools/actionlint/go.mod (Dependabot las actualiza)
+  BIN: '{{.ROOT_DIR}}/.bin'
+  # El Go que pide apps/api/go.mod, primero en el PATH de las herramientas que analizan código: si el del
+  # sistema es más viejo, `go` cambia de toolchain al vuelo, pero govulncheck y golangci-lint llaman a
+  # `go list` por su cuenta y verían el viejo. (Task no deja que `env:` pise un PATH que ya existe)
+  WITH_GO:
+    sh: echo "PATH=\"$(cd apps/api && go env GOROOT)/bin:\$PATH\""
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list
+
+  # ---------- portal y API ----------
+
+  web:
+    desc: Compila apps/web/dist (index.html autocontenido + fuentes; falla si pasa de 12 KB gzip)
+    cmds:
+      - pnpm build
+
+  web:dev:
+    desc: Sirve apps/web/src en :8000 (modo demo, sin API)
+    cmds:
+      - python3 -m http.server -d apps/web/src 8000
+
+  web:fonts:
+    desc: Recorta las fuentes de apps/web/fonts-src a src/fonts (volver a correr si cambian los textos)
+    cmds:
+      - pnpm fonts
+
+  api:
+    desc: Compila el portal y levanta la API en :8080
+    deps: [web]
+    dir: apps/api
+    cmds:
+      - go run .
+
+  build:
+    desc: Construye la imagen
+    deps: [web]
+    cmds:
+      - '{{.DC}} build'
+
+  up:
+    desc: Levanta el contenedor (construye si hace falta)
+    deps: [web]
+    cmds:
+      - '{{.DC}} up -d --build'
+
+  down:
+    desc: Para el contenedor
+    cmds:
+      - '{{.DC}} down'
+
+  logs:
+    desc: Sigue los logs
+    cmds:
+      - '{{.DC}} logs -f'
+
+  # ---------- calidad ----------
+
+  install:
+    desc: pnpm install (instala también los hooks de git) y compila las herramientas de Go
+    cmds:
+      - pnpm install
+      - task: tools
+
+  tools:
+    desc: Compila golangci-lint, govulncheck, task y actionlint en .bin/ (solo si cambiaron sus versiones)
+    sources:
+      - tools/go.mod
+      - tools/go.sum
+      - tools/actionlint/go.mod
+      - tools/actionlint/go.sum
+    generates:
+      - .bin/golangci-lint
+      - .bin/govulncheck
+      - .bin/actionlint
+      - .bin/task
+    cmds:
+      - cd tools && go build -o {{.BIN}}/ github.com/golangci/golangci-lint/v2/cmd/golangci-lint golang.org/x/vuln/cmd/govulncheck github.com/go-task/task/v3/cmd/task
+      - cd tools/actionlint && go build -o {{.BIN}}/ github.com/rhysd/actionlint/cmd/actionlint
+
+  check:
+    desc: Todo lo que valida CI salvo la imagen (lo corre el hook pre-push)
+    cmds:
+      - task: check:web
+      - task: check:api
+      - task: check:repo
+      - echo "✔ check completo"
+
+  fmt:
+    desc: Formatea JS, CSS, JSON, Markdown, YAML, Go y Terraform
+    deps: [tools]
+    cmds:
+      - pnpm format
+      - cd apps/api && {{.WITH_GO}} {{.BIN}}/golangci-lint fmt ./...
+      - terraform fmt -recursive infra
+
+  check:web:
+    desc: 'Portal: oxlint, oxfmt, ES2020 y build con presupuesto de peso'
+    cmds:
+      - pnpm check
+
+  check:api:
+    desc: 'API: módulos, formato, lint, tests con -race y vulnerabilidades'
+    deps: [tools]
+    cmds:
+      - task: api:mod
+      - task: api:fmt
+      - task: api:lint
+      - task: api:test
+      - task: api:vuln
+
+  check:repo:
+    desc: 'Repo: scripts de shell, Dockerfile, workflows y Terraform'
+    cmds:
+      - task: repo:shell
+      - task: repo:docker
+      - task: repo:actions
+      - task: repo:tf
+
+  api:mod:
+    desc: go.mod y go.sum ordenados y verificados (API y herramientas)
+    cmds:
+      - cd apps/api && go mod tidy -diff && go mod verify
+      - cd tools && go mod tidy -diff
+      - cd tools/actionlint && go mod tidy -diff
+
+  api:fmt:
+    desc: gofmt + goimports sin cambios pendientes
+    deps: [tools]
+    dir: apps/api
+    cmds:
+      - '{{.WITH_GO}} {{.BIN}}/golangci-lint fmt --diff ./...'
+
+  api:lint:
+    desc: go vet + golangci-lint (apps/api/.golangci.yaml)
+    deps: [tools]
+    dir: apps/api
+    cmds:
+      - go vet ./...
+      - '{{.WITH_GO}} {{.BIN}}/golangci-lint run ./...'
+
+  api:test:
+    desc: Tests de la API con el detector de carreras
+    dir: apps/api
+    cmds:
+      - go test -race -count=1 ./...
+
+  api:vuln:
+    desc: Vulnerabilidades conocidas en el código alcanzable de la API (govulncheck)
+    deps: [tools]
+    dir: apps/api
+    cmds:
+      - '{{.WITH_GO}} {{.BIN}}/govulncheck ./...'
+
+  repo:shell:
+    desc: shellcheck sobre loadtest y los hooks de git
+    cmds:
+      - task: optional
+        vars:
+          TOOL: shellcheck
+          RUN: shellcheck loadtest/*.sh && shellcheck -s sh -x --source-path=SCRIPTDIR .husky/pre-commit .husky/commit-msg .husky/pre-push .husky/post-checkout .husky/branch-name.sh
+
+  repo:docker:
+    desc: hadolint sobre el Dockerfile
+    cmds:
+      - task: optional
+        vars:
+          TOOL: hadolint
+          RUN: hadolint docker/Dockerfile
+
+  repo:actions:
+    desc: actionlint sobre .github/workflows (con shellcheck en los `run:` si está)
+    deps: [tools]
+    cmds:
+      - '{{.BIN}}/actionlint'
+
+  repo:tf:
+    desc: terraform fmt y validate en infra/local/terraform
+    cmds:
+      - task: optional
+        vars:
+          TOOL: terraform
+          RUN: >-
+            terraform fmt -check -recursive infra &&
+            terraform -chdir=infra/local/terraform init -backend=false -input=false >/dev/null &&
+            terraform -chdir=infra/local/terraform validate
+
+  secrets:
+    desc: Escanea todo el historial de git en busca de secretos verificados (trufflehog)
+    cmds:
+      - task: optional
+        vars:
+          TOOL: trufflehog
+          RUN: trufflehog git file://. --only-verified --fail
+
+  # Herramienta del sistema: en local, si falta, avisa y sigue; en CI (CI=true) faltar es un error
+  optional:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if ! command -v {{.TOOL}} >/dev/null 2>&1; then
+          if [ -n "$CI" ]; then echo "✖ falta {{.TOOL}}"; exit 1; fi
+          echo "⚠ {{.TOOL}} no está instalado: se salta"
+          exit 0
+        fi
+        {{.RUN}}

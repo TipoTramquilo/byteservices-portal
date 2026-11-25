@@ -1,4 +1,4 @@
-// Command captiveportal sirve el portal cautivo de Byte y su API
+// Command byte-api sirve el portal cautivo de Byte y su API
 //
 // Configuración (variables de entorno): ADDR, DB, PORTAL_DIR, TIMEZONE, RESET_AT, REDIRECT,
 // OPNSENSE_URL, OPNSENSE_KEY, OPNSENSE_SECRET, OPNSENSE_ZONE, OPNSENSE_CA_FILE, OPNSENSE_SERVER_NAME
@@ -15,10 +15,10 @@ import (
 	"time"
 	_ "time/tzdata" // los routers suelen venir sin base de zonas horarias
 
-	"captiveportal/adapters/httpapi"
-	"captiveportal/adapters/router"
-	"captiveportal/adapters/sqlite"
-	"captiveportal/core"
+	"byte-api/adapters/httpapi"
+	"byte-api/adapters/router"
+	"byte-api/adapters/sqlite"
+	"byte-api/core"
 )
 
 func main() {

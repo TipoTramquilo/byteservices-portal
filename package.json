@@ -7,20 +7,18 @@
     "fonts": "node apps/web/subset-fonts.mjs",
     "lint": "oxlint --max-warnings=0 .",
     "lint:fix": "oxlint --fix .",
-    "lint:openapi": "redocly lint docs/reference/api/openapi.yaml",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "es-check": "es-check es2020 apps/web/src/app.js --checkFeatures",
+    "es-check": "es-check es2020 apps/web/src/app.mjs --checkFeatures",
     "audit:deps": "pnpm audit --audit-level=high",
     "audit:signatures": "pnpm audit signatures",
-    "check": "pnpm lint && pnpm format:check && pnpm es-check && pnpm lint:openapi && pnpm build",
+    "check": "pnpm lint && pnpm format:check && pnpm es-check && pnpm build",
     "preinstall": "node -e \"if(!process.env.npm_config_user_agent?.includes('pnpm')){console.error('\\n\\u2716 Usa pnpm: pnpm install\\n');process.exit(1)}\"",
     "prepare": "husky"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
-    "@redocly/cli": "2.83.0",
     "es-check": "9.9.0",
     "husky": "9.1.7",
     "lint-staged": "17.6.2",
@@ -29,17 +27,14 @@
     "subset-font": "2.9.0"
   },
   "lint-staged": {
-    "*.{js,mjs,css,json,md,yml,yaml}": [
+    "*.{mjs,css,json,md,yml,yaml}": [
       "oxfmt --write --no-error-on-unmatched-pattern"
     ],
-    "*.{js,mjs}": [
+    "*.mjs": [
       "oxlint --fix --max-warnings=0"
     ],
-    "apps/web/src/*.js": [
+    "apps/web/src/*.mjs": [
       "es-check es2020 --checkFeatures"
-    ],
-    "docs/reference/api/openapi.yaml": [
-      "redocly lint"
     ],
     "apps/api/**/*.go": [
       "gofmt -w"

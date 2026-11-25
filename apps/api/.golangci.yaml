@@ -1,4 +1,4 @@
-# golangci-lint v2 (CI: job `go` en .github/workflows/ci.yaml; local: `make lint`)
+# golangci-lint v2 (CI: job `api` en .github/workflows/ci.yaml; local: `task check:api`)
 # `standard` (govet, errcheck, staticcheck, ineffassign, unused) más los que atrapan bugs
 # reales en una API expuesta a cualquier visitante del Wi-Fi: seguridad, cuerpos HTTP sin
 # cerrar, contexto perdido en peticiones, SQL sin cerrar y errores mal comparados

@@ -74,12 +74,23 @@
     "no-shadow": "warn"
   },
   "overrides": [
+    // El orden importa: un override posterior pisa al anterior. Primero lo común a todo .mjs
+    // y después los dos que no corren en Node (el portal y el script de k6)
     {
-      // El portal corre en el mini navegador cautivo: ES2020 (iOS 14+, Chrome/WebView 80+),
-      // sin módulos ni APIs de Node. Ver docs/explanation/web/es2020.md
-      "files": ["apps/web/src/**/*.js"],
+      // Herramientas de build y reportes (Node): imprimen su resultado por consola a propósito
+      "files": ["**/*.mjs"],
+      "env": { "node": true },
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      // El portal corre en el mini navegador cautivo: ES2020 (iOS 14+, Chrome/WebView 80+), script
+      // clásico sin APIs de Node. Ver docs/explanation/web/es2020.md
+      "files": ["apps/web/src/**/*.mjs"],
       "env": { "browser": true, "es2020": true, "node": false },
       "rules": {
+        "no-console": "warn",
         "prefer-arrow-callback": "warn",
         "prefer-exponentiation-operator": "warn",
         // Sugieren APIs posteriores a ES2020 (replaceAll ES2021, at/hasOwn ES2022, toSorted ES2023):
@@ -93,25 +104,14 @@
       }
     },
     {
-      // Herramientas de build y reportes (Node): imprimen su resultado por consola a propósito
-      "files": ["**/*.mjs"],
-      "env": { "node": true },
+      // Script de k6 (loadtest): corre en k6, no en Node. __ENV es su única forma de leer `-e`
+      "files": ["loadtest/k6/**/*.mjs"],
+      "env": { "node": false },
+      "globals": { "__ENV": "readonly" },
       "rules": {
-        "no-console": "off"
+        "no-console": "warn"
       }
-    },
-    {
-      // Script de k6 (loadtest): sus globals no son de Node ni del navegador
-      "files": ["loadtest/scripts/**/*.js"],
-      "globals": { "__ENV": "readonly", "__VU": "readonly", "__ITER": "readonly" }
     }
   ],
-  "ignorePatterns": [
-    "node_modules",
-    "**/dist",
-    "loadtest/results",
-    ".claude",
-    ".impeccable",
-    "brand"
-  ]
+  "ignorePatterns": ["node_modules", "**/dist", "loadtest/results"]
 }

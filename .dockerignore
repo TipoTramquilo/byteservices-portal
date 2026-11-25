@@ -2,5 +2,5 @@
 !apps/api/
 !apps/web/build.mjs
 !apps/web/src/
-apps/api/captiveportal
+apps/api/byte-api
 apps/api/*.db*

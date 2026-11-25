@@ -1,0 +1,51 @@
+# ============================================================
+#  Portal cautivo Byte - Dependabot
+#  Minor y patch agrupados en un PR por ecosistema; los major llegan solos, uno por PR,
+#  para revisarlos aparte. CI valida cada PR con los mismos chequeos de siempre.
+#  Docker no está: el Dockerfile usa a propósito la última imagen de node y golang
+# ============================================================
+
+version: 2
+updates:
+  # API (modernc.org/sqlite) y herramientas de Go (golangci-lint, govulncheck, task, actionlint)
+  - package-ecosystem: gomod
+    directories:
+      - /apps/api
+      - /tools
+      - /tools/actionlint
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      go-minor-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  # Herramientas de JS (pnpm-lock.yaml): oxlint, oxfmt, es-check, husky, commitlint, subset-font
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      js-minor-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  # Acciones del workflow, fijadas por SHA
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  # Provider de libvirt del entorno local
+  - package-ecosystem: terraform
+    directory: /infra/local/terraform
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2

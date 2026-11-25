@@ -16,7 +16,7 @@ import (
 	"slices"
 	"strings"
 
-	"captiveportal/core"
+	"byte-api/core"
 )
 
 type sendRequest struct {

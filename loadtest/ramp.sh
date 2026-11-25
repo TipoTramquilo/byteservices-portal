@@ -17,11 +17,11 @@ run() { # modo vus dur etiqueta
   local stats=$RESULTS/stats-$label.log
   echo
   echo "### $label: modo=$mode vus=$vus duración=${dur}s (sin pausa)"
-  ( for i in $(seq 1 200); do timeout 3 podman stats --no-stream \
+  ( for _ in $(seq 1 200); do timeout 3 podman stats --no-stream \
       --format '{{.Name}} {{.CPUPerc}} {{.MemUsage}}' byte-portal k6run 2>/dev/null; sleep 1; done > "$stats" ) &
   local sp=$!
-  podman run --rm --name k6run --network "$NET" -v "$DIR:/scripts" "$IMG" run \
-      -e MODE="$mode" -e VUS="$vus" -e DUR="${dur}s" /scripts/scripts/portal.js
+  podman run --rm --name k6run --network "$NET" -v "$DIR:/loadtest" "$IMG" run \
+      -e MODE="$mode" -e VUS="$vus" -e DUR="${dur}s" /loadtest/k6/portal.mjs
   kill $sp 2>/dev/null; wait $sp 2>/dev/null
 
   # El consumo llega como "39.62MB / 7.8GB": se pasa todo a MB para poder comparar

@@ -10,14 +10,7 @@
   "arrowParens": "always",
   "endOfLine": "lf",
   // HTML fuera: build.mjs reemplaza literal <link rel="stylesheet" href="byte.css"> y
-  // <script src="app.js"></script>, y el formateador los convierte en <link ... />.
+  // <script src="app.mjs"></script>, y el formateador los convierte en <link ... />.
   // El resto es material de terceros o generado
-  "ignorePatterns": [
-    "*.html",
-    ".claude/**",
-    ".impeccable/**",
-    "brand/**",
-    "apps/web/fonts-src/**",
-    "pnpm-lock.yaml"
-  ]
+  "ignorePatterns": ["*.html", "apps/web/fonts-src/**", "pnpm-lock.yaml"]
 }

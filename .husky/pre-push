@@ -1,4 +1,5 @@
 # FASE 1: nombre de rama (instantáneo)
+# shellcheck source=branch-name.sh
 . "$(dirname "$0")/branch-name.sh"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if ! branch_ok "$BRANCH"; then
@@ -10,4 +11,4 @@ if ! branch_ok "$BRANCH"; then
 fi
 
 # FASE 2: lo mismo que CI salvo la imagen. Si pasa aquí, CI no debería romperse por lint, formato o tests
-make check
+task check

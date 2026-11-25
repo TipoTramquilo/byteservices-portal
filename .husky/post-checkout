@@ -1,5 +1,6 @@
 # Después de cada checkout; $3 = 1 cuando fue un cambio de rama (no de archivos)
 [ "$3" = "1" ] || exit 0
+# shellcheck source=branch-name.sh
 . "$(dirname "$0")/branch-name.sh"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if branch_ok "$BRANCH"; then

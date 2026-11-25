@@ -25,31 +25,30 @@ El código vive en [infra/local/](/infra/local/README.md).
 | 4 GB de RAM libres                                         | Memoria de la VM                                       | `free -h`                                                    |
 | Teléfono con Wi-Fi                                         | Probar el portal de verdad                             | —                                                            |
 
-Aviso: `task host:up` puede cortar tu Wi-Fi actual si `WIFI_CON` está definido, porque la tarjeta pasa a AP.
+Aviso: `task local:host:up` puede cortar tu Wi-Fi actual si `WIFI_CON` está definido, porque la tarjeta pasa a AP.
 
 ## Pasos
 
 ```sh
-cd infra/local
-task up      # imagen + host + VM
+task local:up      # desde la raíz del repo: imagen + host + VM
 ```
 
 Eso ejecuta, en orden:
 
-1. `env`: crea `.env` desde `.env.example` si no existe.
+1. `env`: crea el `.env` de la raíz desde [.env.example](/.env.example) si no existe.
 2. `image`: descarga la imagen oficial de OPNsense, verifica su SHA-256 y la descomprime en `~/.cache/byte-local/images`.
 3. `host:up`: crea el puente `br0` (WAN), el puente `br-lan` (LAN) y levanta `hostapd` con la red `Byte`.
 4. `tf:apply`: crea la VM con dos NIC: WAN en `br0`, LAN en `br-lan`.
 
 Cuando termine, el panel de OPNsense está en `https://192.168.1.1` desde la red `Byte`.
 
-Para deshacer todo: `task down`.
+Para deshacer todo: `task local:down`.
 
 ## Flujo
 
 ```mermaid
 flowchart LR
-  A[task up] --> B[env: .env]
+  A[task local:up] --> B[env: .env]
   B --> C[image: descarga + SHA-256]
   C --> D[host:up: br0, br-lan, hostapd]
   D --> E[tf:apply: VM con WAN y LAN]

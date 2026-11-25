@@ -10,7 +10,7 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"captiveportal/core"
+	"byte-api/core"
 )
 
 // maxReadConns acota el pool de lectura: más conexiones que núcleos no ayudan y cuestan memoria

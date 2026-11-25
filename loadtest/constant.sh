@@ -12,11 +12,11 @@ rm -f "$RESULTS/last.json"
 
 echo
 echo "### 1000 VUs simultáneos, ${DUR} s, sin pausa"
-( for i in $(seq 1 $((DUR + 60))); do timeout 3 podman stats --no-stream \
+( for _ in $(seq 1 $((DUR + 60))); do timeout 3 podman stats --no-stream \
     --format '{{.Name}} {{.CPUPerc}} {{.MemUsage}}' byte-portal k6run 2>/dev/null; sleep 1; done > "$RESULTS/stats-constant-1000.log" ) &
 SP=$!
-podman run --rm --name k6run --network "$NET" -v "$DIR:/scripts" "$IMG" run \
-    -e MODE=send -e VUS=1000 -e DUR="${DUR}s" /scripts/scripts/portal.js
+podman run --rm --name k6run --network "$NET" -v "$DIR:/loadtest" "$IMG" run \
+    -e MODE=send -e VUS=1000 -e DUR="${DUR}s" /loadtest/k6/portal.mjs
 kill $SP 2>/dev/null; wait $SP 2>/dev/null
 
 echo

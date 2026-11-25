@@ -2,18 +2,23 @@
 
 > **Estado:** Aprobado
 
-Todos los comandos salen del [Makefile](/Makefile), desde la raíz
+Todos los comandos salen del [Taskfile](/Taskfile.yml), desde la raíz (`task --list` los muestra)
 
 ## Requisitos
 
-- **Node.js** para compilar el portal (`build.mjs` no tiene dependencias)
-- **Go** para la API
-- **Podman o Docker** para el contenedor. El `Makefile` detecta el motor; para forzarlo, `make ENGINE=docker`
+- **[Task](https://taskfile.dev)** para las tareas del repo
+- **Node.js** 26+ (`engines` en `package.json`) y **pnpm** (versión en `packageManager`, vía `corepack enable`):
+  `build.mjs` no tiene dependencias, pnpm solo instala las herramientas de calidad
+- **Go** para la API (la versión de `apps/api/go.mod`; con un Go más viejo se descarga sola)
+
+Primera vez: `task install` (dependencias de JS, hooks de git y herramientas de Go)
+
+- **Podman o Docker** para el contenedor. El `Taskfile.yml` detecta el motor; para forzarlo, `ENGINE=docker task up`
 
 ## Opción A: API en el host
 
 ```bash
-make api
+task api
 ```
 
 Compila el portal y levanta la API en `:8080`. Abrir `http://localhost:8080`. Sin `OPNSENSE_URL`, el acceso no se abre
@@ -22,17 +27,17 @@ en ningún equipo: la API solo lo registra en el log, así que sirve para probar
 ## Opción B: todo en contenedor
 
 ```bash
-make up     # construye y levanta; la base queda en el volumen portal_data
-make logs
-make down
+task up     # construye y levanta; la base queda en el volumen portal_data
+task logs
+task down
 ```
 
-Otro puerto: `PORTAL_PORT=8090 make up`
+Otro puerto: `PORTAL_PORT=8090 task up`
 
 ## Solo el portal
 
 ```bash
-make web-dev
+task web:dev
 ```
 
 Sirve `apps/web/src` en `:8000` en modo demo (sin API). Para ver el design system, servir `apps/web` en su lugar
@@ -42,9 +47,11 @@ Estados de vista previa: `index.html?step=listo` y `index.html?step=datos-error`
 
 ## Antes de un commit
 
-- `cd apps/api && go vet ./... && go test ./...`
-- `make web` para que `dist/` esté al día (no va en git; la imagen lo compila sola)
+Los hooks de git validan solos: el pre-commit formatea y lintea lo que está en stage y el pre-push corre
+`task check` (ver [ci.md](/docs/explanation/ops/ci.md)). Lo que no automatizan:
+
 - Probar el flujo en el navegador a 390×844
+- `task web` para que `dist/` esté al día si se va a correr la API (no va en git; la imagen lo compila sola)
 
 ## Compilar para OPNsense
 

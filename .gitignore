@@ -1,7 +1,7 @@
 .DS_Store
 
 # apps/api: binario compilado y la base SQLite local (con sus archivos WAL)
-apps/api/captiveportal
+apps/api/byte-api
 
 # apps/web: el portal compilado; lo arman `make web` y el Dockerfile
 apps/web/dist/
@@ -20,11 +20,12 @@ infra/local/terraform/*.tfstate
 infra/local/terraform/*.tfstate.*
 infra/local/terraform/*.tfvars
 
-# Entorno local: copia local de variables
-infra/local/.env
 
 # Herramientas de Go compiladas por `make tools`
 .bin/
 
 # pnpm
 node_modules/
+
+# Task: caché de checksums de sources/generates
+.task/

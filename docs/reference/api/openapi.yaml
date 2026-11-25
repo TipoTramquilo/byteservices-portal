@@ -35,7 +35,7 @@ info:
 
 servers:
   - url: http://localhost:8080
-    description: Desarrollo (`make api`)
+    description: Desarrollo (`task api`)
 # Sin autenticación a propósito: el visitante todavía no tiene internet ni credenciales.
 # El dispositivo se identifica por la IP de la petición (ver info.description)
 security: []
@@ -91,7 +91,7 @@ paths:
   /api/health:
     get:
       summary: Liveness del proceso
-      description: Responde mientras el proceso HTTP esté escuchando. Lo usa el healthcheck del contenedor (`captiveportal health`)
+      description: Responde mientras el proceso HTTP esté escuchando. Lo usa el healthcheck del contenedor (`byte-api health`)
       operationId: getHealth
       tags: [Sistema]
       responses:

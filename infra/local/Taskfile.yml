@@ -1,17 +1,14 @@
 # Entorno local del portal: OPNsense en una VM + AP Byte en el host.
-# Uso: `task up` (primera vez), `task down` (al terminar). Ver `task --list`.
+# Se usa desde la raíz del repo (incluido en /Taskfile.yml): `task local:up`, `task local:down`, `task --list`
 version: '3'
-
-# Lee .env local si existe (ver .env.example); si no, usa los valores por defecto
-dotenv: ['.env']
 
 vars:
   IMAGE_BZ2:
-    sh: grep '^IMAGE_BZ2=' image.env | cut -d= -f2
+    sh: grep '^IMAGE_BZ2=' opnsense-image.env | cut -d= -f2
   IMAGE_URL:
-    sh: grep '^IMAGE_URL=' image.env | cut -d= -f2
+    sh: grep '^IMAGE_URL=' opnsense-image.env | cut -d= -f2
   IMAGE_SHA256:
-    sh: grep '^IMAGE_SHA256=' image.env | cut -d= -f2
+    sh: grep '^IMAGE_SHA256=' opnsense-image.env | cut -d= -f2
   CACHE: '{{.HOME}}/.cache/byte-local/images'
   IMG: '{{trimSuffix ".bz2" .IMAGE_BZ2}}'
   WAN_NIC: '{{env "WAN_NIC" | default "enp5s0"}}'
@@ -26,11 +23,11 @@ tasks:
       - task --list
 
   env:
-    desc: 'Crea .env desde .env.example si todavía no existe'
+    desc: 'Crea .env en la raíz desde .env.example si todavía no existe'
     status:
-      - test -f .env
+      - test -f "{{.ROOT_DIR}}/.env"
     cmds:
-      - cp .env.example .env
+      - cp "{{.ROOT_DIR}}/.env.example" "{{.ROOT_DIR}}/.env"
       - echo "Creado .env desde .env.example (ajusta WAN_NIC, WIFI_NIC y SSID si hace falta)"
 
   image:

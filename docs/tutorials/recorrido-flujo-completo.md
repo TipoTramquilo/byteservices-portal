@@ -8,7 +8,7 @@ Seguir una visita de punta a punta, del portal a la base, sin router real. Para 
 ## 1. Levantar la API
 
 ```bash
-make api
+task api
 ```
 
 En la terminal: `listening on :8080`. Sin `OPNSENSE_URL` no hay router: la API solo registra el acceso en el log.

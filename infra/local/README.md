@@ -23,23 +23,25 @@ Guía completa: [docs/how-to/levantar-local.md](/docs/how-to/levantar-local.md).
 | 4 GB de RAM libres                                         | Memoria de la VM                                       | `free -h`                                                    |
 | Teléfono con Wi-Fi                                         | Probar el portal de verdad                             | —                                                            |
 
-Aviso: `task host:up` puede cortar tu Wi-Fi actual si `WIFI_CON` está definido, porque la tarjeta pasa a AP.
+Aviso: `task local:host:up` puede cortar tu Wi-Fi actual si `WIFI_CON` está definido, porque la tarjeta pasa a AP.
 
 ## Uso
 
+Desde la raíz del repo: el [Taskfile raíz](/Taskfile.yml) incluye este como `local:`.
+
 ```sh
-task up        # primera vez: .env, imagen, host y VM
-task down      # destruye la VM y deshace el host
-task --list    # todas las tareas
+task local:up        # primera vez: .env, imagen, host y VM
+task local:down      # destruye la VM y deshace el host
+task --list          # todas las tareas
 ```
 
-Variables en `.env` (se crea desde `.env.example`, y no se sube al repo). Cada una tiene su comentario en el ejemplo.
+Variables en el `.env` de la raíz del repo (se crea desde [/.env.example](/.env.example) y no se sube al repo). Cada una tiene su comentario en el ejemplo.
 
 ## Flujo
 
 ```mermaid
 flowchart LR
-  A[task up] --> B[env: .env]
+  A[task local:up] --> B[env: .env]
   B --> C[image: descarga + SHA-256]
   C --> D[host:up: br0, br-lan, hostapd]
   D --> E[tf:apply: VM con WAN y LAN]
@@ -62,7 +64,7 @@ flowchart TB
 
 | Tarea                                 | Qué hace                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------ |
-| `env`                                 | Crea `.env` desde `.env.example` si falta                                      |
+| `env`                                 | Crea `.env` en la raíz desde `.env.example` si falta                           |
 | `image`                               | Descarga la imagen nano de OPNsense 26.7, verifica su SHA-256 y la descomprime |
 | `host:up`                             | Crea `br0`, `br-lan` y levanta el AP `Byte` (requiere `sudo`)                  |
 | `host:down`                           | Quita el AP y los puentes, y devuelve la cableada a NetworkManager             |
